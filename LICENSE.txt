@@ -1,0 +1,1 @@
+SPDX-License-Identifier: GPL-3.0-or-later. Aurora source is distributed under the GNU General Public License version 3 or later. The full license is available at https://www.gnu.org/licenses/gpl-3.0.txt. See THIRD_PARTY.md for dependency notices.

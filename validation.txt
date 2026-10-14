@@ -1,0 +1,46 @@
+PASS nonlinear polynomial
+PASS delay impulse / wrap indexing
+PASS fractional delay interpolation
+PASS SVF bounded impulse response
+PASS effect 1 stability
+PASS effect 2 stability
+PASS effect 3 stability
+PASS effect 4 stability
+PASS effect 5 stability
+PASS effect 6 stability
+PASS effect 7 stability
+PASS effect 8 stability
+PASS effect 9 stability
+PASS effect 10 stability
+PASS effect 11 stability
+PASS effect 12 stability
+PASS effect 13 stability
+PASS effect 14 stability
+PASS effect 15 stability
+PASS effect 16 stability
+PASS effect 17 stability
+PASS Bode +100 Hz shift / unwanted sideband rejection
+PASS synth MIDI note-on/off produces bounded audio
+PASS release decays to silence
+PASS preset state round-trip
+PASS previous-version preset loads with new parameter defaults and audio
+PASS oversized host block / MIDI sample offset
+PASS sample import
+PASS engine 1 generates sample-derived audio
+PASS engine 2 generates sample-derived audio
+PASS engine 3 generates sample-derived audio
+PASS engine 4 generates sample-derived audio
+PASS SFZ two-zone import
+PASS embedded samples / zones preset round-trip
+PASS editor software-rendered preview
+PASS UI pages / resize / modulation drop / FX reorder / MIDI learn / undo-redo
+PASS Mono/legato fallback / portamento / unison / Bezier envelope stability
+PASS OpenGL shader compilation on native context
+PASS VST3 factory enumerates component
+PASS VST3 host creates component/controller
+PASS VST3 renders audio in host
+PASS VST3 editor constructs
+PASS VST3 factory enumerates component
+PASS VST3 host creates component/controller
+PASS VST3 renders audio in host
+PASS VST3 editor constructs

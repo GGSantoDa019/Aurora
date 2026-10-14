@@ -1,0 +1,7 @@
+/build/
+/cmake-build-*/
+/.vs/
+*.user
+*.suo
+/interface-[0-9].png
+/interface-small.png
