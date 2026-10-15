@@ -25,7 +25,20 @@
 
 namespace juce
 {
+// Aurora extension: preserve every VST3 queue point before processBlock.
+class SampleAccurateParameterSink {
+public:
+    virtual ~SampleAccurateParameterSink() = default;
+    virtual bool enqueueParameterPoint(int parameterIndex, int sampleOffset, float normalized) = 0;
+};
 
+// Aurora extension: native VST3 note IDs and expression events, without MIDI loss.
+class NativeNoteEventSink {
+public:
+    virtual ~NativeNoteEventSink() = default;
+    virtual bool nativeNoteExpressionEnabled() const { return true; }
+    virtual bool enqueueNativeNote(int kind, int offset, int noteId, int channel, int pitch, int type, float value) = 0;
+};
 //==============================================================================
 /**
     Base class for audio processing classes or plugins.

@@ -3,6 +3,8 @@
 #include <array>
 #include <cmath>
 #include <vector>
+#include "ExactKernels.h"
+#include "WavetableReader.h"
 namespace aurora {
 struct WaveTap {
     juce::AbstractFifo fifo{4096};
@@ -35,6 +37,7 @@ inline float nonlinear(float x) {
 struct Wavetables {
     std::array<std::array<std::array<float, 2048>, 4>, 8> data{};
     Wavetables() {
+        (void)WavetableReader::coefficients();
         for (int level = 0; level < 8; ++level)
             for (int i = 0; i < 2048; ++i) {
                 float phase = 2 * pi * i / 2048.f;
@@ -50,7 +53,7 @@ struct Wavetables {
                 }
             }
     }
-    float read(double phase, float position, double hz, double sr) const {
+    float read(double phase, float position, double hz, double sr, WavetableReadState *state=nullptr) const {
         if (hz >= sr * .45)
             return 0;
         int level = 0;
@@ -59,14 +62,11 @@ struct Wavetables {
         float frame = position * 3;
         int a = juce::jlimit(0, 3, int(frame)), b = std::min(3, a + 1);
         float blend = frame - a;
-        float at = float(phase) * 2048;
-        int index = int(at) & 2047, next = (index + 1) & 2047;
-        float frac = at - std::floor(at);
-        auto interp = [&](int f) {
-            const auto &t = data[size_t(level)][size_t(f)];
-            return t[size_t(index)] + frac * (t[size_t(next)] - t[size_t(index)]);
+        auto atBand=[&](int band){
+            auto interp=[&](int f){return WavetableReader::periodic(data[size_t(band)][size_t(f)].data(),2048,phase);};
+            const float first=interp(a);return blend==0 || a==b?first:first+(interp(b)-first)*blend;
         };
-        return interp(a) + (interp(b) - interp(a)) * blend;
+        return state?state->tick(this,level,atBand):atBand(level);
     }
 };
 struct SVF {
@@ -118,7 +118,11 @@ struct Effect {
     Delay dl, dr;
     SVF fl, fr, fl2, fr2;
     juce::Reverb rev;
-    juce::dsp::Convolution conv;
+    StereoFIR conv;
+    Ring8192 delayAuxL, delayAuxR;
+    CompressorDetector detector;
+    std::array<BodePhasePair,2> bode;
+    float delaySmoothL=1,delaySmoothR=1;
     juce::AudioBuffer<float> scratch;
     std::array<Allpass, 19> al{}, ar{};
     float phase = 0, env = 0, mixSmooth = 0;
@@ -136,12 +140,18 @@ struct Effect {
         phase = env = 0;
         rev.setSampleRate(sr);
         rev.reset();
-        conv.prepare({sr, juce::uint32(block), 2});
+        conv.prepare(sr);
+        delayAuxL.clear();delayAuxR.clear();detector={};
+        delaySmoothL=delaySmoothR=1;
+        for(auto &pair:bode){pair.reset();pair.coefficient=recoveredBodeCoefficients();}
         scratch.setSize(2, block);
     }
     void loadIR(const juce::File &f) {
-        conv.loadImpulseResponse(f, juce::dsp::Convolution::Stereo::yes,
-                                 juce::dsp::Convolution::Trim::yes, 0);
+        juce::AudioFormatManager formats;formats.registerBasicFormats();
+        std::unique_ptr<juce::AudioFormatReader> reader(formats.createReaderFor(f));
+        if(!reader || reader->lengthInSamples<=0 || reader->lengthInSamples>reader->sampleRate*10)return;
+        juce::AudioBuffer<float> data(2,int(reader->lengthInSamples));reader->read(&data,0,data.getNumSamples(),0,true,true);
+        conv.load(data,reader->sampleRate);
     }
     void process(float *l, float *r, int n, int type, float amount, float mix, float time) {
         if (type == 0)
@@ -154,7 +164,7 @@ struct Effect {
             al = {};
             ar = {};
             rev.reset();
-            env = 0;
+            env = 0;detector={};for(auto &pair:bode)pair.reset();
             previous = type;
         }
         if (type == 12) {
@@ -162,9 +172,7 @@ struct Effect {
                 return;
             scratch.copyFrom(0, 0, l, n);
             scratch.copyFrom(1, 0, r, n);
-            auto block = juce::dsp::AudioBlock<float>(scratch).getSubBlock(0, size_t(n));
-            juce::dsp::ProcessContextReplacing<float> ctx(block);
-            conv.process(ctx);
+            conv.process(scratch.getWritePointer(0),scratch.getWritePointer(1),n);
             for (int i = 0; i < n; ++i) {
                 mixSmooth += (mix - mixSmooth) * .002f;
                 l[i] += mixSmooth * (scratch.getSample(0, i) - l[i]);
@@ -190,6 +198,7 @@ struct Effect {
             }
             return;
         }
+        if(type==13 || type==15) midSide4(l,r,scratch.getWritePointer(0),scratch.getWritePointer(1),n);
         for (int i = 0; i < n; ++i) {
             float x = l[i], y = r[i], wl = x, wr = y;
             phase += float((type == 11 ? (time - .5f) * 2000 : (.05 + time * 4)) / sr);
@@ -234,15 +243,19 @@ struct Effect {
                 }
                 break;
             }
-            case 5:
-                wl = dl.read(float(sr * (.01 + time * 1.99)));
-                wr = dr.read(float(sr * (.013 + time * 1.97)));
-                dl.push(x + wr * amount * .85f);
-                dr.push(y + wl * amount * .85f);
+            case 5: {
+                // The documented 8192-position ring is auxiliary, not a claim
+                // that the source's maximum delay is 8192 samples.
+                delaySmoothL+=(float(sr*(.01+time*1.99))-delaySmoothL)*.000142454999149777f;
+                delaySmoothR+=(float(sr*(.013+time*1.97))-delaySmoothR)*.000142454999149777f;
+                float a=delayAuxL.read(std::min(8190.f,delaySmoothL)),b=delayAuxR.read(std::min(8190.f,delaySmoothR));
+                wl=dl.read(delaySmoothL)*.75f+a*.25f;wr=dr.read(delaySmoothR)*.75f+b*.25f;
+                float inL=x+wr*amount*.85f,inR=y+wl*amount*.85f;
+                dl.push(inL);dr.push(inR);delayAuxL.push(inL);delayAuxR.push(inR);
                 break;
+            }
             case 6:
-                env += (std::max(std::abs(x), std::abs(y)) - env) *
-                       float(1 - std::exp(-1 / (sr * .025)));
+                env = detector.tick(std::max(std::abs(x), std::abs(y)));
                 {
                     float threshold = .05f + .7f * (1 - amount);
                     float gain = env > threshold ? std::pow(threshold / env, .75f) : 1;
@@ -262,31 +275,15 @@ struct Effect {
                 wr = fr.tick(y, 30 * std::pow(600.f, time), amount, sr);
                 break;
             case 11: {
-                // Independent analytic-signal frequency shifter. The supplied all-pass
-                // recurrence is used as a phase disperser; a windowed Hilbert FIR supplies
-                // quadrature because the original coefficient generator was not recovered.
-                for (int j = 0; j < 18; ++j) {
-                    float a = .05f + .9f * float(j + 1) / 19 * amount;
-                    wl = al[size_t(j)].tick(wl, a);
-                    wr = ar[size_t(j)].tick(wr, a);
-                }
-                wl = al[18].tick(wl, .45f);
-                wr = ar[18].tick(wr, .45f);
-                dl.push(wl);
-                dr.push(wr);
-                float ql = 0, qr = 0;
-                for (int k = -63; k <= 63; k += 2) {
-                    float coeff = 2 / (pi * k) * (.54f + .46f * std::cos(pi * k / 64));
-                    ql += coeff * dl.read(float(64 + k));
-                    qr += coeff * dr.read(float(64 + k));
-                }
-                float c = std::cos(2 * pi * phase), s = std::sin(2 * pi * phase);
-                wl = dl.read(64) * c - ql * s;
-                wr = dr.read(64) * c - qr * s;
+                // Recovered fixed all-pass quadrature pair replaces the approximate
+                // coefficients and windowed Hilbert FIR from 0.2.0.
+                auto left=bode[0].tick(x),right=bode[1].tick(y);
+                double c=std::cos(2*pi*phase),s=std::sin(2*pi*phase);
+                wl=float(left[0]*c+left[1]*s);wr=float(right[0]*c+right[1]*s);
                 break;
             }
             case 13: {
-                float m = (x + y) * .5f, s = (x - y) * .5f * (amount * 2);
+                float m = scratch.getSample(0,i), s = scratch.getSample(1,i) * (amount * 2);
                 wl = m + s;
                 wr = m - s;
                 break;
@@ -302,7 +299,7 @@ struct Effect {
                 break;
             }
             case 15: {
-                float m = (x + y) * .5f, s = (x - y) * .5f;
+                float m = scratch.getSample(0,i), s = scratch.getSample(1,i);
                 wl = m + s * amount * 2;
                 wr = m - s * amount * 2;
                 break;

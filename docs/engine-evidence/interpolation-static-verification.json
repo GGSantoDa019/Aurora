@@ -1,0 +1,37 @@
+{
+  "binarySha256": "33369e196ae66d05d20485f3c5e800707dc34a5ad89c27959250d60387b2ea55",
+  "imageBase": "0x180000000",
+  "constructor": "0x1804408d0",
+  "ghidraIndex": "outputs\\decompiled-bulk-004\\index.tsv",
+  "ghidraIndexRow": "0x1804408d0\tsuccess\t1400\t268\tFUN_1804408d0\t",
+  "sourceFirstRead": "0x180a82688",
+  "sourceLastRead": "0x180a72690",
+  "sourceStride": -8,
+  "sourceCount": 8192,
+  "previousInitialValue": 0.0,
+  "destinationPermutation": "((n >> 9) | ((0x1fff0 - 16*n) & 0x1ff0)) << 2",
+  "runtimeScope": "owned Serum 2.1.5 instance at 48000 Hz; after setup before audio",
+  "allTablesBitExact": true,
+  "tables": [
+    {
+      "name": "base",
+      "floatCount": 8192,
+      "sha256": "9c0de3cc3df5b07bb4b17068fd72d3bfaaaf3c8a88b8e98f4568e5a8d99d3061",
+      "captureSha256": "9c0de3cc3df5b07bb4b17068fd72d3bfaaaf3c8a88b8e98f4568e5a8d99d3061",
+      "identicalBytes": true,
+      "differentFloatBitPatterns": 0,
+      "firstDifferentIndices": [],
+      "staticFile": "outputs\\engine-closure-2026-10-15\\interpolation-base-static.f32le"
+    },
+    {
+      "name": "slope",
+      "floatCount": 8192,
+      "sha256": "4d0608460dc67d2994ea0080f0f23e235ff9fb63f53508264b9c611725393e7f",
+      "captureSha256": "4d0608460dc67d2994ea0080f0f23e235ff9fb63f53508264b9c611725393e7f",
+      "identicalBytes": true,
+      "differentFloatBitPatterns": 0,
+      "firstDifferentIndices": [],
+      "staticFile": "outputs\\engine-closure-2026-10-15\\interpolation-slope-static.f32le"
+    }
+  ]
+}

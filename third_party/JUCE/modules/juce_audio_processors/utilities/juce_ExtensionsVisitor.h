@@ -29,6 +29,7 @@
 namespace Steinberg::Vst
 {
     class IComponent;
+    class IEditController;
 } // namespace Steinberg::Vst
 
 #endif
@@ -91,6 +92,7 @@ struct ExtensionsVisitor
     {
         virtual ~VST3Client() = default;
         virtual Steinberg::Vst::IComponent* getIComponentPtr() const noexcept = 0;
+        virtual Steinberg::Vst::IEditController* getIEditControllerPtr() const noexcept { return nullptr; }
 
         virtual MemoryBlock getPreset() const = 0;
         virtual bool setPreset (const MemoryBlock&) const = 0;

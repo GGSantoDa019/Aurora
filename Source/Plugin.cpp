@@ -1,4 +1,5 @@
 #include "Dsp.h"
+#include "CoreInfrastructure.h"
 #include "ImportedWavetable.h"
 #include "LegacyParamOrder.h"
 #include "ModCurve.h"
@@ -69,7 +70,7 @@ class Voice : public SynthesiserVoice {
     void startNote(int, float, SynthesiserSound *, int) override;
     void stopNote(float, bool) override;
     void pitchWheelMoved(int v) override { bend = std::pow(2., ((v - 8192) / 8192.) * 2. / 12.); }
-    void controllerMoved(int, int) override {}
+    void controllerMoved(int cc, int value) override { if(cc==74)timbre=value/127.f; }
     void aftertouchChanged(int v) override { pressure = v / 127.f; }
     void channelPressureChanged(int v) override { pressure = v / 127.f; }
     void renderNextBlock(AudioBuffer<float> &, int, int) override;
@@ -77,12 +78,17 @@ class Voice : public SynthesiserVoice {
     std::array<ADSR, 4> envs;
     std::array<double, 3> phase{}, position{};
     std::array<std::array<double, 8>, 3> unisonPhase{};
+    std::array<std::array<WavetableReadState,8>,3> wavetableState{};
     std::array<double, 4> envelopeTime{};
     bool keepEnvelope = false;
     float glideNote = 60;
     std::array<int, 3> zone{};
     double subphase = 0, bend = 1;
-    float velocity = 0, pressure = 0;
+    float velocity = 0, pressure = 0, timbre = .5f;
+    float expressionGain=1,expressionPan=0,expressionTune=0,memberBend=0,masterBend=0;
+    int nativeNoteId=-1;
+    std::array<double,10> voiceLfoPhase{},voiceLfoTime{};
+    std::array<float,10> voiceLfoValue{};
     int note = 60;
     bool released = false;
     Random rng;
@@ -90,6 +96,34 @@ class Voice : public SynthesiserVoice {
 class PerformanceSynth : public Synthesiser {
   public:
     int mode = 0, limit = 16;
+    MPEZoneLayout mpe;
+    bool mpeActive=true;
+    std::array<int,16> bends{};
+    PerformanceSynth(){mpe.setLowerZone(15);bends.fill(8192);}
+    void refreshExpression(Voice &v){
+        int channel=1;for(int c=1;c<=16;++c)if(v.isPlayingChannel(c))channel=c;
+        auto lower=mpe.getLowerZone(),upper=mpe.getUpperZone();
+        auto z=lower.isUsingChannelAsMemberChannel(channel)?lower:upper;
+        bool member=z.isUsingChannelAsMemberChannel(channel);
+        v.memberBend=(bends[size_t(channel-1)]-8192)/8192.f*(member?z.perNotePitchbendRange:2);
+        v.masterBend=member?(bends[size_t(z.getMasterChannel()-1)]-8192)/8192.f*z.masterPitchbendRange:0;
+        v.bend=std::pow(2.,(v.memberBend+v.masterBend)/12.);
+    }
+    void startNative(int id,int channel,int note,float velocity){
+        if(id>=0)for(int i=0;i<getNumVoices();++i)if(auto *active=dynamic_cast<Voice*>(getVoice(i));active && active->isVoiceActive() && active->nativeNoteId==id)active->stopNote(0,false);
+        auto *v=dynamic_cast<Voice*>(findFreeVoice(getSound(0).get(),channel,note,true));
+        if(!v)return;startVoice(v,getSound(0).get(),channel,note,velocity);v->nativeNoteId=id;refreshExpression(*v);
+    }
+    void expression(int id,int type,float value){
+        if(id<0)return;
+        for(int i=0;i<getNumVoices();++i)if(auto *v=dynamic_cast<Voice*>(getVoice(i));v && v->isVoiceActive() && v->nativeNoteId==id){
+            if(type==0)v->expressionGain=4*value;
+            else if(type==1)v->expressionPan=2*value-1;
+            else if(type==2)v->expressionTune=240*(value-.5f);
+            else if(type==4)v->pressure=value;
+            else if(type==5)v->timbre=value;
+        }
+    }
     int serial = 0;
     std::array<int, 2048> heldKeys{};
     std::array<float, 2048> velocities{};
@@ -132,7 +166,20 @@ class PerformanceSynth : public Synthesiser {
     void handleMidiEvent(const MidiMessage &message) override {
         if (message.isAllNotesOff() || message.isAllSoundOff())
             heldKeys.fill(0);
+        if(mpeActive)mpe.processNextMidiEvent(message);
+        if(message.isPitchWheel()) {
+            bends[size_t(message.getChannel()-1)]=message.getPitchWheelValue();
+            for(int i=0;i<getNumVoices();++i)if(auto *v=dynamic_cast<Voice*>(getVoice(i));v && v->isVoiceActive())refreshExpression(*v);
+            return;
+        }
+        if(message.isController() && message.getControllerNumber()==74)
+            for(int i=0;i<getNumVoices();++i)if(auto *v=dynamic_cast<Voice*>(getVoice(i));v && v->isPlayingChannel(message.getChannel()))v->timbre=message.getControllerValue()/127.f;
+        auto lower=mpe.getLowerZone(),upper=mpe.getUpperZone();
+        for(auto z:{lower,upper})if(z.isActive() && message.getChannel()==z.getMasterChannel() &&
+            (message.isController() || message.isChannelPressure()))
+            for(int c=1;c<=16;++c)if(z.isUsingChannelAsMemberChannel(c)){auto copy=message;copy.setChannel(c);Synthesiser::handleMidiEvent(copy);}
         Synthesiser::handleMidiEvent(message);
+        if(message.isNoteOn())for(int i=0;i<getNumVoices();++i)if(auto *v=dynamic_cast<Voice*>(getVoice(i));v && v->isPlayingChannel(message.getChannel()))refreshExpression(*v);
     }
     SynthesiserVoice *findFreeVoice(SynthesiserSound *sound, int, int, bool steal) const override {
         SynthesiserVoice *oldest = nullptr;
@@ -146,11 +193,19 @@ class PerformanceSynth : public Synthesiser {
         return steal ? oldest : nullptr;
     }
 };
-class Aurora : public AudioProcessor {
+class Aurora : public AudioProcessor, public SampleAccurateParameterSink, public NativeNoteEventSink {
   public:
+    juce::var presetMetadata, presetExtensions;
     UndoManager undo;
     AudioProcessorValueTreeState state;
     WaveTap telemetry;
+    // The audio thread publishes observations only; UI never touches filter state.
+    struct FilterDisplay {
+        std::atomic<float> cutoff{16000}, resonance{.1f}, sampleRate{48000};
+        std::atomic<int> type{0};
+        std::atomic<unsigned> frame{0};
+    };
+    std::array<FilterDisplay, 2> filterDisplay;
     std::atomic<int> midiLearn{-1};
     std::array<std::atomic<int>, 128> midiMappings;
     PerformanceSynth synth;
@@ -159,6 +214,7 @@ class Aurora : public AudioProcessor {
     std::array<CurveShape, 4> envCurves;
     std::array<CurveShape, 10> lfoCurves;
     std::array<double, 10> lfoTime{};
+    double currentTempo=120;
     float previousNote = 60;
     Wavetables tables;
     std::array<std::shared_ptr<ImportedWavetable>, 3> importedTables;
@@ -187,6 +243,43 @@ class Aurora : public AudioProcessor {
     AudioFormatManager formats;
     std::vector<std::atomic<float> *> raw;
     std::vector<float> snapshot;
+    std::vector<LinearParameter> parameterRamps;
+    std::vector<ParameterDescriptor> parameterCatalog;
+    AutomationQueue automation;
+    struct NativeNote {int kind,offset,id,channel,pitch,type;float value;unsigned serial;};
+    std::array<NativeNote,4096> nativeEvents{};
+    int nativeCount=0;unsigned nativeSerial=0;
+    std::atomic<unsigned> rejectedNotes{0};
+    bool enqueueNativeNote(int kind,int offset,int id,int channel,int pitch,int type,float value) override {
+        if(nativeCount==4096 || offset<0 || channel<1 || channel>16 || pitch<0 || pitch>127 || !std::isfinite(value)){++rejectedNotes;return false;}
+        nativeEvents[size_t(nativeCount++)]={kind,offset,id,channel,pitch,type,juce::jlimit(0.f,1.f,value),nativeSerial++};return true;
+    }
+    void dispatchNative(const NativeNote &e){
+        if(e.kind==0){synth.startNative(e.id,e.channel,e.pitch,e.value);return;}
+        if(e.kind==3){synth.expression(e.id,e.type,e.value);return;}
+        for(int i=0;i<synth.getNumVoices();++i)if(auto *v=dynamic_cast<Voice*>(synth.getVoice(i));v && v->isVoiceActive() &&
+            (e.id>=0?v->nativeNoteId==e.id:v->isPlayingChannel(e.channel)&&v->getCurrentlyPlayingNote()==e.pitch)){
+            if(e.kind==1){v->setKeyDown(false);if(!v->isSustainPedalDown()&&!v->isSostenutoPedalDown())v->stopNote(e.value,true);}
+            else if(e.kind==2)v->pressure=e.value;
+        }
+    }
+    MidiBuffer nativeMidi;
+    MidiBuffer automationMidi;
+    bool enqueueParameterPoint(int index, int offset, float normalized) override {
+        if (index < 0 || index >= int(raw.size()) || !std::isfinite(normalized)) return false;
+        auto *p = dynamic_cast<RangedAudioParameter*>(getParameters()[index]);
+        return automation.push(index, offset, p->convertFrom0to1(juce::jlimit(0.f, 1.f, normalized)));
+    }
+    bool enqueueCanonicalPoint(unsigned canonical, int offset, float normalized) {
+        if(!std::isfinite(normalized))return false;
+        for (size_t i=0; i<parameterCatalog.size(); ++i)
+            if (parameterCatalog[i].canonicalId != 0 && parameterCatalog[i].canonicalId == canonical) {
+                int local = int(canonical % 1000);
+                float plain = RoutingDescriptor::plain(local, normalized);
+                return automation.push(int(i),offset,plain);
+            }
+        return false;
+    }
     std::vector<bool> smoothParameters;
     std::map<String, int> indices;
     struct RouteConfig {
@@ -232,6 +325,23 @@ class Aurora : public AudioProcessor {
                                            !rp->paramID.startsWith("step"));
             }
         snapshot.resize(raw.size());
+        parameterRamps.resize(raw.size());
+        for (int i=0; i<getParameters().size(); ++i) {
+            auto *p = dynamic_cast<RangedAudioParameter*>(getParameters()[i]);
+            auto r = p->getNormalisableRange();
+            ParameterDescriptor descriptor{p->paramID,p->getName(128),p->getLabel(),r.start,r.end,
+                                           p->convertFrom0to1(p->getDefaultValue()),0};
+            if (p->paramID.startsWith("route")) {
+                int instance = p->paramID.substring(5).getIntValue();
+                const StringArray suffixes{"balance","bus1","bus2","dest","env"};
+                int local = suffixes.indexOf(p->paramID.fromFirstOccurrenceOf("_",false,false));
+                if (local >= 0) descriptor.canonicalId = RoutingDescriptor::canonical(instance,local);
+            }
+            if(descriptor.unit.isEmpty()){
+                descriptor.unit=p->paramID.startsWith("route") && (p->paramID.endsWith("_balance")||p->paramID.endsWith("_bus1")||p->paramID.endsWith("_bus2"))?"percent":p->paramID.endsWith("_dest")?"enum":p->paramID.endsWith("_cutoff")?"Hz":p->paramID.endsWith("_tune")||p->paramID=="transpose"?"semitones":p->paramID=="portamento"||p->paramID.endsWith("_grain")?"ms":p->paramID.endsWith("_rate")?"Hz":p->paramID.endsWith("_a")||p->paramID.endsWith("_d")||p->paramID.endsWith("_r")||p->paramID.endsWith("_delay")||p->paramID.endsWith("_rise")?"s":dynamic_cast<AudioParameterChoice*>(p)?"enum":dynamic_cast<AudioParameterBool*>(p)?"bool":"plain";
+            }
+            parameterCatalog.push_back(descriptor);
+        }
         capture(true);
         for (auto &s : spectrum) {
             s.fill(0);
@@ -318,13 +428,12 @@ class Aurora : public AudioProcessor {
         }
         for (int i = 0; i < 7; ++i) {
             String n = "Route " + String(i + 1) + " ";
-            f(key("route", i, "balance"), n + "filter balance", -100, 100, 0);
+            f(key("route", i, "balance"), n + "filter balance", -100, 100, -100);
             f(key("route", i, "bus1"), n + "FX bus 1", 0, 100, 0);
             f(key("route", i, "bus2"), n + "FX bus 2", 0, 100, 0);
             // Raw 0..1 preserves the exact thresholds from the supplied descriptors.
-            f(key("route", i, "dest"), n + "destination [0 Filter, .25 Main, .5 Direct, .75 None]",
-              0, 1, i < 5 && !AURORA_FX ? 0 : .25f);
-            f(key("route", i, "env"), n + "Via Env1 [.5 = on]", 0, 1, i < 5 ? 1 : 0);
+            p.add(std::make_unique<RoutingDestinationParameter>(key("route",i,"dest"),n+"destination [Filter, Main, Direct, None]"));
+            boolean(key("route",i,"env"),n+"Via Env1",true);
         }
         const StringArray types{"Off",          "Distortion",    "Flanger",    "Phaser",
                                 "Chorus",       "Delay",         "Compressor", "Reverb",
@@ -348,6 +457,7 @@ class Aurora : public AudioProcessor {
         for (int i = 0; i < 8; ++i)
             sources.add("Macro " + String(i + 1));
         sources.add("Mod wheel");
+        sources.add("Timbre");
         StringArray targets{"Off",
                             "Osc 1 level",
                             "Osc 2 level",
@@ -369,6 +479,7 @@ class Aurora : public AudioProcessor {
         f("seq_bpm", "Fallback BPM", 30, 240, 120);
         choice("seq_div", "Step division", {"1/4", "1/8", "1/16", "1/32"}, 2);
         f("seq_gate", "Gate", .05f, .95f, .75f);
+        boolean("mpe_enabled","MPE enabled",true);
         choice("voice_mode", "Voicing", {"Poly", "Mono", "Legato"});
         f("voice_limit", "Voice count", 1, 16, 16);
         f("portamento", "Portamento ms", 0, 500, 0);
@@ -387,19 +498,19 @@ class Aurora : public AudioProcessor {
         return p;
     }
     void capture(bool instant = false, int block = 0) {
-        float blend =
-            instant
-                ? 1.f
-                : float(1 - std::exp(-std::max(1, block > 0 ? block : maxBlock) / (rate * .015)));
-        for (size_t i = 0; i < raw.size(); ++i) {
-            float value = raw[i]->load();
-            snapshot[i] = smoothParameters[i] ? snapshot[i] + (value - snapshot[i]) * blend : value;
+        juce::ignoreUnused(block);
+        for (size_t i=0; i<raw.size(); ++i) {
+            float value=raw[i]->load();
+            if (instant) { snapshot[i]=value; parameterRamps[i].reset(value); }
         }
+        refreshConfiguration();
+    }
+    void refreshConfiguration() {
         for (int j = 0; j < 7; ++j)
             routes[size_t(j)] = {(val(key("route", j, "balance")) + 100) / 200,
                                  val(key("route", j, "bus1")) * .01f,
                                  val(key("route", j, "bus2")) * .01f,
-                                 std::min(3, int(val(key("route", j, "dest")) * 4)),
+                                 juce::jlimit(0,3,int(val(key("route",j,"dest")))),
                                  val(key("route", j, "env")) >= .5f};
         for (int j = 0; j < 64; ++j)
             mods[size_t(j)] = {int(val(key("mod", j, "source"))), int(val(key("mod", j, "target"))),
@@ -453,6 +564,10 @@ class Aurora : public AudioProcessor {
         rate = sr;
         capture(true);
         midiScratch.ensureSize(16384);
+        automationMidi.ensureSize(65536);
+        nativeMidi.ensureSize(65536);nativeCount=0;
+        automation.count = 0;
+        synth.setMinimumRenderingSubdivisionSize(1, true);
         sequenceOutput.ensureSize(16384);
         maxBlock = std::max(1, block);
         synth.setCurrentPlaybackSampleRate(sr);
@@ -461,10 +576,11 @@ class Aurora : public AudioProcessor {
         send1.setSize(2, maxBlock);
         send2.setSize(2, maxBlock);
         direct.setSize(2, maxBlock);
-        cutoffMod.setSize(3, maxBlock);
+        cutoffMod.setSize(4, maxBlock);
         for (auto &r : fx)
             for (auto &e : r)
                 e.prepare(sr, maxBlock);
+        for(int rack=0;rack<3;++rack) if(irData[size_t(rack)].getSize())applyIR(rack);
         filters = {};
         lfoPhase = {};
         lfoTime = {};
@@ -479,7 +595,7 @@ class Aurora : public AudioProcessor {
         return l.getMainOutputChannelSet() == AudioChannelSet::stereo() &&
                (!AURORA_FX || l.getMainInputChannelSet() == AudioChannelSet::stereo());
     }
-    void route(int index, float l, float r, float env, int sample) {
+    void route(int index, float l, float r, float env, int sample, bool allowFilterFeed = true) {
         const auto &config = routes[size_t(index)];
         if (config.env) {
             l *= env;
@@ -495,6 +611,9 @@ class Aurora : public AudioProcessor {
                 buses[2].addSample(c, sample, x * (1 - b));
                 buses[3].addSample(c, sample, x * b);
             }
+        } else if (dest == 0 && index >= 5 && allowFilterFeed) {
+            buses[size_t(8-index)].addSample(0,sample,l);
+            buses[size_t(8-index)].addSample(1,sample,r);
         } else if (dest != 3) {
             buses[0].addSample(0, sample, l);
             buses[0].addSample(1, sample, r);
@@ -594,6 +713,57 @@ class Aurora : public AudioProcessor {
         midi.swapWith(out);
     }
     void processBlock(AudioBuffer<float> &output, MidiBuffer &midi) override {
+        NumericEnvironment environment;
+        automation.sort();
+        std::sort(nativeEvents.begin(),nativeEvents.begin()+nativeCount,[](const auto&a,const auto&b){return a.offset==b.offset?a.serial<b.serial:a.offset<b.offset;});
+        nativeMidi.clear();
+        bool nativeNotes=false;for(int i=0;i<nativeCount;++i)nativeNotes |= nativeEvents[size_t(i)].kind<3;
+        for(auto event:midi){auto message=event.getMessage();if(!nativeNotes || (!message.isNoteOnOrOff()&&!message.isAftertouch()))nativeMidi.addEvent(message,event.samplePosition);}
+        int noteEvent=0;
+        std::array<bool, 8192> queued{};
+        for (int i=0; i<automation.count; ++i)
+            if (automation.points[size_t(i)].parameter < int(raw.size()))
+                queued[size_t(automation.points[size_t(i)].parameter)] = true;
+        for (size_t i=0; i<raw.size(); ++i)
+            if (!queued[i]) parameterRamps[i].set(raw[i]->load(), smoothParameters[i] ? std::max(1,int(rate*.01)) : 0);
+        int event=0, offset=0, total=output.getNumSamples();
+        while (offset < total) {
+            while (event < automation.count && automation.points[size_t(event)].sampleOffset <= offset) {
+                auto point=automation.points[size_t(event++)];
+                if (point.parameter >= int(raw.size())) continue;
+                size_t i=size_t(point.parameter);
+                parameterRamps[i].set(point.plain, smoothParameters[i] ? std::max(1,int(rate*.01)) : 0);
+                raw[i]->store(point.plain);
+            }
+            bool ramping=false;
+            for (size_t i=0; i<snapshot.size(); ++i) {
+                ramping |= parameterRamps[i].remaining > 0;
+                snapshot[i]=parameterRamps[i].next();
+            }
+            refreshConfiguration();
+            bool useMpe=val("mpe_enabled")>=.5f;
+            if(useMpe!=synth.mpeActive){synth.mpeActive=useMpe;if(useMpe)synth.mpe.setLowerZone(15);else synth.mpe.clearAllZones();}
+            synth.mode=int(val("voice_mode"));
+            int limit=synth.mode?1:juce::jlimit(1,16,int(val("voice_limit")));
+            if(limit<synth.limit)for(int i=limit;i<synth.limit;++i)synth.getVoice(i)->stopNote(0,false);
+            synth.limit=limit;
+            while(noteEvent<nativeCount && nativeEvents[size_t(noteEvent)].offset<=offset)dispatchNative(nativeEvents[size_t(noteEvent++)]);
+            int length = ramping ? 1 : std::min(maxBlock,total-offset);
+            if(noteEvent<nativeCount)length=std::min(length,std::max(1,nativeEvents[size_t(noteEvent)].offset-offset));
+            if (event < automation.count) length=std::min(length,std::max(1,automation.points[size_t(event)].sampleOffset-offset));
+            refreshConfiguration();
+            automationMidi.clear(); automationMidi.addEvents(nativeMidi,offset,length,-offset);
+            AudioBuffer<float> view(output.getArrayOfWritePointers(),output.getNumChannels(),offset,length);
+            processAudioChunk(view,automationMidi);
+            offset += length;
+        }
+        if (event < automation.count) automation.rejected.fetch_add(unsigned(automation.count-event));
+        automation.count=0;
+        if(noteEvent<nativeCount)rejectedNotes.fetch_add(unsigned(nativeCount-noteEvent));
+        nativeCount=0;
+        midi.clear();
+    }
+    void processAudioChunk(AudioBuffer<float> &output, MidiBuffer &midi) {
         ScopedNoDenormals denorm;
         if (!AURORA_FX) {
             keyboard.processNextMidiBuffer(midi, 0, output.getNumSamples(), true);
@@ -621,7 +791,6 @@ class Aurora : public AudioProcessor {
                     getParameters()[index]->setValueNotifyingHost(msg.getControllerValue() / 127.f);
             }
         }
-        capture(false, output.getNumSamples());
         int limit = int(val("voice_mode")) == 0 ? juce::jlimit(1, 16, int(val("voice_limit"))) : 1;
         if (limit < synth.limit)
             for (int i = limit; i < synth.limit; ++i)
@@ -633,6 +802,7 @@ class Aurora : public AudioProcessor {
             if (auto position = playhead->getPosition())
                 if (auto tempo = position->getBpm())
                     bpm = *tempo;
+        currentTempo=bpm;
         if (!AURORA_FX)
             output.clear();
         int total = output.getNumSamples();
@@ -645,35 +815,6 @@ class Aurora : public AudioProcessor {
             send2.clear();
             direct.clear();
             cutoffMod.clear();
-            for (int j = 0; j < 10; ++j) {
-                double &p = lfoPhase[size_t(j)];
-                lfoTime[size_t(j)] += n / rate;
-                double frequency = val(key("lfo", j, "rate"));
-                if (val(key("lfo", j, "sync")) > .5f)
-                    frequency = bpm / 60 / std::pow(2., 4 - int(val(key("lfo", j, "division"))));
-                p += frequency * n / rate;
-                p -= std::floor(p);
-                double phase = p + val(key("lfo", j, "phase"));
-                phase -= std::floor(phase);
-                int shape = int(val(key("lfo", j, "shape")));
-                lfoValue[size_t(j)] = shape == 0   ? std::sin(2 * pi * float(phase))
-                                      : shape == 1 ? 1 - 4 * std::abs(float(phase) - .5f)
-                                      : shape == 2 ? 2 * float(phase) - 1
-                                      : phase < .5 ? 1
-                                                   : -1;
-                if (shape == 4) {
-                    lfoValue[size_t(j)] = 2 * lfoCurves[size_t(j)].at(float(phase)) - 1;
-                }
-                double elapsed = lfoTime[size_t(j)] - val(key("lfo", j, "delay"));
-                float fade =
-                    elapsed < 0 ? 0
-                    : val(key("lfo", j, "rise")) > 0
-                        ? juce::jlimit(0.f, 1.f, float(elapsed) / val(key("lfo", j, "rise")))
-                        : 1;
-                if (importedLfoUnipolar.load())
-                    lfoValue[size_t(j)] = (lfoValue[size_t(j)] + 1) * .5f;
-                lfoValue[size_t(j)] *= fade;
-            }
             if (AURORA_FX) {
                 for (int i = 0; i < n; ++i)
                     route(0, output.getSample(0, start + i), output.getSample(1, start + i), 1, i);
@@ -684,26 +825,35 @@ class Aurora : public AudioProcessor {
                 sequence(local, n);
                 synth.renderNextBlock(buses[1], local, 0, n);
             }
-            // Filter 1 may feed filter 2; filter 2 cannot feed filter 1 in this acyclic graph.
-            for (int f = 0; f < 2; ++f) {
+            // Either serial direction is allowed. A cyclic legacy/automated graph
+            // safely falls back to parallel Main outputs rather than feedback.
+            const bool cycle = routes[5].dest == 0 && routes[6].dest == 0;
+            const bool reverse = routes[6].dest == 0 && !cycle;
+            for (int pass = 0; pass < 2; ++pass) {
+                int f = reverse ? 1 - pass : pass;
                 float base = val(key("filter", f, "cutoff")), res = val(key("filter", f, "res"));
                 int type = int(val(key("filter", f, "type")));
+                float observedCutoff = base;
                 for (int i = 0; i < n; ++i) {
                     float lr[2];
                     float count = std::max(1.f, cutoffMod.getSample(2, i));
                     float cutoff =
                         base * std::pow(2.f, juce::jlimit(-8.f, 8.f,
                                                           cutoffMod.getSample(f, i) / count * 8));
+                    observedCutoff = juce::jlimit(10.f, float(rate * .45), cutoff);
                     for (int c = 0; c < 2; ++c)
                         lr[c] = filters[size_t(f)][size_t(c)].tick(
                             buses[size_t(f + 2)].getSample(c, i), cutoff, res, rate, type);
                     int dest = routes[size_t(f + 5)].dest;
-                    if (dest == 0 && f == 0) {
-                        buses[3].addSample(0, i, lr[0]);
-                        buses[3].addSample(1, i, lr[1]);
-                    } else if (dest != 3)
-                        route(f + 5, lr[0], lr[1], 1, i);
+                    float envelope=AURORA_FX?1.f:cutoffMod.getSample(3,i)/count;
+                    if(dest!=3 || importedSendOnlyRouting.load())route(f+5,lr[0],lr[1],envelope,i,!cycle);
                 }
+                auto &display = filterDisplay[size_t(f)];
+                display.cutoff.store(observedCutoff, std::memory_order_relaxed);
+                display.resonance.store(res, std::memory_order_relaxed);
+                display.type.store(type, std::memory_order_relaxed);
+                display.sampleRate.store(float(rate), std::memory_order_relaxed);
+                display.frame.fetch_add(1, std::memory_order_release);
             }
             for (int rack = 0; rack < 3; ++rack) {
                 auto &b = rack == 0 ? send1 : rack == 1 ? send2 : buses[0];
@@ -720,7 +870,7 @@ class Aurora : public AudioProcessor {
             }
             float gain = val("master");
             for (int i = 0; i < n; ++i) {
-                gainSmooth += (gain - gainSmooth) * .002f;
+                gainSmooth = gain;
                 for (int c = 0; c < 2; ++c) {
                     float x = (buses[0].getSample(c, i) + direct.getSample(c, i)) * gainSmooth;
                     output.setSample(c, start + i, AURORA_FX ? x : std::tanh(x));
@@ -895,9 +1045,7 @@ class Aurora : public AudioProcessor {
         for (auto &effect : fx[size_t(rack)]) {
             AudioBuffer<float> copy;
             copy.makeCopyOf(buffer);
-            effect.conv.loadImpulseResponse(std::move(copy), irRate, dsp::Convolution::Stereo::yes,
-                                            dsp::Convolution::Trim::yes,
-                                            dsp::Convolution::Normalise::yes);
+            effect.conv.load(copy,irRate);
         }
         return true;
     }
@@ -993,6 +1141,7 @@ class Aurora : public AudioProcessor {
             return false;
         auto plan = mapSerum(document, report);
         ValueTree tree("AuroraState");
+        tree.setProperty("routingPlainVersion",2,nullptr);
         tree.setProperty("serumLfoUnipolar", true, nullptr);
         tree.setProperty("serumSendOnlyRouting", true, nullptr);
         for (auto *base : getParameters())
@@ -1003,6 +1152,7 @@ class Aurora : public AudioProcessor {
                 float value = found == plan.values.end()
                                   ? parameter->convertFrom0to1(parameter->getDefaultValue())
                                   : found->second;
+                if(found!=plan.values.end() && parameter->paramID.startsWith("route") && parameter->paramID.endsWith("_dest"))value=RoutingDescriptor::plain(3,value);
                 auto range = parameter->getNormalisableRange();
                 value = range.snapToLegalValue(jlimit(range.start, range.end, value));
                 child.setProperty("value", value, nullptr);
@@ -1210,6 +1360,7 @@ class Aurora : public AudioProcessor {
     void getStateInformation(MemoryBlock &out) override {
         const ScopedLock lock(getCallbackLock());
         auto tree = state.copyState();
+        tree.setProperty("routingPlainVersion",2,nullptr);
         tree.setProperty("serumLfoUnipolar", importedLfoUnipolar.load(), nullptr);
         tree.setProperty("serumSendOnlyRouting", importedSendOnlyRouting.load(), nullptr);
         for (int cc = 0; cc < 128; ++cc) {
@@ -1256,18 +1407,23 @@ class Aurora : public AudioProcessor {
         if (auto xml = tree.createXml()) {
             MemoryBlock binary;
             copyXmlToBinary(*xml, binary);
-            if (!encodePreset(binary, out))
+            if (!encodePreset(binary, out, presetMetadata, presetExtensions))
                 out = std::move(binary);
         }
     }
     void setStateInformation(const void *data, int size) override {
         MemoryBlock binary;
-        if (!decodePreset(data, size, binary))
+        PresetDocument document;
+        if (!decodePreset(data, size, binary, &document))
             return;
         auto xml = getXmlFromBinary(binary.getData(), int(binary.getSize()));
         if (!xml || !xml->hasTagName("AuroraState"))
             return;
         auto tree = ValueTree::fromXml(*xml);
+        if(int(tree.getProperty("routingPlainVersion",1))<2){
+            for(auto child:tree){auto id=child["id"].toString();if(id.startsWith("route")&&id.endsWith("_dest"))child.setProperty("value",RoutingDescriptor::plain(3,float(child["value"])),nullptr);}
+            tree.setProperty("routingPlainVersion",2,nullptr);
+        }
         std::array<std::shared_ptr<ImportedWavetable>, 3> decodedTables;
         for (auto child : tree)
             if (child.hasType("ImportedTable")) {
@@ -1351,9 +1507,12 @@ class Aurora : public AudioProcessor {
             applyIR(s);
         }
         state.replaceState(tree);
+        presetMetadata=document.metadata; presetExtensions=document.state;
         capture(true);
     }
     const String getName() const override { return AURORA_FX ? "Aurora FX" : "Aurora"; }
+    bool nativeNoteExpressionEnabled() const override { return !AURORA_FX && state.getRawParameterValue("mpe_enabled")->load()<.5f; }
+    bool supportsMPE() const override { return !AURORA_FX && !nativeNoteExpressionEnabled(); }
     bool acceptsMidi() const override { return !AURORA_FX; }
     bool producesMidi() const override { return false; }
     double getTailLengthSeconds() const override { return 8; }
@@ -1375,13 +1534,15 @@ void Voice::startNote(int n, float vel, SynthesiserSound *, int wheel) {
                     : float(note);
     owner.previousNote = float(note);
     velocity = vel;
-    pressure = 0;
+    pressure = 0; timbre=.5f;expressionGain=1;expressionPan=expressionTune=0;nativeNoteId=-1;
     released = false;
     if (!legato) {
+        wavetableState = {};
         phase = {};
         position = {};
         subphase = 0;
         envelopeTime = {};
+        voiceLfoPhase={};voiceLfoTime={};voiceLfoValue={};
         for (int s = 0; s < 3; ++s)
             for (int u = 0; u < 8; ++u)
                 unisonPhase[size_t(s)][size_t(u)] =
@@ -1445,6 +1606,7 @@ void Voice::renderNextBlock(AudioBuffer<float> &, int start, int n) {
                              owner.val(key("osc", s, "grain")),
                              std::pow(2., owner.val(key("osc", s, "tune")) / 12.),
                              owner.val(key("osc", s, "loop")) > .5f};
+    for(int j=0;j<4;++j)envs[size_t(j)].setParameters({owner.val(key("env",j,"a")),owner.val(key("env",j,"d")),owner.val(key("env",j,"s")),owner.val(key("env",j,"r"))});
     const float noiseLevel = owner.val("noise"), subLevel = owner.val("sub");
     for (int s = 0; s < 3; ++s) {
         config[size_t(s)].unison = juce::jlimit(1, 8, int(owner.val(key("osc", s, "unison"))));
@@ -1458,6 +1620,17 @@ void Voice::renderNextBlock(AudioBuffer<float> &, int start, int n) {
     float glideRate =
         glideMs > 0 ? float(1 - std::exp(-1 / (getSampleRate() * glideMs * .0002))) : 1;
     for (int i = start; i < start + n; ++i) {
+        for(int j=0;j<10;++j){
+            auto k=size_t(j);double frequency=owner.val(key("lfo",j,"rate"));
+            if(owner.val(key("lfo",j,"sync"))>.5f)frequency=owner.currentTempo/60/std::pow(2.,4-int(owner.val(key("lfo",j,"division"))));
+            voiceLfoTime[k]+=1/getSampleRate();voiceLfoPhase[k]+=frequency/getSampleRate();voiceLfoPhase[k]-=std::floor(voiceLfoPhase[k]);
+            double phase=voiceLfoPhase[k]+owner.val(key("lfo",j,"phase"));phase-=std::floor(phase);
+            int shape=int(owner.val(key("lfo",j,"shape")));
+            float value=shape==0?std::sin(2*pi*float(phase)):shape==1?1-4*std::abs(float(phase)-.5f):shape==2?2*float(phase)-1:shape==4?2*owner.lfoCurves[k].at(float(phase))-1:phase<.5?1:-1;
+            if(owner.importedLfoUnipolar.load())value=(value+1)*.5f;
+            double elapsed=voiceLfoTime[k]-owner.val(key("lfo",j,"delay"));float rise=owner.val(key("lfo",j,"rise"));
+            voiceLfoValue[k]=value*(elapsed<0?0:rise>0?juce::jlimit(0.f,1.f,float(elapsed)/rise):1);
+        }
         std::array<float, 4> en{};
         for (int j = 0; j < 4; ++j) {
             en[size_t(j)] = envs[size_t(j)].getNextSample();
@@ -1483,8 +1656,9 @@ void Voice::renderNextBlock(AudioBuffer<float> &, int start, int n) {
                           : src == 2  ? note / 127.f
                           : src == 3  ? pressure
                           : src < 8   ? en[size_t(src - 4)]
-                          : src < 18  ? owner.lfoValue[size_t(src - 8)]
+                          : src < 18  ? voiceLfoValue[size_t(src - 8)]
                           : src == 26 ? owner.modwheel.load()
+                          : src == 27 ? timbre
                                       : owner.macros[size_t(src - 18)];
             if (m.curve != 1)
                 value = std::copysign(std::pow(std::abs(value), m.curve), value);
@@ -1493,8 +1667,9 @@ void Voice::renderNextBlock(AudioBuffer<float> &, int start, int n) {
         owner.cutoffMod.addSample(0, i, mod[9]);
         owner.cutoffMod.addSample(1, i, mod[10]);
         owner.cutoffMod.addSample(2, i, 1);
+        owner.cutoffMod.addSample(3, i, en[0]);
         glideNote += (note - glideNote) * glideRate;
-        double hz = 440 * std::pow(2., (glideNote - 69) / 12. + mod[7] * 2.) * bend;
+        double hz = 440 * std::pow(2., (glideNote - 69 + expressionTune) / 12. + mod[7] * 2.) * bend;
         for (int s = 0; s < 3; ++s) {
             const auto &cfg = config[size_t(s)];
             if (cfg.level == 0 && mod[size_t(s + 1)] <= 0)
@@ -1520,8 +1695,8 @@ void Voice::renderNextBlock(AudioBuffer<float> &, int start, int n) {
                     float value =
                         customTables[size_t(s)]
                             ? customTables[size_t(s)]->read(phase, pos, effectiveFrequency,
-                                                            getSampleRate())
-                            : owner.tables.read(phase, pos, effectiveFrequency, getSampleRate());
+                                                            getSampleRate(), &wavetableState[size_t(s)][size_t(u)])
+                            : owner.tables.read(phase, pos, effectiveFrequency, getSampleRate(), &wavetableState[size_t(s)][size_t(u)]);
                     if (cfg.warp == 3)
                         value = std::sin(value * (1 + cfg.warpAmount * 5));
                     x += value / cfg.unison;
@@ -1562,17 +1737,17 @@ void Voice::renderNextBlock(AudioBuffer<float> &, int start, int n) {
             }
             p += frequency / getSampleRate();
             p -= std::floor(p);
-            float level = juce::jlimit(0.f, 1.f, cfg.level + mod[size_t(s + 1)]) * velocity * .25f;
-            float pan = juce::jlimit(-1.f, 1.f, cfg.pan + mod[8]);
+            float level = juce::jlimit(0.f, 1.f, cfg.level + mod[size_t(s + 1)]) * velocity * expressionGain * .25f;
+            float pan = juce::jlimit(-1.f, 1.f, cfg.pan + mod[8] + expressionPan);
             owner.route(s, x * level * std::sqrt((1 - pan) * .5f),
                         x * level * std::sqrt((1 + pan) * .5f), en[0], i);
         }
-        float noise = (rng.nextFloat() * 2 - 1) * noiseLevel * velocity * .12f;
-        owner.route(3, noise, noise, en[0], i);
-        float sub = std::sin(2 * pi * float(subphase)) * subLevel * velocity * .25f;
+        float noise = (rng.nextFloat() * 2 - 1) * noiseLevel * velocity * expressionGain * .12f;
+        owner.route(3,noise*std::sqrt(1-expressionPan),noise*std::sqrt(1+expressionPan),en[0],i);
+        float sub = std::sin(2 * pi * float(subphase)) * subLevel * velocity * expressionGain * .25f;
         subphase += hz * .5 / getSampleRate();
         subphase -= std::floor(subphase);
-        owner.route(4, sub, sub, en[0], i);
+        owner.route(4,sub*std::sqrt(1-expressionPan),sub*std::sqrt(1+expressionPan),en[0],i);
     }
 }
 #include "Editor.h"
@@ -1587,7 +1762,7 @@ bool auroraImportSFZForTest(AudioProcessor &p, int slot, const File &f) {
 bool auroraUIForTest(AudioProcessor &processor, const File &folder) {
     auto &p = dynamic_cast<Aurora &>(processor);
     Editor editor(p);
-    bool okay = true;
+    bool okay = editor.referenceLayoutForTest();
     for (int page = 0; page < 6; ++page) {
         editor.showPage(page);
         okay &= editor.pageFitsForTest();
@@ -1649,7 +1824,7 @@ int auroraGpuForTest(AudioProcessor &processor) {
     return editor.testGPU();
 }
 bool auroraPerformanceForTest() {
-    Aurora processor;
+    auto processorOwner=std::make_unique<Aurora>();auto &processor=*processorOwner;
     processor.prepareToPlay(48000, 256);
     auto set = [&](String id, float value) {
         auto *parameter = processor.state.getParameter(id);
@@ -1696,9 +1871,10 @@ bool auroraPerformanceForTest() {
 
 bool auroraRoutingModulationForTest() {
     auto render = [](int scenario) {
-        Aurora p;
+        auto pOwner = std::make_unique<Aurora>(); auto &p = *pOwner;
         auto set = [&](String id, float value) {
             auto *param = p.state.getParameter(id);
+            if(id.startsWith("route") && id.endsWith("_dest"))value=RoutingDescriptor::plain(3,value);
             param->setValueNotifyingHost(param->convertTo0to1(value));
         };
         set("noise", 0);
@@ -1755,8 +1931,166 @@ bool auroraRoutingModulationForTest() {
            sends.getRMSLevel(0, 1024, 4096) > .001f && nativeNone.getMagnitude(0, 8192) < 1e-8f;
 }
 
+bool auroraFilterDisplayForTest(const File &folder) {
+    auto pOwner = std::make_unique<Aurora>(); auto &p = *pOwner;
+    auto set = [&](String id, float value) { aurora_ui::write(p, id, value); };
+    set("noise", 0); set("sub", 0);
+    set("osc0_level", .8f); set("osc0_random", 0);
+    set("filter0_cutoff", 1000); set("filter0_res", .7f);
+    set("lfo0_rate", 3);
+    set("mod0_source", 8); set("mod0_target", 9); set("mod0_depth", .4f);
+    set("mod1_source", 5); set("mod1_target", 10); set("mod1_depth", .4f);
+    set("env1_a", .15f); set("env1_s", .2f);
+    aurora_ui::FilterRouting first(p, 0), second(p, 1);
+    set("route0_dest", .25f);
+    first.toggleSource(1); // A -> F1
+    bool okay = aurora_ui::read(p, "route0_dest") == 0 &&
+                aurora_ui::read(p, "route0_balance") == -100;
+    second.toggleSource(1); // A -> both
+    okay &= aurora_ui::read(p, "route0_balance") == 0;
+    first.toggleSource(1); // A -> F2
+    okay &= aurora_ui::read(p, "route0_balance") == 100;
+    second.toggleSource(1); // last deselected -> Main
+    okay &= aurora_ui::read(p, "route0_dest") == .25f;
+    for (int i = 0; i < 5; ++i) first.toggleSource(i);
+    first.selectOutputForTest(1); // F1 -> F2
+    second.selectOutputForTest(1); // cycle rejected, F2 stays Main
+    okay &= aurora_ui::read(p, "route5_dest") == 0 &&
+            aurora_ui::read(p, "route6_dest") == .25f;
+    first.selectOutputForTest(2);
+    second.selectOutputForTest(1); // F2 -> F1
+    okay &= aurora_ui::read(p, "route6_dest") == 0;
+    // Feed F2 and verify the reverse chain actually reaches F1/Main.
+    set("route0_balance", 100);
+    p.prepareToPlay(48000, 256);
+    aurora_ui::Curve graph(p, "filter", 0), envelopeGraph(p, "filter", 1);
+    graph.setSize(240, 150); envelopeGraph.setSize(240, 150);
+    float low = 1.e9f, high = 0, envLow = 1.e9f, envHigh = 0;
+    double energy = 0;
+    AudioBuffer<float> audio(2, 256); MidiBuffer midi;
+    Image before, after;
+    for (int b = 0; b < 100; ++b) {
+        midi.clear();
+        if (!b) midi.addEvent(MidiMessage::noteOn(1, 60, .8f), 0);
+        p.processBlock(audio, midi);
+        graph.refreshForTest(); envelopeGraph.refreshForTest();
+        float cutoff = graph.cutoffForTest(), envCutoff = envelopeGraph.cutoffForTest();
+        okay &= std::abs(cutoff - p.filterDisplay[0].cutoff.load()) < .1f;
+        low = std::min(low, cutoff); high = std::max(high, cutoff);
+        envLow = std::min(envLow, envCutoff); envHigh = std::max(envHigh, envCutoff);
+        energy += audio.getRMSLevel(0, 0, 256);
+        if (b == 10) before = graph.createComponentSnapshot(graph.getLocalBounds());
+        if (b == 30) after = graph.createComponentSnapshot(graph.getLocalBounds());
+    }
+    okay &= high > low * 3 && envHigh > envLow * 1.2f && energy > .01;
+    int changed = 0;
+    for (int y = 0; y < 150; ++y)
+        for (int x = 0; x < 240; ++x)
+            changed += before.getPixelAt(x, y) != after.getPixelAt(x, y);
+    okay &= changed > 200;
+    for (int i = 0; i < 2; ++i) {
+        auto file = folder.getChildFile(i ? "filter-lfo-after.png" : "filter-lfo-before.png");
+        file.deleteFile(); auto stream = file.createOutputStream(); PNGImageFormat png;
+        okay &= stream && png.writeImageToStream(i ? after : before, *stream);
+    }
+    MemoryBlock saved; p.getStateInformation(saved);
+    auto restoredOwner = std::make_unique<Aurora>(); auto &restored = *restoredOwner; restored.setStateInformation(saved.getData(), int(saved.getSize()));
+    okay &= aurora_ui::read(restored, "route6_dest") == 0 &&
+            aurora_ui::read(restored, "route0_balance") == 100;
+    // An automated cycle must stay finite and audible, falling back to Main.
+    set("route5_dest", 0);
+    for (int b = 0; b < 12; ++b) {
+        midi.clear(); p.processBlock(audio, midi);
+        okay &= std::isfinite(audio.getRMSLevel(0, 0, 256));
+    }
+    okay &= audio.getMagnitude(0, 256) > 1.e-6f;
+    set("route0_balance", -100); set("route6_dest", .25f); set("route5_dest", .75f);
+    for (int b = 0; b < 48; ++b) { midi.clear(); p.processBlock(audio, midi); }
+    okay &= audio.getMagnitude(0, 256) < 1.e-7f; // Filter None really cuts its output.
+    set("route5_dest", .5f);
+    for (int b = 0; b < 8; ++b) { midi.clear(); p.processBlock(audio, midi); }
+    okay &= audio.getMagnitude(0, 256) > 1.e-6f; // Direct reaches output.
+    graph.refreshForTest();
+    p.releaseResources();
+    Thread::sleep(270);
+    graph.refreshForTest();
+    okay &= std::abs(graph.cutoffForTest() - 1000) < .1f;
+    return okay;
+}
+
+bool auroraCoreProcessorForTest(){
+    auto configure=[](Aurora &p){aurora_ui::write(p,"sub",0);aurora_ui::write(p,"noise",0);aurora_ui::write(p,"osc0_random",0);};
+    auto pOwner = std::make_unique<Aurora>(); auto &p = *pOwner;configure(p);p.prepareToPlay(48000,1024);
+    bool routesOK=true;
+    for(int slot=0;slot<7;++slot){
+        auto *destination=p.state.getParameter(key("route",slot,"dest"));
+        routesOK &= destination->getNormalisableRange().start==0 && destination->getNormalisableRange().end==3 && destination->convertFrom0to1(.25f)==1 && destination->convertFrom0to1(.5f)==2 && destination->convertFrom0to1(.75f)==3;
+        p.buses[0].clear();p.send1.clear();p.send2.clear();p.direct.clear();
+        p.route(slot,1,.5f,.25f,0);
+        routesOK &= std::abs(p.buses[0].getSample(0,0)-.25f)<1.e-6f;
+    }
+    int master=p.indices["master"];
+    bool okay=routesOK && !p.enqueueCanonicalPoint(0,0,.5f) && !p.enqueueCanonicalPoint(0xffffffffu,0,.5f) && p.enqueueParameterPoint(master,73,0);
+    AudioBuffer<float> audio(2,1024);MidiBuffer midi;midi.addEvent(MidiMessage::noteOn(1,60,.8f),0);
+    p.processBlock(audio,midi);
+    okay &= audio.getMagnitude(0,73)>1.e-5f && audio.getMagnitude(554,470)<1.e-7f && p.snapshot[size_t(master)]==0;
+    auto render=[&](int hostBlock){
+        auto qOwner = std::make_unique<Aurora>(); auto &q = *qOwner;configure(q);q.prepareToPlay(48000,1024);AudioBuffer<float> result(2,1024);MidiBuffer events;
+        for(int start=0;start<1024;start+=hostBlock){int n=std::min(hostBlock,1024-start);AudioBuffer<float> block(2,n);events.clear();
+            if(!start)events.addEvent(MidiMessage::noteOn(1,60,.8f),0);
+            if(start<=73 && 73<start+n)q.enqueueParameterPoint(q.indices["master"],73-start,0);
+            if(start<=400 && 400<start+n)q.enqueueParameterPoint(q.indices["master"],400-start,.8f);
+            q.processBlock(block,events);for(int c=0;c<2;++c)result.copyFrom(c,start,block,c,0,n);
+        }return result;
+    };
+    auto large=render(1024),small=render(64);float difference=0;for(int i=0;i<1024;++i)difference=std::max(difference,std::abs(large.getSample(0,i)-small.getSample(0,i)));
+    okay &= difference<2.e-5f;
+    auto mpeOwner = std::make_unique<Aurora>(); auto &mpe = *mpeOwner;configure(mpe);mpe.prepareToPlay(48000,256);
+    mpe.enqueueNativeNote(0,0,11,2,60,0,.8f);mpe.enqueueNativeNote(0,128,22,3,60,0,.8f);
+    audio.setSize(2,256);midi.clear();mpe.processBlock(audio,midi);
+    Voice *first=nullptr,*second=nullptr;
+    for(int i=0;i<16;++i){auto *v=dynamic_cast<Voice*>(mpe.synth.getVoice(i));if(v->nativeNoteId==11)first=v;if(v->nativeNoteId==22)second=v;}
+    okay &= first && second;
+    if(first && second){
+        okay &= first->voiceLfoPhase[0]>second->voiceLfoPhase[0] && first->envelopeTime[0]>second->envelopeTime[0];
+        mpe.enqueueNativeNote(3,37,11,2,60,0,0);mpe.enqueueNativeNote(3,38,11,2,60,2,.55f);
+        midi.clear();midi.addEvent(MidiMessage::pitchWheel(2,16383),32);midi.addEvent(MidiMessage::pitchWheel(1,12288),64);
+        midi.addEvent(MidiMessage::controllerEvent(2,74,115),80);midi.addEvent(MidiMessage::aftertouchChange(2,60,90),96);
+        mpe.processBlock(audio,midi);
+        okay &= first->expressionGain==0 && second->expressionGain==1 && std::abs(first->expressionTune-12)<.001f && second->expressionTune==0;
+        okay &= first->memberBend>47 && second->memberBend==0 && std::abs(first->masterBend-1)<.01f && std::abs(second->masterBend-1)<.01f;
+        okay &= first->timbre>.9f && second->timbre==.5f && first->pressure>.7f && second->pressure==0;
+        mpe.enqueueNativeNote(1,97,11,2,60,0,0);midi.clear();mpe.processBlock(audio,midi);
+        okay &= !first->isKeyDown() && second->isKeyDown();
+    }
+    return okay;
+}
+bool auroraFactoryGenerate(const File &folder){
+    if(!folder.createDirectory())return false;
+    auto pOwner = std::make_unique<Aurora>(); auto &p = *pOwner;
+    for(int i=0;i<626;++i){
+        auto set=[&](String id,float v){aurora_ui::write(p,id,v);};
+        set("sub",.05f*(i%4));set("osc0_level",.6f);set("osc1_level",(i%5)*.04f);
+        set("osc0_position",float(i%97)/96);set("osc0_tune",float((i%7)-3)*12);
+        set("osc1_tune",float((i%3)-1)*7);set("osc1_position",float((i*17)%101)/100);
+        set("env0_a",.001f+float(i%23)*.008f);set("env0_d",.04f+float(i%31)*.015f);
+        set("env0_s",.15f+float(i%17)*.04f);set("env0_r",.04f+float(i%29)*.03f);
+        set("filter0_cutoff",100+float((i*137)%19000));set("filter0_res",float(i%13)/16);
+        set("route0_dest",0);set("route0_balance",-100);set("route5_dest",.25f);
+        auto *metadata=new DynamicObject;metadata->setProperty("product","Aurora");metadata->setProperty("version","0.2.0");metadata->setProperty("author","Aurora procedural factory");
+        metadata->setProperty("name","Aurora Factory "+String(i+1).paddedLeft('0',3));metadata->setProperty("factoryIndex",i+1);metadata->setProperty("provenance","Original procedural parameters; no commercial presets/assets");
+        p.presetMetadata=var(metadata);MemoryBlock state;p.getStateInformation(state);
+        auto file=folder.getChildFile("Aurora Factory "+String(i+1).paddedLeft('0',3)+".aurora");
+        if(!file.replaceWithData(state.getData(),state.getSize()))return false;
+        PresetDocument doc;if(!decodeDocument(state.getData(),int(state.getSize()),doc))return false;
+    }
+    Array<var> descriptors;
+    for(auto &d:p.parameterCatalog){auto *o=new DynamicObject;o->setProperty("auroraId",d.auroraId);o->setProperty("name",d.name);o->setProperty("minimum",d.minimum);o->setProperty("maximum",d.maximum);o->setProperty("default",d.defaultValue);o->setProperty("unit",d.unit.isEmpty()?"plain":d.unit);if(d.canonicalId)o->setProperty("canonicalId",int64(d.canonicalId));descriptors.add(var(o));}
+    return folder.getSiblingFile("docs").getChildFile("aurora-parameter-catalog.json").replaceWithText(JSON::toString(descriptors));
+}
+
 bool auroraSerumForTest(const File &file, String &details, bool fixture) {
-    Aurora p;
+    auto pOwner = std::make_unique<Aurora>(); auto &p = *pOwner;
     p.prepareToPlay(48000, 256);
     MemoryBlock previous;
     p.getStateInformation(previous);
@@ -1787,7 +2121,7 @@ bool auroraSerumForTest(const File &file, String &details, bool fixture) {
         valid &= rejected && unchanged == state;
         file.getParentDirectory().getChildFile("Tables/AuroraFixture.wav").deleteFile();
     }
-    Aurora copy;
+    auto copyOwner = std::make_unique<Aurora>(); auto &copy = *copyOwner;
     copy.prepareToPlay(48000, 256);
     copy.setStateInformation(state.getData(), int(state.getSize()));
     MemoryBlock restored;

@@ -152,7 +152,8 @@ inline void serumFixtureTests(const std::function<void(bool, const char *)> &che
         sine[size_t(i)] = std::sin(2 * pi * i / 2048.f);
     ImportedWavetable imported;
     check(imported.build(std::move(sine)) &&
-              std::abs(imported.read(.25, 0, 220, 48000) - 1) < .002f,
-          "Imported wavetable FFT mipmaps retain fundamental amplitude");
+              std::abs(imported.mipmaps[size_t(3*2048+512)] - 1) < .00002f &&
+              std::abs(imported.read(.25, 0, 220, 48000) - 1.00317417f) < .00002f,
+          "Imported wavetable FFT retains fundamental amplitude before recovered reader gain");
 }
 } // namespace aurora

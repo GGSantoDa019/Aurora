@@ -2,6 +2,7 @@
 #include <JuceHeader.h>
 #include <array>
 #include <vector>
+#include "WavetableReader.h"
 
 namespace aurora {
 struct ImportedWavetable {
@@ -35,22 +36,19 @@ struct ImportedWavetable {
         }
         return true;
     }
-    float read(double phase, float position, double hz, double sampleRate) const {
+    float read(double phase, float position, double hz, double sampleRate, WavetableReadState *state=nullptr) const {
         if (frames <= 0 || hz >= sampleRate * .45)
             return 0;
         int band = 0;
         while (band < bands - 1 && ((period / 2) >> band) * hz > sampleRate * .45)
             ++band;
-        double p = phase - std::floor(phase), sample = p * period;
-        int a = int(sample) & (period - 1), b = (a + 1) & (period - 1);
-        float fraction = float(sample - std::floor(sample)),
-              frame = juce::jlimit(0.f, 1.f, position) * (frames - 1);
-        int first = int(frame), second = std::min(frames - 1, first + 1);
-        auto at = [&](int f) {
-            auto *wave = mipmaps.data() + (band * frames + f) * period;
-            return wave[a] + fraction * (wave[b] - wave[a]);
+        float frame=juce::jlimit(0.f,1.f,position)*(frames-1);
+        int first=int(frame),second=std::min(frames-1,first+1);
+        auto atBand=[&](int level){
+            auto at=[&](int f){return WavetableReader::periodic(mipmaps.data()+(level*frames+f)*period,period,phase);};
+            const float a=at(first);return first==second || frame==first?a:a+(at(second)-a)*(frame-first);
         };
-        return at(first) + (at(second) - at(first)) * (frame - first);
+        return state?state->tick(this,band,atBand):atBand(band);
     }
 };
 } // namespace aurora

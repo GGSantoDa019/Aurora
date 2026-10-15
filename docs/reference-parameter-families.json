@@ -1,0 +1,2038 @@
+{
+  "schema": "serum-static-global-parameter-families-v1",
+  "binary_sha256": "33369e196ae66d05d20485f3c5e800707dc34a5ad89c27959250d60387b2ea55",
+  "provenance": "Analyst transcription of existing Ghidra pseudocode and independent PE pointer reads; no new REA Evidence records.",
+  "canonical_encoding": "a is module instance, b is local parameter index; add: base+1000*a+b, bitwise_or: base|b (single instance0).",
+  "families": [
+    {
+      "name": "Global",
+      "type_pointer_variable": "0x181122180",
+      "type_name_pointer": "0x180fc9f86",
+      "instances": [
+        0
+      ],
+      "local_min": 0,
+      "local_max": 36,
+      "segments": [
+        {
+          "local_min": 0,
+          "local_max": 20,
+          "base": 0,
+          "stride": 1000,
+          "operator": "add"
+        },
+        {
+          "local_min": 21,
+          "local_max": 36,
+          "base": 100000000,
+          "stride": 1000,
+          "operator": "bitwise_or"
+        }
+      ],
+      "encoder": "0x1803a38e0",
+      "encoder_source": "decompiled-expanded/FUN_1803a38e0.c",
+      "ui_local_names": {
+        "6": [
+          "BendDown"
+        ],
+        "5": [
+          "BendUp"
+        ],
+        "100000027": [
+          "Bus1Dest"
+        ],
+        "19": [
+          "Bus1Vol"
+        ],
+        "100000028": [
+          "Bus2Dest"
+        ],
+        "20": [
+          "Bus2Vol"
+        ],
+        "18": [
+          "DirectVol"
+        ],
+        "100000023": [
+          "GlobalTuning"
+        ],
+        "14000000": [
+          "Key"
+        ],
+        "11": [
+          "Legato"
+        ],
+        "100000032": [
+          "LimitSameNotePolyphony"
+        ],
+        "100000025": [
+          "MIDIOut"
+        ],
+        "0": [
+          "MainVol"
+        ],
+        "8": [
+          "ModWheel"
+        ],
+        "10": [
+          "MonoToggle"
+        ],
+        "100000024": [
+          "NoteLatch"
+        ],
+        "100000022": [
+          "Oversampling"
+        ],
+        "7": [
+          "PitchBend"
+        ],
+        "100000021": [
+          "PolyCount"
+        ],
+        "12": [
+          "PortaAlways"
+        ],
+        "4": [
+          "PortaCurve"
+        ],
+        "13": [
+          "PortaScaled"
+        ],
+        "3": [
+          "PortaTime"
+        ],
+        "14000001": [
+          "Scale"
+        ],
+        "100000026": [
+          "Serum1Compatibility"
+        ],
+        "100000029": [
+          "SmoothingDisable"
+        ],
+        "14": [
+          "Swing"
+        ],
+        "15": [
+          "SwingDiv"
+        ],
+        "16": [
+          "Transpose"
+        ]
+      },
+      "canonical_id_count": 37
+    },
+    {
+      "name": "VoiceFilter",
+      "type_pointer_variable": "0x181131b28",
+      "type_name_pointer": "0x180fc6120",
+      "instances": [
+        0,
+        1
+      ],
+      "local_min": 0,
+      "local_max": 12,
+      "segments": [
+        {
+          "local_min": 0,
+          "local_max": 10,
+          "base": 2000000,
+          "stride": 1000,
+          "operator": "add"
+        },
+        {
+          "local_min": 11,
+          "local_max": 12,
+          "base": 102000000,
+          "stride": 1000,
+          "operator": "add"
+        }
+      ],
+      "encoder": "0x1803a3910",
+      "encoder_source": "decompiled-bulk-004/FUN_1803a3910.c",
+      "ui_local_names": {
+        "5": [
+          "kParamDrive"
+        ],
+        "0": [
+          "kParamEnable"
+        ],
+        "3": [
+          "kParamFreq"
+        ],
+        "11": [
+          "kParamKeyTrack"
+        ],
+        "8": [
+          "kParamLevelOut"
+        ],
+        "12": [
+          "kParamPad"
+        ],
+        "4": [
+          "kParamReso"
+        ],
+        "7": [
+          "kParamStereo"
+        ],
+        "2": [
+          "kParamType"
+        ],
+        "6": [
+          "kParamVar"
+        ],
+        "1": [
+          "kParamWet"
+        ],
+        "9": [
+          "kParamX"
+        ],
+        "10": [
+          "kParamY"
+        ]
+      },
+      "canonical_id_count": 26
+    },
+    {
+      "name": "Env",
+      "type_pointer_variable": "0x1811320c8",
+      "type_name_pointer": "0x180fb9e49",
+      "instances": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "local_min": 0,
+      "local_max": 13,
+      "segments": [
+        {
+          "local_min": 0,
+          "local_max": 9,
+          "base": 3000000,
+          "stride": 1000,
+          "operator": "add"
+        },
+        {
+          "local_min": 10,
+          "local_max": 13,
+          "base": 103000000,
+          "stride": 1000,
+          "operator": "add"
+        }
+      ],
+      "encoder": "0x1803a39b0",
+      "encoder_source": "decompiled-bulk-004/FUN_1803a39b0.c",
+      "ui_local_names": {
+        "0": [
+          "kParamAttack"
+        ],
+        "12": [
+          "kParamBeatSync"
+        ],
+        "5": [
+          "kParamCurve1"
+        ],
+        "6": [
+          "kParamCurve2"
+        ],
+        "7": [
+          "kParamCurve3"
+        ],
+        "2": [
+          "kParamDecay"
+        ],
+        "9": [
+          "kParamEnd"
+        ],
+        "1": [
+          "kParamHold"
+        ],
+        "11": [
+          "kParamLegatoInverted"
+        ],
+        "4": [
+          "kParamRelease"
+        ],
+        "8": [
+          "kParamStart"
+        ],
+        "3": [
+          "kParamSustain"
+        ],
+        "10": [
+          "kParamTimingScale"
+        ],
+        "13": [
+          "kParamVoiceStealRestart"
+        ]
+      },
+      "canonical_id_count": 56
+    },
+    {
+      "name": "LFO",
+      "type_pointer_variable": "0x181132068",
+      "type_name_pointer": "0x180fd27ea",
+      "instances": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "local_min": 0,
+      "local_max": 21,
+      "segments": [
+        {
+          "local_min": 0,
+          "local_max": 4,
+          "base": 4000000,
+          "stride": 1000,
+          "operator": "add"
+        },
+        {
+          "local_min": 5,
+          "local_max": 21,
+          "base": 104000000,
+          "stride": 1000,
+          "operator": "add"
+        }
+      ],
+      "encoder": "0x1803a3a70",
+      "encoder_source": "decompiled-bulk-004/FUN_1803a3a70.c",
+      "ui_local_names": {
+        "7": [
+          "kParamAnchored"
+        ],
+        "6": [
+          "kParamBeatSync"
+        ],
+        "19": [
+          "kParamDefaultMode"
+        ],
+        "3": [
+          "kParamDelay"
+        ],
+        "14": [
+          "kParamDirection"
+        ],
+        "8": [
+          "kParamDotted"
+        ],
+        "10": [
+          "kParamGridX"
+        ],
+        "11": [
+          "kParamGridY"
+        ],
+        "21": [
+          "kParamLoopbackCompat"
+        ],
+        "5": [
+          "kParamMode"
+        ],
+        "12": [
+          "kParamMono"
+        ],
+        "4": [
+          "kParamPhase"
+        ],
+        "20": [
+          "kParamPhaseSnap"
+        ],
+        "0": [
+          "kParamRate"
+        ],
+        "17": [
+          "kParamRate10x"
+        ],
+        "2": [
+          "kParamRise"
+        ],
+        "1": [
+          "kParamSmooth"
+        ],
+        "18": [
+          "kParamSwing"
+        ],
+        "15": [
+          "kParamTimingScale"
+        ],
+        "16": [
+          "kParamTimingScaleSnap"
+        ],
+        "9": [
+          "kParamTriplets"
+        ],
+        "13": [
+          "kParamType"
+        ]
+      },
+      "canonical_id_count": 220
+    },
+    {
+      "name": "ModSlot",
+      "type_pointer_variable": "0x181131f28",
+      "type_name_pointer": "0x180fba5ba",
+      "instances": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63
+      ],
+      "local_min": 0,
+      "local_max": 13,
+      "segments": [
+        {
+          "local_min": 0,
+          "local_max": 1,
+          "base": 6000000,
+          "stride": 1000,
+          "operator": "add"
+        },
+        {
+          "local_min": 2,
+          "local_max": 13,
+          "base": 106000000,
+          "stride": 1000,
+          "operator": "add"
+        }
+      ],
+      "encoder": "0x1803a3ad0",
+      "encoder_source": "decompiled-bulk-004/FUN_1803a3ad0.c",
+      "ui_local_names": {
+        "0": [
+          "kParamAmount"
+        ],
+        "3": [
+          "kParamAuxCurve"
+        ],
+        "8": [
+          "kParamAuxCurveData"
+        ],
+        "5": [
+          "kParamAuxInverted"
+        ],
+        "4": [
+          "kParamBipolar"
+        ],
+        "6": [
+          "kParamBypass"
+        ],
+        "2": [
+          "kParamCurveIn"
+        ],
+        "10": [
+          "kParamDelayBeatSync"
+        ],
+        "9": [
+          "kParamDelayOffset"
+        ],
+        "7": [
+          "kParamMainCurveData"
+        ],
+        "1": [
+          "kParamOut"
+        ],
+        "12": [
+          "kParamSmoothFall"
+        ],
+        "13": [
+          "kParamSmoothLink"
+        ],
+        "11": [
+          "kParamSmoothRise"
+        ]
+      },
+      "canonical_id_count": 896
+    },
+    {
+      "name": "Macro",
+      "type_pointer_variable": "0x1811329a8",
+      "type_name_pointer": "0x180fc84ad",
+      "instances": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "local_min": 0,
+      "local_max": 0,
+      "segments": [
+        {
+          "local_min": 0,
+          "local_max": 0,
+          "base": 7000000,
+          "stride": 1000,
+          "operator": "add"
+        }
+      ],
+      "encoder": "0x1803a3bc0",
+      "encoder_source": "decompiled-focused/FUN_1803a3bc0.c",
+      "ui_local_names": {},
+      "canonical_id_count": 8
+    },
+    {
+      "name": "LFOPointModBus",
+      "type_pointer_variable": "0x181132060",
+      "type_name_pointer": "0x180fbbe98",
+      "instances": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15
+      ],
+      "local_min": 0,
+      "local_max": 0,
+      "segments": [
+        {
+          "local_min": 0,
+          "local_max": 0,
+          "base": 108000000,
+          "stride": 1000,
+          "operator": "add"
+        }
+      ],
+      "encoder": "0x1803a3c20",
+      "encoder_source": "decompiled-bulk-004/FUN_1803a3c20.c",
+      "ui_local_names": {},
+      "canonical_id_count": 16
+    },
+    {
+      "name": "RoutingSlot",
+      "type_pointer_variable": "0x181132a18",
+      "type_name_pointer": "0x180fba5ae",
+      "instances": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "local_min": 0,
+      "local_max": 4,
+      "segments": [
+        {
+          "local_min": 0,
+          "local_max": 2,
+          "base": 9000000,
+          "stride": 1000,
+          "operator": "add"
+        },
+        {
+          "local_min": 3,
+          "local_max": 4,
+          "base": 109000000,
+          "stride": 1000,
+          "operator": "add"
+        }
+      ],
+      "encoder": "0x1803a3c80",
+      "encoder_source": "rea-parameter-ids/id-family-encode.c",
+      "ui_local_names": {
+        "1": [
+          "kParamFXBus1Level"
+        ],
+        "2": [
+          "kParamFXBus2Level"
+        ],
+        "0": [
+          "kParamFilterBalance"
+        ],
+        "3": [
+          "kParamRoutingDest"
+        ],
+        "4": [
+          "kParamViaEnv1"
+        ]
+      },
+      "canonical_id_count": 35
+    },
+    {
+      "name": "ClipPlayer",
+      "type_pointer_variable": "0x181132970",
+      "type_name_pointer": "0x180fc5f1e",
+      "instances": [
+        0
+      ],
+      "local_min": 0,
+      "local_max": 9,
+      "segments": [
+        {
+          "local_min": 0,
+          "local_max": 3,
+          "base": 10000000,
+          "stride": 1000,
+          "operator": "bitwise_or"
+        },
+        {
+          "local_min": 4,
+          "local_max": 9,
+          "base": 110000000,
+          "stride": 1000,
+          "operator": "bitwise_or"
+        }
+      ],
+      "encoder": "0x1803a3d40",
+      "encoder_source": "decompiled-focused/FUN_1803a3d40.c",
+      "ui_local_names": {
+        "10000000": [
+          "ClipPlayerEnable"
+        ],
+        "110000007": [
+          "ClipPlayerMetronomeEnable"
+        ],
+        "110000004": [
+          "ClipPlayerMonoClipTrig"
+        ],
+        "110000008": [
+          "ClipPlayerRecordMode"
+        ],
+        "110000005": [
+          "ClipPlayerTrigOctave"
+        ]
+      },
+      "canonical_id_count": 10
+    },
+    {
+      "name": "MidiClip",
+      "type_pointer_variable": "0x1811329b0",
+      "type_name_pointer": "0x180fc80fc",
+      "instances": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "local_min": 0,
+      "local_max": 12,
+      "segments": [
+        {
+          "local_min": 0,
+          "local_max": 12,
+          "base": 111000000,
+          "stride": 1000,
+          "operator": "add"
+        }
+      ],
+      "encoder": "0x1803a3da0",
+      "encoder_source": "decompiled-focused/FUN_1803a3da0.c",
+      "ui_local_names": {
+        "9": [
+          "kParamBeatSync"
+        ],
+        "10": [
+          "kParamDotted"
+        ],
+        "2": [
+          "kParamLaunchQuantize"
+        ],
+        "3": [
+          "kParamLaunchRetrig"
+        ],
+        "5": [
+          "kParamNoteGate"
+        ],
+        "0": [
+          "kParamPlaybackMode"
+        ],
+        "1": [
+          "kParamPlaybackModeTime"
+        ],
+        "8": [
+          "kParamRate"
+        ],
+        "12": [
+          "kParamRegionOffset"
+        ],
+        "6": [
+          "kParamSpanKeyboardMode"
+        ],
+        "7": [
+          "kParamTranspose"
+        ],
+        "11": [
+          "kParamTriplets"
+        ],
+        "4": [
+          "kParamVelocityTrigger"
+        ]
+      },
+      "canonical_id_count": 156
+    },
+    {
+      "name": "Arp",
+      "type_pointer_variable": "0x181131fe0",
+      "type_name_pointer": "0x180fc7716",
+      "instances": [
+        0
+      ],
+      "local_min": 0,
+      "local_max": 24,
+      "segments": [
+        {
+          "local_min": 0,
+          "local_max": 14,
+          "base": 12000000,
+          "stride": 1000,
+          "operator": "bitwise_or"
+        },
+        {
+          "local_min": 15,
+          "local_max": 24,
+          "base": 112000000,
+          "stride": 1000,
+          "operator": "bitwise_or"
+        }
+      ],
+      "encoder": "0x1803a3e10",
+      "encoder_source": "decompiled-focused/FUN_1803a3e10.c",
+      "ui_local_names": {},
+      "canonical_id_count": 25
+    },
+    {
+      "name": "ArpClip",
+      "type_pointer_variable": "0x181131f80",
+      "type_name_pointer": "0x180fc80c8",
+      "instances": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "local_min": 0,
+      "local_max": 40,
+      "segments": [
+        {
+          "local_min": 0,
+          "local_max": 40,
+          "base": 113000000,
+          "stride": 1000,
+          "operator": "add"
+        }
+      ],
+      "encoder": "0x1803a3eb0",
+      "encoder_source": "decompiled-bulk-004/FUN_1803a3eb0.c",
+      "ui_local_names": {
+        "7": [
+          "kParamBeatRetrig"
+        ],
+        "26": [
+          "kParamBeatSync"
+        ],
+        "30": [
+          "kParamChance"
+        ],
+        "31": [
+          "kParamChancePre"
+        ],
+        "27": [
+          "kParamDotted"
+        ],
+        "6": [
+          "kParamFirstNoteRetrig"
+        ],
+        "3": [
+          "kParamGate"
+        ],
+        "9": [
+          "kParamLatch"
+        ],
+        "4": [
+          "kParamLaunchRetrig"
+        ],
+        "33": [
+          "kParamMacro1Bipolar"
+        ],
+        "34": [
+          "kParamMacro2Bipolar"
+        ],
+        "35": [
+          "kParamMacro3Bipolar"
+        ],
+        "36": [
+          "kParamMacro4Bipolar"
+        ],
+        "37": [
+          "kParamMacro5Bipolar"
+        ],
+        "38": [
+          "kParamMacro6Bipolar"
+        ],
+        "39": [
+          "kParamMacro7Bipolar"
+        ],
+        "40": [
+          "kParamMacro8Bipolar"
+        ],
+        "32": [
+          "kParamModWheelBipolar"
+        ],
+        "5": [
+          "kParamNoteRetrig"
+        ],
+        "1": [
+          "kParamOffset"
+        ],
+        "17": [
+          "kParamPlaybackMode"
+        ],
+        "18": [
+          "kParamPlaybackModeTime"
+        ],
+        "20": [
+          "kParamRangeWrapMode"
+        ],
+        "25": [
+          "kParamRate"
+        ],
+        "2": [
+          "kParamRepeats"
+        ],
+        "8": [
+          "kParamRetrigRate"
+        ],
+        "0": [
+          "kParamShape"
+        ],
+        "19": [
+          "kParamStepAction"
+        ],
+        "29": [
+          "kParamThru"
+        ],
+        "24": [
+          "kParamTranspose"
+        ],
+        "11": [
+          "kParamTransposeRange"
+        ],
+        "12": [
+          "kParamTransposeShape"
+        ],
+        "10": [
+          "kParamTransposeShift"
+        ],
+        "28": [
+          "kParamTriplets"
+        ],
+        "15": [
+          "kParamVeloDecay"
+        ],
+        "13": [
+          "kParamVeloEnabled"
+        ],
+        "14": [
+          "kParamVeloRetrig"
+        ],
+        "16": [
+          "kParamVeloTarget"
+        ],
+        "23": [
+          "kParamWrapPhantomNote"
+        ],
+        "22": [
+          "kParamWrapRange"
+        ],
+        "21": [
+          "kParamWrapTranspose"
+        ]
+      },
+      "canonical_id_count": 492
+    },
+    {
+      "name": "PitchQuantizer",
+      "type_pointer_variable": "0x1811329e8",
+      "type_name_pointer": "0x180fc5ef7",
+      "instances": [
+        0
+      ],
+      "local_min": 0,
+      "local_max": 1,
+      "segments": [
+        {
+          "local_min": 0,
+          "local_max": 1,
+          "base": 14000000,
+          "stride": 1000,
+          "operator": "add"
+        }
+      ],
+      "encoder": "0x1803a3f20",
+      "encoder_source": "decompiled-bulk-004/FUN_1803a3f20.c",
+      "ui_local_names": {},
+      "canonical_id_count": 2
+    },
+    {
+      "name": "VoicePanel",
+      "type_pointer_variable": "0x181132a48",
+      "type_name_pointer": "0x180fc9cc6",
+      "instances": [
+        0
+      ],
+      "local_min": 0,
+      "local_max": 61,
+      "segments": [
+        {
+          "local_min": 0,
+          "local_max": 3,
+          "base": 15000000,
+          "stride": 1000,
+          "operator": "bitwise_or"
+        },
+        {
+          "local_min": 4,
+          "local_max": 61,
+          "base": 115000000,
+          "stride": 1000,
+          "operator": "bitwise_or"
+        }
+      ],
+      "encoder": "0x1803a3f50",
+      "encoder_source": "decompiled-bulk-004/FUN_1803a3f50.c",
+      "ui_local_names": {
+        "15000003": [
+          "CutoffRand"
+        ],
+        "15000002": [
+          "EnvRand"
+        ],
+        "115000058": [
+          "EnvelopeScaling"
+        ],
+        "115000059": [
+          "LFOScaling"
+        ],
+        "115000004": [
+          "OSCAEnabled"
+        ],
+        "115000005": [
+          "OSCBEnabled"
+        ],
+        "115000006": [
+          "OSCCEnabled"
+        ],
+        "115000007": [
+          "OSCNEnabled"
+        ],
+        "115000008": [
+          "OSCSEnabled"
+        ],
+        "15000000": [
+          "OscDetuneRnd"
+        ],
+        "15000001": [
+          "OscPanRand"
+        ],
+        "115000060": [
+          "SnapLFOScaling"
+        ],
+        "115000034": [
+          "Voice1Cut"
+        ],
+        "115000018": [
+          "Voice1Det"
+        ],
+        "115000026": [
+          "Voice1Env"
+        ],
+        "115000042": [
+          "Voice1Mod1"
+        ],
+        "115000050": [
+          "Voice1Mod2"
+        ],
+        "115000010": [
+          "Voice1Pan"
+        ],
+        "115000035": [
+          "Voice2Cut"
+        ],
+        "115000019": [
+          "Voice2Det"
+        ],
+        "115000027": [
+          "Voice2Env"
+        ],
+        "115000043": [
+          "Voice2Mod1"
+        ],
+        "115000051": [
+          "Voice2Mod2"
+        ],
+        "115000011": [
+          "Voice2Pan"
+        ],
+        "115000036": [
+          "Voice3Cut"
+        ],
+        "115000020": [
+          "Voice3Det"
+        ],
+        "115000028": [
+          "Voice3Env"
+        ],
+        "115000044": [
+          "Voice3Mod1"
+        ],
+        "115000052": [
+          "Voice3Mod2"
+        ],
+        "115000012": [
+          "Voice3Pan"
+        ],
+        "115000037": [
+          "Voice4Cut"
+        ],
+        "115000021": [
+          "Voice4Det"
+        ],
+        "115000029": [
+          "Voice4Env"
+        ],
+        "115000045": [
+          "Voice4Mod1"
+        ],
+        "115000053": [
+          "Voice4Mod2"
+        ],
+        "115000013": [
+          "Voice4Pan"
+        ],
+        "115000038": [
+          "Voice5Cut"
+        ],
+        "115000022": [
+          "Voice5Det"
+        ],
+        "115000030": [
+          "Voice5Env"
+        ],
+        "115000046": [
+          "Voice5Mod1"
+        ],
+        "115000054": [
+          "Voice5Mod2"
+        ],
+        "115000014": [
+          "Voice5Pan"
+        ],
+        "115000039": [
+          "Voice6Cut"
+        ],
+        "115000023": [
+          "Voice6Det"
+        ],
+        "115000031": [
+          "Voice6Env"
+        ],
+        "115000047": [
+          "Voice6Mod1"
+        ],
+        "115000055": [
+          "Voice6Mod2"
+        ],
+        "115000015": [
+          "Voice6Pan"
+        ],
+        "115000040": [
+          "Voice7Cut"
+        ],
+        "115000024": [
+          "Voice7Det"
+        ],
+        "115000032": [
+          "Voice7Env"
+        ],
+        "115000048": [
+          "Voice7Mod1"
+        ],
+        "115000056": [
+          "Voice7Mod2"
+        ],
+        "115000016": [
+          "Voice7Pan"
+        ],
+        "115000041": [
+          "Voice8Cut"
+        ],
+        "115000025": [
+          "Voice8Det"
+        ],
+        "115000033": [
+          "Voice8Env"
+        ],
+        "115000049": [
+          "Voice8Mod1"
+        ],
+        "115000057": [
+          "Voice8Mod2"
+        ],
+        "115000017": [
+          "Voice8Pan"
+        ],
+        "115000009": [
+          "VoiceCount"
+        ]
+      },
+      "canonical_id_count": 62
+    },
+    {
+      "name": "RetriggerState",
+      "type_pointer_variable": "0x1811342c8",
+      "type_name_pointer": "0x180fcb986",
+      "instances": [
+        0
+      ],
+      "local_min": 0,
+      "local_max": 19,
+      "segments": [
+        {
+          "local_min": 0,
+          "local_max": 19,
+          "base": 116000000,
+          "stride": 1000,
+          "operator": "add"
+        }
+      ],
+      "encoder": "0x1803a50c0",
+      "encoder_source": "decompiled-focused/FUN_1803a50c0.c",
+      "ui_local_names": {
+        "6": [
+          "kParamEnv1"
+        ],
+        "7": [
+          "kParamEnv2"
+        ],
+        "8": [
+          "kParamEnv3"
+        ],
+        "9": [
+          "kParamEnv4"
+        ],
+        "10": [
+          "kParamLFO1"
+        ],
+        "19": [
+          "kParamLFO10"
+        ],
+        "11": [
+          "kParamLFO2"
+        ],
+        "12": [
+          "kParamLFO3"
+        ],
+        "13": [
+          "kParamLFO4"
+        ],
+        "14": [
+          "kParamLFO5"
+        ],
+        "15": [
+          "kParamLFO6"
+        ],
+        "16": [
+          "kParamLFO7"
+        ],
+        "17": [
+          "kParamLFO8"
+        ],
+        "18": [
+          "kParamLFO9"
+        ],
+        "5": [
+          "kParamNoise"
+        ],
+        "0": [
+          "kParamNote"
+        ],
+        "1": [
+          "kParamOscA"
+        ],
+        "2": [
+          "kParamOscB"
+        ],
+        "3": [
+          "kParamOscC"
+        ],
+        "4": [
+          "kParamSub"
+        ]
+      },
+      "canonical_id_count": 20
+    },
+    {
+      "name": "Oscillator",
+      "type_pointer_variable": "0x181131098",
+      "type_name_pointer": "0x180fc50f2",
+      "instances": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "local_min": 0,
+      "local_max": 60,
+      "segments": [
+        {
+          "local_min": 0,
+          "local_max": 32,
+          "base": 1000000,
+          "stride": 1000,
+          "operator": "add"
+        },
+        {
+          "local_min": 33,
+          "local_max": 60,
+          "base": 101000000,
+          "stride": 1000,
+          "operator": "add"
+        }
+      ],
+      "encoder": "0x1803a3fe0",
+      "encoder_source": "decompiled-focused/FUN_1803a3fe0.c",
+      "ui_local_names": {
+        "48": [
+          "kParamAutoSliceThreshold"
+        ],
+        "59": [
+          "kParamBaseTempo"
+        ],
+        "6": [
+          "kParamCoarsePit"
+        ],
+        "26": [
+          "kParamDetune"
+        ],
+        "43": [
+          "kParamDetuneMode"
+        ],
+        "27": [
+          "kParamDetuneWid"
+        ],
+        "0": [
+          "kParamEnable"
+        ],
+        "11": [
+          "kParamEnd"
+        ],
+        "5": [
+          "kParamFine"
+        ],
+        "60": [
+          "kParamFreq"
+        ],
+        "8": [
+          "kParamHzOffset"
+        ],
+        "39": [
+          "kParamKeyZoneFold"
+        ],
+        "38": [
+          "kParamKeyZoneMax"
+        ],
+        "37": [
+          "kParamKeyZoneMin"
+        ],
+        "40": [
+          "kParamKeyZoneWarp"
+        ],
+        "52": [
+          "kParamLinkLoopLength"
+        ],
+        "19": [
+          "kParamLoopCrossfade"
+        ],
+        "18": [
+          "kParamLoopEnd"
+        ],
+        "53": [
+          "kParamLoopEndsAtRelease"
+        ],
+        "20": [
+          "kParamLoopMode"
+        ],
+        "17": [
+          "kParamLoopStart"
+        ],
+        "21": [
+          "kParamLoopStartLink"
+        ],
+        "54": [
+          "kParamManualPositionMode"
+        ],
+        "3": [
+          "kParamOctave"
+        ],
+        "2": [
+          "kParamPan"
+        ],
+        "4": [
+          "kParamPitch"
+        ],
+        "51": [
+          "kParamPitchBendTrack"
+        ],
+        "34": [
+          "kParamPitchMode"
+        ],
+        "7": [
+          "kParamPitchRatio"
+        ],
+        "36": [
+          "kParamPitchRatioModMode"
+        ],
+        "35": [
+          "kParamPitchSource"
+        ],
+        "9": [
+          "kParamPitchTrack"
+        ],
+        "16": [
+          "kParamPosition"
+        ],
+        "30": [
+          "kParamRandomStart"
+        ],
+        "12": [
+          "kParamReverse"
+        ],
+        "56": [
+          "kParamScanBPMDivide"
+        ],
+        "14": [
+          "kParamScanBPMRate"
+        ],
+        "15": [
+          "kParamScanKeyTrack"
+        ],
+        "57": [
+          "kParamScanRange"
+        ],
+        "13": [
+          "kParamScanRate"
+        ],
+        "58": [
+          "kParamScanTempoLock"
+        ],
+        "47": [
+          "kParamSlicingEnabled"
+        ],
+        "50": [
+          "kParamSlicingPlaySingleSlice"
+        ],
+        "23": [
+          "kParamSlicingPlayToEnd"
+        ],
+        "49": [
+          "kParamSlicingRootNote"
+        ],
+        "22": [
+          "kParamSlicingSingleSlice"
+        ],
+        "10": [
+          "kParamStart"
+        ],
+        "33": [
+          "kParamType"
+        ],
+        "24": [
+          "kParamUnison"
+        ],
+        "44": [
+          "kParamUnisonRange"
+        ],
+        "45": [
+          "kParamUnisonRotate"
+        ],
+        "29": [
+          "kParamUnisonSpan"
+        ],
+        "46": [
+          "kParamUnisonSpanBipolar"
+        ],
+        "25": [
+          "kParamUnisonStack"
+        ],
+        "28": [
+          "kParamUnisonStereo"
+        ],
+        "31": [
+          "kParamUnisonWarp"
+        ],
+        "32": [
+          "kParamUnisonWarp2"
+        ],
+        "42": [
+          "kParamVelocityZoneMax"
+        ],
+        "41": [
+          "kParamVelocityZoneMin"
+        ],
+        "1": [
+          "kParamVolume"
+        ],
+        "55": [
+          "kParamWrapPosition"
+        ]
+      },
+      "canonical_id_count": 305
+    },
+    {
+      "name": "WTOsc",
+      "type_pointer_variable": "0x181131038",
+      "type_name_pointer": "0x180fcf69b",
+      "instances": [
+        0,
+        1,
+        2
+      ],
+      "local_min": 0,
+      "local_max": 13,
+      "segments": [
+        {
+          "local_min": 0,
+          "local_max": 13,
+          "base": 200000000,
+          "stride": 1000,
+          "operator": "add"
+        }
+      ],
+      "encoder": "0x1803a40e0",
+      "encoder_source": "decompiled-bulk-004/FUN_1803a40e0.c",
+      "ui_local_names": {
+        "8": [
+          "kParamInitialPhase"
+        ],
+        "12": [
+          "kParamPhaseLegato"
+        ],
+        "10": [
+          "kParamPhaseMemory"
+        ],
+        "9": [
+          "kParamRandomPhase"
+        ],
+        "6": [
+          "kParamTablePos"
+        ],
+        "7": [
+          "kParamUnisonWTPos"
+        ],
+        "0": [
+          "kParamWarp"
+        ],
+        "3": [
+          "kParamWarp2"
+        ],
+        "2": [
+          "kParamWarpMenu"
+        ],
+        "5": [
+          "kParamWarpMenu2"
+        ],
+        "1": [
+          "kParamWarpVar"
+        ],
+        "4": [
+          "kParamWarpVar2"
+        ],
+        "13": [
+          "kParamWrapPhase"
+        ],
+        "11": [
+          "kParamXfadeMode"
+        ]
+      },
+      "canonical_id_count": 42
+    },
+    {
+      "name": "MultiSampleOsc",
+      "type_pointer_variable": "0x1811311c0",
+      "type_name_pointer": "0x180fcf66b",
+      "instances": [
+        0,
+        1,
+        2
+      ],
+      "local_min": 0,
+      "local_max": 17,
+      "segments": [
+        {
+          "local_min": 0,
+          "local_max": 17,
+          "base": 201000000,
+          "stride": 1000,
+          "operator": "add"
+        }
+      ],
+      "encoder": "0x1803a4140",
+      "encoder_source": "decompiled-bulk-004/FUN_1803a4140.c",
+      "ui_local_names": {
+        "10": [
+          "kParamEnvAttack"
+        ],
+        "12": [
+          "kParamEnvDecay"
+        ],
+        "9": [
+          "kParamEnvDelay"
+        ],
+        "17": [
+          "kParamEnvDelayBeatSync"
+        ],
+        "11": [
+          "kParamEnvHold"
+        ],
+        "8": [
+          "kParamEnvOverride"
+        ],
+        "14": [
+          "kParamEnvRelease"
+        ],
+        "13": [
+          "kParamEnvSustain"
+        ],
+        "7": [
+          "kParamRandomPhase"
+        ],
+        "6": [
+          "kParamTimbreShift"
+        ],
+        "16": [
+          "kParamVelTrack"
+        ],
+        "15": [
+          "kParamVelTrackOverride"
+        ],
+        "0": [
+          "kParamWarp"
+        ],
+        "3": [
+          "kParamWarp2"
+        ],
+        "2": [
+          "kParamWarpMenu"
+        ],
+        "5": [
+          "kParamWarpMenu2"
+        ],
+        "1": [
+          "kParamWarpVar"
+        ],
+        "4": [
+          "kParamWarpVar2"
+        ]
+      },
+      "canonical_id_count": 54
+    },
+    {
+      "name": "SampleOsc",
+      "type_pointer_variable": "0x181131158",
+      "type_name_pointer": "0x180fcf670",
+      "instances": [
+        0,
+        1,
+        2
+      ],
+      "local_min": 0,
+      "local_max": 5,
+      "segments": [
+        {
+          "local_min": 0,
+          "local_max": 5,
+          "base": 202000000,
+          "stride": 1000,
+          "operator": "add"
+        }
+      ],
+      "encoder": "0x1803a41a0",
+      "encoder_source": "decompiled-bulk-004/FUN_1803a41a0.c",
+      "ui_local_names": {
+        "0": [
+          "kParamWarp"
+        ],
+        "3": [
+          "kParamWarp2"
+        ],
+        "2": [
+          "kParamWarpMenu"
+        ],
+        "5": [
+          "kParamWarpMenu2"
+        ],
+        "1": [
+          "kParamWarpVar"
+        ],
+        "4": [
+          "kParamWarpVar2"
+        ]
+      },
+      "canonical_id_count": 18
+    },
+    {
+      "name": "GranularOsc",
+      "type_pointer_variable": "0x181131188",
+      "type_name_pointer": "0x180fcf645",
+      "instances": [
+        0,
+        1,
+        2
+      ],
+      "local_min": 0,
+      "local_max": 33,
+      "segments": [
+        {
+          "local_min": 0,
+          "local_max": 33,
+          "base": 203000000,
+          "stride": 1000,
+          "operator": "add"
+        }
+      ],
+      "encoder": "0x1803a4200",
+      "encoder_source": "decompiled-bulk-004/FUN_1803a4200.c",
+      "ui_local_names": {
+        "6": [
+          "kParamDensity"
+        ],
+        "28": [
+          "kParamDensityDotted"
+        ],
+        "23": [
+          "kParamDensityMode"
+        ],
+        "29": [
+          "kParamDensityTriplet"
+        ],
+        "7": [
+          "kParamGrainLength"
+        ],
+        "8": [
+          "kParamGrainReverse"
+        ],
+        "27": [
+          "kParamJumpStartGrains"
+        ],
+        "30": [
+          "kParamLengthDotted"
+        ],
+        "33": [
+          "kParamLengthKeyTrack"
+        ],
+        "22": [
+          "kParamLengthMode"
+        ],
+        "31": [
+          "kParamLengthTriplet"
+        ],
+        "32": [
+          "kParamLoopGrains"
+        ],
+        "24": [
+          "kParamMaxNumGrains"
+        ],
+        "13": [
+          "kParamRandomDir"
+        ],
+        "17": [
+          "kParamRandomGain"
+        ],
+        "15": [
+          "kParamRandomGrainLength"
+        ],
+        "12": [
+          "kParamRandomOffset"
+        ],
+        "16": [
+          "kParamRandomPan"
+        ],
+        "14": [
+          "kParamRandomPitch"
+        ],
+        "20": [
+          "kParamRandomWarp"
+        ],
+        "21": [
+          "kParamRandomWarp2"
+        ],
+        "18": [
+          "kParamRandomWindowAmount"
+        ],
+        "19": [
+          "kParamRandomWindowSkew"
+        ],
+        "26": [
+          "kParamUnisonTrigPattern"
+        ],
+        "0": [
+          "kParamWarp"
+        ],
+        "3": [
+          "kParamWarp2"
+        ],
+        "2": [
+          "kParamWarpMenu"
+        ],
+        "5": [
+          "kParamWarpMenu2"
+        ],
+        "1": [
+          "kParamWarpVar"
+        ],
+        "4": [
+          "kParamWarpVar2"
+        ],
+        "9": [
+          "kParamWindowParam"
+        ],
+        "11": [
+          "kParamWindowShape"
+        ],
+        "10": [
+          "kParamWindowSkew"
+        ],
+        "25": [
+          "kParamYAxisAssignment"
+        ]
+      },
+      "canonical_id_count": 102
+    },
+    {
+      "name": "SpectralOsc",
+      "type_pointer_variable": "0x181131118",
+      "type_name_pointer": "0x180fcf651",
+      "instances": [
+        0,
+        1,
+        2
+      ],
+      "local_min": 0,
+      "local_max": 14,
+      "segments": [
+        {
+          "local_min": 0,
+          "local_max": 14,
+          "base": 204000000,
+          "stride": 1000,
+          "operator": "add"
+        }
+      ],
+      "encoder": "0x1803a4260",
+      "encoder_source": "decompiled-bulk-004/FUN_1803a4260.c",
+      "ui_local_names": {
+        "9": [
+          "kParamFreqHi"
+        ],
+        "8": [
+          "kParamFreqLo"
+        ],
+        "12": [
+          "kParamLoHiIsPost"
+        ],
+        "13": [
+          "kParamLoHiIsSmooth"
+        ],
+        "10": [
+          "kParamPhaseLock"
+        ],
+        "6": [
+          "kParamSpecFltShift"
+        ],
+        "7": [
+          "kParamSpecFltWetDry"
+        ],
+        "11": [
+          "kParamTransients"
+        ],
+        "0": [
+          "kParamWarp"
+        ],
+        "3": [
+          "kParamWarp2"
+        ],
+        "2": [
+          "kParamWarpMenu"
+        ],
+        "5": [
+          "kParamWarpMenu2"
+        ],
+        "1": [
+          "kParamWarpVar"
+        ],
+        "4": [
+          "kParamWarpVar2"
+        ],
+        "14": [
+          "kParamYAxisAssignment"
+        ]
+      },
+      "canonical_id_count": 45
+    },
+    {
+      "name": "NoiseOsc",
+      "type_pointer_variable": "0x181131ef0",
+      "type_name_pointer": "0x180fcf662",
+      "instances": [
+        3
+      ],
+      "local_min": 0,
+      "local_max": 5,
+      "segments": [
+        {
+          "local_min": 0,
+          "local_max": 5,
+          "base": 205000000,
+          "stride": 1000,
+          "operator": "add"
+        }
+      ],
+      "encoder": "0x1803a42b0",
+      "encoder_source": "decompiled-bulk-004/FUN_1803a42b0.c",
+      "ui_local_names": {
+        "0": [
+          "kParamColor"
+        ],
+        "1": [
+          "kParamFine"
+        ],
+        "2": [
+          "kParamInitialPhase"
+        ],
+        "5": [
+          "kParamNoiseType"
+        ],
+        "4": [
+          "kParamOneShot"
+        ],
+        "3": [
+          "kParamRandomPhase"
+        ]
+      },
+      "canonical_id_count": 6
+    },
+    {
+      "name": "SubOsc",
+      "type_pointer_variable": "0x1811324b0",
+      "type_name_pointer": "0x180fcf681",
+      "instances": [
+        4
+      ],
+      "local_min": 0,
+      "local_max": 3,
+      "segments": [
+        {
+          "local_min": 0,
+          "local_max": 3,
+          "base": 206000000,
+          "stride": 1000,
+          "operator": "add"
+        }
+      ],
+      "encoder": "0x1803a4300",
+      "encoder_source": "decompiled-bulk-004/FUN_1803a4300.c",
+      "ui_local_names": {
+        "2": [
+          "kParamContiguousPhase"
+        ],
+        "1": [
+          "kParamInitialPhase"
+        ],
+        "0": [
+          "kParamShape"
+        ],
+        "3": [
+          "kParamWrapPhase"
+        ]
+      },
+      "canonical_id_count": 4
+    }
+  ],
+  "sources": [
+    "decompiled-focused/FUN_1803a4320.c",
+    "decompiled-bulk-004/FUN_1803a4740.c",
+    "decompiled-bulk-004/FUN_1803a4ac0.c",
+    "decompiled-focused/FUN_1803a50c0.c"
+  ],
+  "limitations": [
+    "Canonical encoder image is not a runtime VST3 parameter enumeration and need not equal the registered parameter count.",
+    "Classifier0x1803a4320 accepts wider envelopes with holes; use canonical encoder domains rather than treating every ID in envelopes as valid.",
+    "Macro107m, LFOPointModBus8m, MidiClip11m, ArpClip13m and PitchQuantizer114m envelopes occur in classifier but not in canonical encoder image; role unknown.",
+    "Generic local decoder0x1803a4ac0 rejects PitchQuantizer high114m although classifier recognizes it. No generic-decoder equivalence claimed.",
+    "UI tag names describe local index names in matching namespaces. Missing tags, compatibility aliases, physical units and runtime availability remain unknown.",
+    "Effects FXRack modules are not encoded by these23 named branches; complete VST3 mapping remains open."
+  ],
+  "source_sha256": {
+    "decompiled-bulk-004/FUN_1803a3910.c": "6d37deb6e46d0b13e20623e832fb2075e014cb385bb3bcdc7c63a9040f854544",
+    "decompiled-bulk-004/FUN_1803a39b0.c": "3563de322910660485bc070890eb9f24f1846a01b9292e8e5aaea23617b5ee25",
+    "decompiled-bulk-004/FUN_1803a3a70.c": "4ceea69c325dc6d19fb4e03a548b5fc358f5c03ef527449a0ceead893374769a",
+    "decompiled-bulk-004/FUN_1803a3ad0.c": "fe580d9292eb510bb88549393b0b4569ede033bb2a97536ec1b2841842c42928",
+    "decompiled-bulk-004/FUN_1803a3c20.c": "562d40e61cd4486903c1930c2f755850220d30eaeb6190a1facb72a2d3eb029c",
+    "decompiled-bulk-004/FUN_1803a3eb0.c": "e8d4d6e4a26d1ba8838f5362a286c90fa11407695244e84ceda6bf1c5d669d0c",
+    "decompiled-bulk-004/FUN_1803a3f20.c": "804f1197a98f5d2d7986242051d0b63ffda7233c6d8a7e56e92a4224412ac725",
+    "decompiled-bulk-004/FUN_1803a3f50.c": "8b0b0c661b3cd3e6f2de830b4e6a96c6fbf36129fe16fa1330a53ec281f6b9de",
+    "decompiled-bulk-004/FUN_1803a40e0.c": "2894b2f6c03f4e791017772f9d2d2741ea8e637efe9b8555939d35bf0c0c9e92",
+    "decompiled-bulk-004/FUN_1803a4140.c": "76ad5900c7c069e15b4618151c8d23e375eb620e0e6e34935b3959933397b1e1",
+    "decompiled-bulk-004/FUN_1803a41a0.c": "fab0f32069c25e55474fd80b5a5176cfd3dc5d2be445fd998b64644ce1afc8e1",
+    "decompiled-bulk-004/FUN_1803a4200.c": "4bd9282b68373d770af090ac8e36f07bed03955c5cfa9c665fabd3bc05ac9b50",
+    "decompiled-bulk-004/FUN_1803a4260.c": "0a8bba007e9abdff26814c30a89b4a02879311d6ff80e0c4caeb447b3dfa88bd",
+    "decompiled-bulk-004/FUN_1803a42b0.c": "da6fe4f0770b71f34538bb6de05933d0dc103103c82e4bb4ea1d910dd1da43a0",
+    "decompiled-bulk-004/FUN_1803a4300.c": "0d953ef0232482c8c6b2478de3f31847791d8f6533170d0d3565c1f6975ce728",
+    "decompiled-bulk-004/FUN_1803a4740.c": "4442bd8f3c861e7728372dcb2c1c3a4fef62a3e22986c00cbc13aca06c6dd7ff",
+    "decompiled-bulk-004/FUN_1803a4ac0.c": "501becd5c686f39a7a01881fdf5bbd2a10bf7c35781aae27e4364fc595e7a322",
+    "decompiled-expanded/FUN_1803a38e0.c": "87ebc81cdc5341ed964d21147691809c19fc595eb3d8e2dce72e550f00803a29",
+    "decompiled-focused/FUN_1803a3bc0.c": "28ee03f0f658f46d57ec3e0f09dc127eafbdebb1c325526693ad067eaaeff7ee",
+    "decompiled-focused/FUN_1803a3d40.c": "76f832d7f280154a4968f57136a23972db2bd86ae84c9dd15d1b5db2a0834726",
+    "decompiled-focused/FUN_1803a3da0.c": "7bab7b1b264dfaba92df6dee15c8042bd9d4af0635bc791448a28bac69d127be",
+    "decompiled-focused/FUN_1803a3e10.c": "484aa78b99ec3781a4d88d7b3ae67f32405fa0713a6684975c5a9faa8ed6c795",
+    "decompiled-focused/FUN_1803a3fe0.c": "2a724c23510bd5998b8e4699e0ef78dcd2b37c6d4bbfc3d167d4435b4825fdda",
+    "decompiled-focused/FUN_1803a4320.c": "cf830cc9f688f7a2efa7e873bab75a60486e9739d48e897b55f53ac4d2aec64d",
+    "decompiled-focused/FUN_1803a50c0.c": "673571667b50773c2e5e6f870cb8dd5d93d2ddd3cee5b906a49fea92dc162a8b",
+    "rea-parameter-ids/id-family-encode.c": "9fb354fc52384415c64d2be7fd859c91fd0bac6fa7a642dd21dd5c8d8747e43e",
+    "serum2-interface.uidesc": "3beca5b6da0a8b622ce0012cc800579417a57951e6fbb65dbb63639c7cf574f7"
+  },
+  "native_corroboration": [
+    {
+      "address": "0x1803a4ac0",
+      "evidence_id": "ev_13355aac07a38d8e6a99f4eb6c0d81b4cc0c577b861910eccfe03ab34305c027",
+      "source": "rea-final-helpers/evidence.json",
+      "scope": "Code structure corroboration; textual type/route names resolved separately by PE pointer reads."
+    },
+    {
+      "address": "0x1806f9660",
+      "evidence_id": "ev_4e9724dc46c62db58b67a2f58435da83d1eca46bfdbc665386dd44323de4f8c0",
+      "source": "rea-final-helpers/evidence.json",
+      "scope": "Code structure corroboration; textual type/route names resolved separately by PE pointer reads."
+    },
+    {
+      "address": "0x18077be70",
+      "evidence_id": "ev_7c43f503fac026b9ddf513546255062cc7540fefebd151d6d860f90fdddf3349",
+      "source": "rea-final-helpers/evidence.json",
+      "scope": "Code structure corroboration; textual type/route names resolved separately by PE pointer reads."
+    },
+    {
+      "address": "0x18077b220",
+      "evidence_id": "ev_96c370d0362091d4a6f42357ccd21389dc3dac81410abd8c00213d278a1f90a3",
+      "source": "rea-final-helpers/evidence.json",
+      "scope": "Code structure corroboration; textual type/route names resolved separately by PE pointer reads."
+    },
+    {
+      "address": "0x180071d80",
+      "evidence_id": "ev_ba1838bc54fbea7cfa24138a79d368a884ebabf40de2488d70bafc8d482e671a",
+      "source": "rea-final-helpers/evidence.json",
+      "scope": "Code structure corroboration; textual type/route names resolved separately by PE pointer reads."
+    },
+    {
+      "address": "0x1803a50c0",
+      "evidence_id": "ev_bfc35faf2386f3a65b111d7414815cd73ff850a288f54cdd81f86c7647fce8f2",
+      "source": "rea-final-helpers/evidence.json",
+      "scope": "Code structure corroboration; textual type/route names resolved separately by PE pointer reads."
+    },
+    {
+      "address": "0x1803a4320",
+      "evidence_id": "ev_d6476aab88199435b742c395cad531f6f3de5fe0fdf17b326c27305aa848e2b2",
+      "source": "rea-final-helpers/evidence.json",
+      "scope": "Code structure corroboration; textual type/route names resolved separately by PE pointer reads."
+    }
+  ]
+}

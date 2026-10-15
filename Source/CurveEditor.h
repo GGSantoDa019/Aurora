@@ -9,6 +9,8 @@ class CurveEditor : public Component, public SettableTooltipClient, private Time
     std::array<Point<float>, 8> handles{};
     std::array<float, 32> previous{};
     bool custom = false;
+    unsigned displayFrame = 0;
+    double lastAudioUpdate = 0;
     int selected = -1;
     String id(const char *suffix) const {
         return key(kind == "env" ? "env" : kind == "filter" ? "filter" : "lfo", index, suffix);
@@ -30,6 +32,20 @@ class CurveEditor : public Component, public SettableTooltipClient, private Time
             values[0] = read(p, id("cutoff"));
             values[1] = read(p, id("res"));
             values[2] = read(p, id("type"));
+            values[3] = 48000;
+            auto &display = p.filterDisplay[size_t(index)];
+            auto frame = display.frame.load(std::memory_order_acquire);
+            double now = Time::getMillisecondCounterHiRes();
+            if (frame != displayFrame) {
+                displayFrame = frame;
+                lastAudioUpdate = now;
+            }
+            if (frame && now - lastAudioUpdate < 250) {
+                values[0] = display.cutoff.load(std::memory_order_relaxed);
+                values[1] = display.resonance.load(std::memory_order_relaxed);
+                values[2] = float(display.type.load(std::memory_order_relaxed));
+                values[3] = display.sampleRate.load(std::memory_order_relaxed);
+            }
         } else {
             values[0] = read(p, id("shape"));
             values[1] = read(p, id("count"));
@@ -78,20 +94,26 @@ class CurveEditor : public Component, public SettableTooltipClient, private Time
             path.startNewSubPath(0, h);
             for (int i = 0; i < 4; ++i)
                 path.lineTo(handles[size_t(i)]);
-        } else if (kind == "filter")
-            for (int i = 0; i < 128; ++i) {
-                float x = i / 127.f, f = 20 * std::pow(1000.f, x) / std::max(20.f, previous[0]),
-                      k = 2 - 1.9f * previous[1],
-                      den = std::sqrt((1 - f * f) * (1 - f * f) + k * k * f * f),
-                      num = previous[2] < .5f    ? 1
-                            : previous[2] < 1.5f ? f
-                                                 : f * f;
-                float y = h - 5 - std::min(1.2f, num / std::max(.001f, den)) * (h - 10) * .78f;
+        } else if (kind == "filter") {
+            // Small-signal response of the same bilinear SVF used by the DSP.
+            float sr = std::max(100.f, previous[3]);
+            float cutoff = juce::jlimit(10.f, sr * .45f, previous[0]);
+            float g = std::tan(pi * cutoff / sr);
+            for (int i = 0; i < 160; ++i) {
+                float x = i / 159.f;
+                float hz = std::min(sr * .49f, 20 * std::pow(1000.f, x));
+                float f = std::tan(pi * hz / sr) / g;
+                float k = 2 - 1.9f * previous[1];
+                float den = std::sqrt((1 - f * f) * (1 - f * f) + k * k * f * f);
+                float num = previous[2] < .5f ? 1 : previous[2] < 1.5f ? f : f * f;
+                float db = 20 * std::log10(std::max(1.e-6f, num / std::max(1.e-6f, den)));
+                float y = 4 + (18 - juce::jlimit(-48.f, 18.f, db)) / 66 * (h - 8);
                 if (!i)
                     path.startNewSubPath(0, y);
                 else
                     path.lineTo(x * w, y);
             }
+        }
         else if (kind == "lfo")
             for (int i = 0; i < 128; ++i) {
                 float x = i / 127.f;
@@ -150,12 +172,20 @@ class CurveEditor : public Component, public SettableTooltipClient, private Time
         g.fillAll(ink);
         g.setColour(line);
         g.strokePath(grid, PathStrokeType(.7f));
-        if (kind == "env") {
-            g.setColour(accent.withAlpha(.12f));
+        if (kind == "env" || kind == "filter") {
+            g.setColour(accent.withAlpha(kind == "filter" ? .23f : .12f));
             g.fillPath(fill);
         }
         g.setColour(accent);
         g.strokePath(path, PathStrokeType(1.4f));
+        if (kind == "filter") {
+            g.setColour(text.withAlpha(.8f));
+            g.setFont(9.f);
+            String hz = previous[0] >= 1000 ? String(previous[0] / 1000, 2) + " kHz"
+                                          : String(previous[0], 0) + " Hz";
+            g.drawText(hz, getLocalBounds().reduced(4).removeFromBottom(12),
+                       Justification::centredRight);
+        }
         if (custom || kind == "env") {
             int count = custom ? shape.count : 4;
             for (int i = 0; i < count; ++i)
@@ -243,6 +273,8 @@ class CurveEditor : public Component, public SettableTooltipClient, private Time
         ++shape.count;
         commit();
     }
+    void refreshForTest() { timerCallback(); }
+    float cutoffForTest() const { return previous[0]; }
     int gpuState() const { return surface ? surface->gpuStatus.load() : 0; }
 };
 using Curve = CurveEditor;

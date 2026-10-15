@@ -1,0 +1,5 @@
+PASS AuroraJson legado → árvore estruturada AuroraState v2
+PASS exportar/regravar JSON preserva metadados e estado
+PASS metadados desconhecidos, extensão de estado e bytes Base64 preservados
+PASS truncamento, trailing bytes e cabeçalho inválido rejeitados
+PASS 626 presets gerados, decodificados e semanticamente regravados (factory-validation.txt)

@@ -6,4 +6,8 @@
 - O SDK VST3 incorporado no JUCE tem seus próprios avisos e licença, preservados em `third_party/JUCE/modules/juce_audio_processors/format_types/VST3_SDK`.
 - As bibliotecas de runtime estaticamente vinculadas pelo LLVM-MinGW preservam suas licenças próprias. O pacote inclui avisos relevantes em `licenses/`.
 
-A distribuição não inclui imagens, tabelas, presets ou binários comerciais do instrumento investigado. O importador experimental lê arquivos e assets locais selecionados pelo usuário; consulte docs/SERUM_IMPORT.md. Os nomes Hyper, Bode e Dimension identificam as famílias funcionais descritas pelo usuário; não afirmam compatibilidade nem equivalência sonora.
+A distribuição não inclui imagens da skin, wavetables musicais, samples, presets ou binários comerciais do instrumento investigado. A preview do motor contém dados numéricos recuperados do pacote fornecido pelo usuário: os coeficientes do interpolador e um fixture sintético com saídas históricas capturadas. A proveniência está em docs/WAVETABLE_ADVANCE.md; a declaração de licença do código Aurora não atribui autoria desses dados ao projeto. O importador experimental lê arquivos e assets locais selecionados pelo usuário; consulte docs/SERUM_IMPORT.md. Os nomes Hyper, Bode e Dimension identificam as famílias funcionais descritas pelo usuário; não afirmam compatibilidade nem equivalência sonora.
+
+## Alterações JUCE nesta sprint
+
+O código JUCE distribuído inclui extensões independentes SampleAccurateParameterSink e NativeNoteEventSink, e encaminhamento de todos os offsets de automação e IDs/expressões nativos VST3. Os cabeçalhos do SDK VST3 são usados pelos testes de integração com suas licenças existentes. A implementação não inclui código executável, coeficientes não recuperados ou presets comerciais do plugin investigado.

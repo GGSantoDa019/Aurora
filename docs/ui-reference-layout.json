@@ -1,0 +1,3007 @@
+{
+  "sourceSha256": "3beca5b6da0a8b622ce0012cc800579417a57951e6fbb65dbb63639c7cf574f7",
+  "coordinateSpace": [
+    1190,
+    740
+  ],
+  "templates": {
+    "SerumGUI": {
+      "size": "1190, 740"
+    },
+    "MainUI": {
+      "size": "1190, 740"
+    },
+    "Header": {
+      "size": "1190, 69"
+    },
+    "SynthUI": {
+      "size": "1190, 583"
+    },
+    "OscPage": {
+      "size": "1190, 318"
+    },
+    "WTOsc": {
+      "size": "270, 292"
+    },
+    "Filter": {
+      "size": "202, 318"
+    },
+    "ModSources": {
+      "size": "1024, 265"
+    },
+    "Macros": {
+      "size": "166, 265"
+    },
+    "Keyboard": {
+      "size": "1190, 90"
+    },
+    "RoutingMatrix": {
+      "size": "1190, 318"
+    },
+    "GlobalPage": {
+      "size": "1190, 318"
+    }
+  },
+  "rectangles": [
+    {
+      "name": "SerumGUI/SerumGUI",
+      "bounds": [
+        0.0,
+        0.0,
+        1190.0,
+        740.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "SerumGUI/MainAreaSwitch",
+      "bounds": [
+        0.0,
+        0.0,
+        1190.0,
+        652.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "SerumGUI/Keyboard",
+      "bounds": [
+        0.0,
+        650.0,
+        1190.0,
+        90.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "MainUI/MainUI",
+      "bounds": [
+        0.0,
+        0.0,
+        1190.0,
+        740.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "MainUI/Header",
+      "bounds": [
+        0.0,
+        0.0,
+        1190.0,
+        69.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "MainUI/MainArea",
+      "bounds": [
+        0.0,
+        69.0,
+        1190.0,
+        583.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "Header/Header",
+      "bounds": [
+        0.0,
+        0.0,
+        1190.0,
+        69.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "Header/FXLogo",
+      "bounds": [
+        0.0,
+        0.0,
+        166.0,
+        68.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "Header/BtnUIMenu",
+      "bounds": [
+        4.0,
+        1.0,
+        157.0,
+        66.0
+      ],
+      "tag": "UI::MainUI::kUIParamWindowZoomSizeMenu"
+    },
+    {
+      "name": "Header/BtnExport",
+      "bounds": [
+        0.0,
+        21.0,
+        27.0,
+        27.0
+      ],
+      "tag": "UI::MainUI::kUIParamDragExport"
+    },
+    {
+      "name": "Header/BtnUpdate",
+      "bounds": [
+        139.0,
+        22.0,
+        27.0,
+        27.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "Header/ProcessTimeoutBlackout",
+      "bounds": [
+        0.0,
+        0.0,
+        166.0,
+        68.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "Header/Nav",
+      "bounds": [
+        165.0,
+        0.0,
+        408.0,
+        69.0
+      ],
+      "tag": "UI::SynthUI::kUIParamSynthUIUpperPage"
+    },
+    {
+      "name": "Header/PresetArea",
+      "bounds": [
+        504.0,
+        1.0,
+        584.0,
+        66.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "Header/BtnSavePreset",
+      "bounds": [
+        2.0,
+        1.0,
+        27.0,
+        31.0
+      ],
+      "tag": "UI::MainUI::kUIParamSavePresetButton"
+    },
+    {
+      "name": "Header/BtnPresetMenu",
+      "bounds": [
+        36.0,
+        0.0,
+        395.0,
+        32.0
+      ],
+      "tag": "UI::MainUI::kUIParamPresetMenu"
+    },
+    {
+      "name": "Header/BtnPresetRocker",
+      "bounds": [
+        431.0,
+        1.0,
+        48.0,
+        31.0
+      ],
+      "tag": "UI::MainUI::kUIParamPresetRockerSwitch"
+    },
+    {
+      "name": "Header/PresetArtist",
+      "bounds": [
+        49.0,
+        36.0,
+        112.0,
+        30.0
+      ],
+      "tag": "UI::MainUI::kUIParamPatchAuthor"
+    },
+    {
+      "name": "Header/PresetDesc",
+      "bounds": [
+        203.0,
+        36.0,
+        273.0,
+        30.0
+      ],
+      "tag": "UI::MainUI::kUIParamPatchDescription"
+    },
+    {
+      "name": "Header/BtnBrowser",
+      "bounds": [
+        481.0,
+        0.0,
+        51.0,
+        33.0
+      ],
+      "tag": "UI::MainUI::kUIParamShowPresetBrowser"
+    },
+    {
+      "name": "Header/BtnMainMenu",
+      "bounds": [
+        532.0,
+        0.0,
+        51.0,
+        33.0
+      ],
+      "tag": "UI::MainUI::kUIParamPresetOptionsMenu"
+    },
+    {
+      "name": "Header/BtnUndo",
+      "bounds": [
+        481.0,
+        33.0,
+        51.0,
+        33.0
+      ],
+      "tag": "UI::WTEditor::kUIParamUndo"
+    },
+    {
+      "name": "Header/BtnRedo",
+      "bounds": [
+        532.0,
+        33.0,
+        51.0,
+        33.0
+      ],
+      "tag": "UI::WTEditor::kUIParamRedo"
+    },
+    {
+      "name": "Header/Main",
+      "bounds": [
+        1087.0,
+        1.0,
+        102.0,
+        66.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "SynthUI/SynthUI",
+      "bounds": [
+        0.0,
+        0.0,
+        1190.0,
+        583.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "SynthUI/SynthUIUpperPage",
+      "bounds": [
+        0.0,
+        0.0,
+        1190.0,
+        318.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "SynthUI/LowerContainerSwitch",
+      "bounds": [
+        166.0,
+        318.0,
+        1024.0,
+        265.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "SynthUI/Macros",
+      "bounds": [
+        0.0,
+        318.0,
+        166.0,
+        265.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "OscPage/OscPage",
+      "bounds": [
+        0.0,
+        0.0,
+        1190.0,
+        318.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "OscPage/OscSContainer",
+      "bounds": [
+        0.0,
+        0.0,
+        76.0,
+        318.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "OscPage/SubOscEnable",
+      "bounds": [
+        1.0,
+        0.0,
+        51.0,
+        26.0
+      ],
+      "tag": "Oscillator::kParamEnable"
+    },
+    {
+      "name": "OscPage/MiniRouting",
+      "bounds": [
+        53.0,
+        0.0,
+        21.0,
+        26.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "OscPage/DestLetter",
+      "bounds": [
+        0.0,
+        0.0,
+        21.0,
+        26.0
+      ],
+      "tag": "RoutingSlot::kParamRoutingDest"
+    },
+    {
+      "name": "OscPage/SendBg1",
+      "bounds": [
+        0.0,
+        0.0,
+        21.0,
+        26.0
+      ],
+      "tag": "RoutingSlot::kParamFXBus1Level"
+    },
+    {
+      "name": "OscPage/SendBg2",
+      "bounds": [
+        0.0,
+        0.0,
+        21.0,
+        26.0
+      ],
+      "tag": "RoutingSlot::kParamFXBus2Level"
+    },
+    {
+      "name": "OscPage/Send1",
+      "bounds": [
+        0.0,
+        0.0,
+        21.0,
+        26.0
+      ],
+      "tag": "RoutingSlot::kParamFXBus1Level"
+    },
+    {
+      "name": "OscPage/Send2",
+      "bounds": [
+        0.0,
+        0.0,
+        21.0,
+        26.0
+      ],
+      "tag": "RoutingSlot::kParamFXBus2Level"
+    },
+    {
+      "name": "OscPage/Filter1",
+      "bounds": [
+        0.0,
+        0.0,
+        21.0,
+        26.0
+      ],
+      "tag": "RoutingSlot::kParamFilterBalance"
+    },
+    {
+      "name": "OscPage/Filter2",
+      "bounds": [
+        0.0,
+        0.0,
+        21.0,
+        26.0
+      ],
+      "tag": "RoutingSlot::kParamFilterBalance"
+    },
+    {
+      "name": "OscPage/DestMenu",
+      "bounds": [
+        0.0,
+        0.0,
+        21.0,
+        26.0
+      ],
+      "tag": "RoutingSlot::kParamRoutingDest"
+    },
+    {
+      "name": "OscPage/OctaveTextParam",
+      "bounds": [
+        2.0,
+        27.0,
+        72.0,
+        21.0
+      ],
+      "tag": "Oscillator::kParamOctave"
+    },
+    {
+      "name": "OscPage/CoarsePitchParam",
+      "bounds": [
+        2.0,
+        49.0,
+        72.0,
+        21.0
+      ],
+      "tag": "Oscillator::kParamCoarsePit"
+    },
+    {
+      "name": "OscPage/PhaseParam",
+      "bounds": [
+        2.0,
+        172.0,
+        72.0,
+        21.0
+      ],
+      "tag": "SubOsc::kParamInitialPhase"
+    },
+    {
+      "name": "OscPage/PanKnob",
+      "bounds": [
+        14.0,
+        199.0,
+        44.0,
+        46.0
+      ],
+      "tag": "Oscillator::kParamPan"
+    },
+    {
+      "name": "OscPage/LevelKnob",
+      "bounds": [
+        14.0,
+        254.0,
+        44.0,
+        46.0
+      ],
+      "tag": "Oscillator::kParamVolume"
+    },
+    {
+      "name": "OscPage/SubOscBlackout",
+      "bounds": [
+        2.0,
+        26.0,
+        72.0,
+        169.0
+      ],
+      "tag": "Oscillator::kParamEnable"
+    },
+    {
+      "name": "OscPage/OscNContainer",
+      "bounds": [
+        886.0,
+        0.0,
+        100.0,
+        318.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "OscPage/PanelSwitch",
+      "bounds": [
+        0.0,
+        0.0,
+        100.0,
+        318.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "OscPage/NoiseTableMenu",
+      "bounds": [
+        0.0,
+        27.0,
+        69.0,
+        21.0
+      ],
+      "tag": "UI::OscPage::kUIParamNoiseMenu"
+    },
+    {
+      "name": "OscPage/WTRocker",
+      "bounds": [
+        68.0,
+        27.0,
+        30.0,
+        23.0
+      ],
+      "tag": "UI::OscPage::kUIParamNoiseRockerSwitch"
+    },
+    {
+      "name": "OscPage/NoiseOscEnable",
+      "bounds": [
+        -1.0,
+        0.0,
+        77.0,
+        26.0
+      ],
+      "tag": "Oscillator::kParamEnable"
+    },
+    {
+      "name": "OscPage/NoiseOscBlackout",
+      "bounds": [
+        0.0,
+        26.0,
+        98.0,
+        169.0
+      ],
+      "tag": "Oscillator::kParamEnable"
+    },
+    {
+      "name": "OscPage/Filter",
+      "bounds": [
+        986.0,
+        0.0,
+        204.0,
+        318.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "OscPage/OSC A",
+      "bounds": [
+        76.0,
+        0.0,
+        270.0,
+        318.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "OscPage/Osc",
+      "bounds": [
+        0.0,
+        0.0,
+        270.0,
+        318.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "OscPage/OSC B",
+      "bounds": [
+        346.0,
+        0.0,
+        270.0,
+        318.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "OscPage/OSC C",
+      "bounds": [
+        616.0,
+        0.0,
+        270.0,
+        318.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "WTOsc/WTOsc",
+      "bounds": [
+        0.0,
+        0.0,
+        270.0,
+        292.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "WTOsc/WTOscController",
+      "bounds": [
+        0.0,
+        0.0,
+        270.0,
+        292.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "WTOsc/EmbedButton",
+      "bounds": [
+        0.0,
+        0.0,
+        23.0,
+        23.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "WTOsc/SaveButton",
+      "bounds": [
+        0.0,
+        0.0,
+        23.0,
+        23.0
+      ],
+      "tag": "UI::WTOsc::kUIParamSaveOscState"
+    },
+    {
+      "name": "WTOsc/WTMenu",
+      "bounds": [
+        23.0,
+        1.0,
+        216.0,
+        21.0
+      ],
+      "tag": "UI::WTOsc::kUIParamTableMenu"
+    },
+    {
+      "name": "WTOsc/WTRocker",
+      "bounds": [
+        238.0,
+        1.0,
+        30.0,
+        23.0
+      ],
+      "tag": "UI::WTOsc::kUIParamTableRockerSwitch"
+    },
+    {
+      "name": "WTOsc/PitchParamsSwitchContainer",
+      "bounds": [
+        0.0,
+        23.0,
+        268.0,
+        22.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "WTOsc/WTPosValue",
+      "bounds": [
+        -3.0,
+        146.0,
+        57.0,
+        22.0
+      ],
+      "tag": "WTOsc::kParamTablePos"
+    },
+    {
+      "name": "WTOsc/PhaseViewSwitch",
+      "bounds": [
+        55.0,
+        146.0,
+        191.0,
+        21.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "WTOsc/PhaseMenu",
+      "bounds": [
+        247.0,
+        146.0,
+        21.0,
+        21.0
+      ],
+      "tag": "WTOsc::kParamPhaseMemory"
+    },
+    {
+      "name": "WTOsc/UnisonSettingsButton",
+      "bounds": [
+        53.0,
+        187.0,
+        25.0,
+        23.0
+      ],
+      "tag": "UI::Osc::kUIParamOpenUnisonSettings"
+    },
+    {
+      "name": "WTOsc/UnisonParam",
+      "bounds": [
+        80.0,
+        189.0,
+        34.0,
+        19.0
+      ],
+      "tag": "Oscillator::kParamUnison"
+    },
+    {
+      "name": "WTOsc/UnisonBlendKnob",
+      "bounds": [
+        164.0,
+        173.0,
+        44.0,
+        46.0
+      ],
+      "tag": "Oscillator::kParamDetuneWid"
+    },
+    {
+      "name": "WTOsc/UnisonDetuneKnob",
+      "bounds": [
+        119.0,
+        173.0,
+        44.0,
+        46.0
+      ],
+      "tag": "Oscillator::kParamDetune"
+    },
+    {
+      "name": "WTOsc/WTPosKnob",
+      "bounds": [
+        2.0,
+        173.0,
+        44.0,
+        46.0
+      ],
+      "tag": "WTOsc::kParamTablePos"
+    },
+    {
+      "name": "WTOsc/OverviewSwitch",
+      "bounds": [
+        0.0,
+        46.0,
+        268.0,
+        99.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "WTOsc/OpenWTEditorButton",
+      "bounds": [
+        247.0,
+        47.0,
+        21.0,
+        21.0
+      ],
+      "tag": "UI::WTOsc::kUIParamOpenWTEditor"
+    },
+    {
+      "name": "WTOsc/WarpRockerA",
+      "bounds": [
+        39.0,
+        257.0,
+        71.0,
+        11.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "WTOsc/WarpRockerB",
+      "bounds": [
+        104.0,
+        257.0,
+        71.0,
+        11.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "WTOsc/WarpKnob",
+      "bounds": [
+        2.0,
+        228.0,
+        44.0,
+        46.0
+      ],
+      "tag": "WTOsc::kParamWarp"
+    },
+    {
+      "name": "WTOsc/WarpMenu",
+      "bounds": [
+        45.0,
+        236.0,
+        59.0,
+        21.0
+      ],
+      "tag": "WTOsc::kParamWarpMenu"
+    },
+    {
+      "name": "WTOsc/RemapEditButton",
+      "bounds": [
+        88.0,
+        270.0,
+        38.0,
+        21.0
+      ],
+      "tag": "UI::WTOsc::kUIParamOpenRemapEdit"
+    },
+    {
+      "name": "WTOsc/WarpVar1",
+      "bounds": [
+        36.0,
+        272.0,
+        53.0,
+        12.0
+      ],
+      "tag": "WTOsc::kParamWarpVar"
+    },
+    {
+      "name": "WTOsc/WarpVar1Overlay",
+      "bounds": [
+        40.0,
+        269.0,
+        46.0,
+        21.0
+      ],
+      "tag": "WTOsc::kParamWarpVar"
+    },
+    {
+      "name": "WTOsc/WarpVar2",
+      "bounds": [
+        125.0,
+        272.0,
+        53.0,
+        12.0
+      ],
+      "tag": "WTOsc::kParamWarpVar2"
+    },
+    {
+      "name": "WTOsc/WarpVar2Overlay",
+      "bounds": [
+        129.0,
+        269.0,
+        46.0,
+        21.0
+      ],
+      "tag": "WTOsc::kParamWarpVar2"
+    },
+    {
+      "name": "WTOsc/PanKnob",
+      "bounds": [
+        218.0,
+        173.0,
+        44.0,
+        46.0
+      ],
+      "tag": "Oscillator::kParamPan"
+    },
+    {
+      "name": "WTOsc/LevelKnob",
+      "bounds": [
+        218.0,
+        228.0,
+        44.0,
+        46.0
+      ],
+      "tag": "Oscillator::kParamVolume"
+    },
+    {
+      "name": "WTOsc/UnisonSettings",
+      "bounds": [
+        0.0,
+        0.0,
+        268.0,
+        146.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "WTOsc/Mode",
+      "bounds": [
+        10.0,
+        46.0,
+        121.0,
+        21.0
+      ],
+      "tag": "Oscillator::kParamDetuneMode"
+    },
+    {
+      "name": "WTOsc/Stack",
+      "bounds": [
+        137.0,
+        46.0,
+        121.0,
+        21.0
+      ],
+      "tag": "Oscillator::kParamUnisonStack"
+    },
+    {
+      "name": "WTOsc/Width",
+      "bounds": [
+        43.0,
+        77.0,
+        88.0,
+        22.0
+      ],
+      "tag": "Oscillator::kParamUnisonStereo"
+    },
+    {
+      "name": "WTOsc/Range",
+      "bounds": [
+        137.0,
+        77.0,
+        88.0,
+        22.0
+      ],
+      "tag": "Oscillator::kParamUnisonRange"
+    },
+    {
+      "name": "WTOsc/WT Pos",
+      "bounds": [
+        10.0,
+        107.0,
+        78.0,
+        22.0
+      ],
+      "tag": "WTOsc::kParamUnisonWTPos"
+    },
+    {
+      "name": "WTOsc/Warp 1",
+      "bounds": [
+        95.0,
+        107.0,
+        78.0,
+        22.0
+      ],
+      "tag": "Oscillator::kParamUnisonWarp"
+    },
+    {
+      "name": "WTOsc/Warp 2",
+      "bounds": [
+        180.0,
+        107.0,
+        78.0,
+        22.0
+      ],
+      "tag": "Oscillator::kParamUnisonWarp2"
+    },
+    {
+      "name": "WTOsc/WTImport",
+      "bounds": [
+        0.0,
+        0.0,
+        268.0,
+        292.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "Filter/Filter",
+      "bounds": [
+        0.0,
+        0.0,
+        202.0,
+        318.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "Filter/Tabs",
+      "bounds": [
+        0.0,
+        0.0,
+        202.0,
+        26.0
+      ],
+      "tag": "UI::Filter::kUIParamSelectedFilter"
+    },
+    {
+      "name": "Filter/Routing1",
+      "bounds": [
+        79.0,
+        0.0,
+        21.0,
+        26.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "Filter/Routing2",
+      "bounds": [
+        181.0,
+        0.0,
+        21.0,
+        26.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "Filter/FilterMenu",
+      "bounds": [
+        5.0,
+        26.0,
+        160.0,
+        23.0
+      ],
+      "tag": "VoiceFilter::kParamType"
+    },
+    {
+      "name": "Filter/ModeRocker",
+      "bounds": [
+        172.0,
+        27.0,
+        30.0,
+        23.0
+      ],
+      "tag": "UI::Filter::kUIParamRockerSwitch"
+    },
+    {
+      "name": "Filter/PanKnob",
+      "bounds": [
+        122.0,
+        199.0,
+        44.0,
+        46.0
+      ],
+      "tag": "VoiceFilter::kParamStereo"
+    },
+    {
+      "name": "Filter/ResKnob",
+      "bounds": [
+        58.0,
+        199.0,
+        44.0,
+        46.0
+      ],
+      "tag": "VoiceFilter::kParamReso"
+    },
+    {
+      "name": "Filter/VarKnob",
+      "bounds": [
+        58.0,
+        254.0,
+        44.0,
+        46.0
+      ],
+      "tag": "VoiceFilter::kParamVar"
+    },
+    {
+      "name": "Filter/CutoffKnob",
+      "bounds": [
+        8.0,
+        199.0,
+        44.0,
+        46.0
+      ],
+      "tag": "VoiceFilter::kParamFreq"
+    },
+    {
+      "name": "Filter/DriveKnob",
+      "bounds": [
+        8.0,
+        254.0,
+        44.0,
+        46.0
+      ],
+      "tag": "VoiceFilter::kParamDrive"
+    },
+    {
+      "name": "Filter/FilterEnable1",
+      "bounds": [
+        -1.0,
+        0.0,
+        24.0,
+        26.0
+      ],
+      "tag": "UI::Filter::kUIParamEnable1"
+    },
+    {
+      "name": "Filter/FilterEnable2",
+      "bounds": [
+        101.0,
+        0.0,
+        24.0,
+        26.0
+      ],
+      "tag": "UI::Filter::kUIParamEnable2"
+    },
+    {
+      "name": "Filter/PZEdit",
+      "bounds": [
+        0.0,
+        27.0,
+        21.0,
+        21.0
+      ],
+      "tag": "UI::Filter::kUIParamOpenPZEditor"
+    },
+    {
+      "name": "Filter/ToggleS",
+      "bounds": [
+        0.0,
+        172.0,
+        34.0,
+        21.0
+      ],
+      "tag": "UI::Osc::kUIParamFilter1On"
+    },
+    {
+      "name": "Filter/ToggleA",
+      "bounds": [
+        34.0,
+        172.0,
+        34.0,
+        21.0
+      ],
+      "tag": "UI::Osc::kUIParamFilter1On"
+    },
+    {
+      "name": "Filter/ToggleB",
+      "bounds": [
+        68.0,
+        172.0,
+        34.0,
+        21.0
+      ],
+      "tag": "UI::Osc::kUIParamFilter1On"
+    },
+    {
+      "name": "Filter/ToggleC",
+      "bounds": [
+        102.0,
+        172.0,
+        34.0,
+        21.0
+      ],
+      "tag": "UI::Osc::kUIParamFilter1On"
+    },
+    {
+      "name": "Filter/ToggleN",
+      "bounds": [
+        136.0,
+        172.0,
+        34.0,
+        21.0
+      ],
+      "tag": "UI::Osc::kUIParamFilter1On"
+    },
+    {
+      "name": "Filter/ToggleKT",
+      "bounds": [
+        170.0,
+        172.0,
+        33.0,
+        21.0
+      ],
+      "tag": "VoiceFilter::kParamKeyTrack"
+    },
+    {
+      "name": "Filter/LevelKnob",
+      "bounds": [
+        122.0,
+        254.0,
+        44.0,
+        46.0
+      ],
+      "tag": "VoiceFilter::kParamWet"
+    },
+    {
+      "name": "Filter/Volume",
+      "bounds": [
+        169.0,
+        203.0,
+        27.0,
+        95.0
+      ],
+      "tag": "VoiceFilter::kParamLevelOut"
+    },
+    {
+      "name": "Filter/FilterBlackout",
+      "bounds": [
+        0.0,
+        26.0,
+        202.0,
+        146.0
+      ],
+      "tag": "VoiceFilter::kParamEnable"
+    },
+    {
+      "name": "ModSources/ModSources",
+      "bounds": [
+        0.0,
+        0.0,
+        1024.0,
+        265.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "ModSources/ModSourceTabs",
+      "bounds": [
+        0.0,
+        0.0,
+        1024.0,
+        38.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "ModSources/EnvelopeController",
+      "bounds": [
+        0.0,
+        38.0,
+        350.0,
+        225.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "ModSources/ZoomLock",
+      "bounds": [
+        322.0,
+        1.0,
+        27.0,
+        27.0
+      ],
+      "tag": "UI::ModSources::kUIParamEnvZoomNormalizing"
+    },
+    {
+      "name": "ModSources/ZoomSliderImage",
+      "bounds": [
+        322.0,
+        29.0,
+        27.0,
+        106.0
+      ],
+      "tag": "UI::ModSources::kUIParamEnvZoomNormalizing"
+    },
+    {
+      "name": "ModSources/ZoomSliderKnob",
+      "bounds": [
+        322.0,
+        29.0,
+        27.0,
+        106.0
+      ],
+      "tag": "UI::ModSources::kUIParamEnvZoom"
+    },
+    {
+      "name": "ModSources/AttackValue",
+      "bounds": [
+        17.0,
+        142.0,
+        39.0,
+        14.0
+      ],
+      "tag": "Env::kParamAttack"
+    },
+    {
+      "name": "ModSources/AttackKnob",
+      "bounds": [
+        12.0,
+        163.0,
+        44.0,
+        46.0
+      ],
+      "tag": "Env::kParamAttack"
+    },
+    {
+      "name": "ModSources/HoldValue",
+      "bounds": [
+        70.0,
+        142.0,
+        39.0,
+        14.0
+      ],
+      "tag": "Env::kParamHold"
+    },
+    {
+      "name": "ModSources/HoldKnob",
+      "bounds": [
+        65.0,
+        163.0,
+        44.0,
+        46.0
+      ],
+      "tag": "Env::kParamHold"
+    },
+    {
+      "name": "ModSources/DecayValue",
+      "bounds": [
+        123.0,
+        142.0,
+        39.0,
+        14.0
+      ],
+      "tag": "Env::kParamDecay"
+    },
+    {
+      "name": "ModSources/DecayKnob",
+      "bounds": [
+        118.0,
+        163.0,
+        44.0,
+        46.0
+      ],
+      "tag": "Env::kParamDecay"
+    },
+    {
+      "name": "ModSources/SustainValue",
+      "bounds": [
+        172.0,
+        142.0,
+        47.0,
+        14.0
+      ],
+      "tag": "Env::kParamSustain"
+    },
+    {
+      "name": "ModSources/SustainKnob",
+      "bounds": [
+        171.0,
+        163.0,
+        44.0,
+        46.0
+      ],
+      "tag": "Env::kParamSustain"
+    },
+    {
+      "name": "ModSources/ReleaseValue",
+      "bounds": [
+        228.0,
+        142.0,
+        39.0,
+        14.0
+      ],
+      "tag": "Env::kParamRelease"
+    },
+    {
+      "name": "ModSources/ReleaseKnob",
+      "bounds": [
+        224.0,
+        163.0,
+        44.0,
+        46.0
+      ],
+      "tag": "Env::kParamRelease"
+    },
+    {
+      "name": "ModSources/BtnBPM",
+      "bounds": [
+        282.0,
+        176.0,
+        57.0,
+        25.0
+      ],
+      "tag": "Env::kParamBeatSync"
+    },
+    {
+      "name": "ModSources/LFOController",
+      "bounds": [
+        352.0,
+        38.0,
+        520.0,
+        225.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "ModSources/TypeMenu",
+      "bounds": [
+        4.0,
+        1.0,
+        101.0,
+        29.0
+      ],
+      "tag": "LFO::kParamType"
+    },
+    {
+      "name": "ModSources/LFO Mode",
+      "bounds": [
+        6.0,
+        42.0,
+        97.0,
+        84.0
+      ],
+      "tag": "LFO::kParamMode"
+    },
+    {
+      "name": "ModSources/Env Mode Blackout",
+      "bounds": [
+        6.0,
+        98.0,
+        97.0,
+        28.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "ModSources/Mono",
+      "bounds": [
+        9.0,
+        141.0,
+        94.0,
+        16.0
+      ],
+      "tag": "LFO::kParamMono"
+    },
+    {
+      "name": "ModSources/MonoHitbox",
+      "bounds": [
+        1.0,
+        138.0,
+        107.0,
+        23.0
+      ],
+      "tag": "LFO::kParamMono"
+    },
+    {
+      "name": "ModSources/BtnAnchor",
+      "bounds": [
+        14.0,
+        176.0,
+        35.0,
+        25.0
+      ],
+      "tag": "LFO::kParamAnchored"
+    },
+    {
+      "name": "ModSources/AnchorBlackout",
+      "bounds": [
+        12.0,
+        174.0,
+        39.0,
+        46.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "ModSources/RateKnob",
+      "bounds": [
+        117.0,
+        163.0,
+        44.0,
+        46.0
+      ],
+      "tag": "LFO::kParamRate"
+    },
+    {
+      "name": "ModSources/RateValue",
+      "bounds": [
+        164.0,
+        180.0,
+        45.0,
+        17.0
+      ],
+      "tag": "LFO::kParamRate"
+    },
+    {
+      "name": "ModSources/BtnTrips",
+      "bounds": [
+        225.0,
+        176.0,
+        35.0,
+        25.0
+      ],
+      "tag": "LFO::kParamTriplets"
+    },
+    {
+      "name": "ModSources/BtnDotted",
+      "bounds": [
+        265.0,
+        176.0,
+        35.0,
+        25.0
+      ],
+      "tag": "LFO::kParamDotted"
+    },
+    {
+      "name": "ModSources/RiseKnob",
+      "bounds": [
+        315.0,
+        163.0,
+        44.0,
+        46.0
+      ],
+      "tag": "LFO::kParamRise"
+    },
+    {
+      "name": "ModSources/DelayKnob",
+      "bounds": [
+        365.0,
+        163.0,
+        44.0,
+        46.0
+      ],
+      "tag": "LFO::kParamDelay"
+    },
+    {
+      "name": "ModSources/ScalarCurve",
+      "bounds": [
+        872.0,
+        38.0,
+        152.0,
+        136.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "ModSources/EnvDragArea",
+      "bounds": [
+        0.0,
+        6.0,
+        350.0,
+        257.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "ModSources/LFODragArea",
+      "bounds": [
+        352.0,
+        6.0,
+        520.0,
+        257.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "ModSources/ScalarCurveDragArea",
+      "bounds": [
+        874.0,
+        6.0,
+        148.0,
+        168.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "ModSources/Voicing",
+      "bounds": [
+        872.0,
+        174.0,
+        152.0,
+        89.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "Macros/Macros",
+      "bounds": [
+        0.0,
+        0.0,
+        166.0,
+        265.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "Macros/Macro1Knob",
+      "bounds": [
+        7.0,
+        30.0,
+        40.0,
+        42.0
+      ],
+      "tag": "Macros::Macro1"
+    },
+    {
+      "name": "Macros/Macro1ModSource",
+      "bounds": [
+        55.0,
+        33.0,
+        27.0,
+        41.0
+      ],
+      "tag": "UI::ModSources::kUIParamMacro1Drag"
+    },
+    {
+      "name": "Macros/Macro1Name",
+      "bounds": [
+        2.0,
+        75.0,
+        80.0,
+        14.0
+      ],
+      "tag": "UI::ModSources::kUIParamMacro1Name"
+    },
+    {
+      "name": "Macros/Macro2Knob",
+      "bounds": [
+        6.0,
+        88.0,
+        40.0,
+        42.0
+      ],
+      "tag": "Macros::Macro2"
+    },
+    {
+      "name": "Macros/Macro2ModSource",
+      "bounds": [
+        55.0,
+        91.0,
+        27.0,
+        41.0
+      ],
+      "tag": "UI::ModSources::kUIParamMacro2Drag"
+    },
+    {
+      "name": "Macros/Macro2Name",
+      "bounds": [
+        2.0,
+        133.0,
+        80.0,
+        14.0
+      ],
+      "tag": "UI::ModSources::kUIParamMacro2Name"
+    },
+    {
+      "name": "Macros/Macro3Knob",
+      "bounds": [
+        6.0,
+        146.0,
+        40.0,
+        42.0
+      ],
+      "tag": "Macros::Macro3"
+    },
+    {
+      "name": "Macros/Macro3ModSource",
+      "bounds": [
+        55.0,
+        149.0,
+        27.0,
+        41.0
+      ],
+      "tag": "UI::ModSources::kUIParamMacro3Drag"
+    },
+    {
+      "name": "Macros/Macro3Name",
+      "bounds": [
+        2.0,
+        191.0,
+        80.0,
+        14.0
+      ],
+      "tag": "UI::ModSources::kUIParamMacro3Name"
+    },
+    {
+      "name": "Macros/Macro4Knob",
+      "bounds": [
+        6.0,
+        204.0,
+        40.0,
+        42.0
+      ],
+      "tag": "Macros::Macro4"
+    },
+    {
+      "name": "Macros/Macro4ModSource",
+      "bounds": [
+        55.0,
+        207.0,
+        27.0,
+        41.0
+      ],
+      "tag": "UI::ModSources::kUIParamMacro4Drag"
+    },
+    {
+      "name": "Macros/Macro4Name",
+      "bounds": [
+        2.0,
+        249.0,
+        80.0,
+        14.0
+      ],
+      "tag": "UI::ModSources::kUIParamMacro4Name"
+    },
+    {
+      "name": "Macros/Macro5Knob",
+      "bounds": [
+        88.0,
+        30.0,
+        40.0,
+        42.0
+      ],
+      "tag": "Macros::Macro5"
+    },
+    {
+      "name": "Macros/Macro5ModSource",
+      "bounds": [
+        137.0,
+        33.0,
+        27.0,
+        41.0
+      ],
+      "tag": "UI::ModSources::kUIParamMacro5Drag"
+    },
+    {
+      "name": "Macros/Macro5Name",
+      "bounds": [
+        84.0,
+        75.0,
+        80.0,
+        14.0
+      ],
+      "tag": "UI::ModSources::kUIParamMacro5Name"
+    },
+    {
+      "name": "Macros/Macro6Knob",
+      "bounds": [
+        88.0,
+        88.0,
+        40.0,
+        42.0
+      ],
+      "tag": "Macros::Macro6"
+    },
+    {
+      "name": "Macros/Macro6ModSource",
+      "bounds": [
+        137.0,
+        91.0,
+        27.0,
+        41.0
+      ],
+      "tag": "UI::ModSources::kUIParamMacro6Drag"
+    },
+    {
+      "name": "Macros/Macro6Name",
+      "bounds": [
+        84.0,
+        133.0,
+        80.0,
+        14.0
+      ],
+      "tag": "UI::ModSources::kUIParamMacro6Name"
+    },
+    {
+      "name": "Macros/Macro7Knob",
+      "bounds": [
+        88.0,
+        146.0,
+        40.0,
+        42.0
+      ],
+      "tag": "Macros::Macro7"
+    },
+    {
+      "name": "Macros/Macro7ModSource",
+      "bounds": [
+        137.0,
+        149.0,
+        27.0,
+        41.0
+      ],
+      "tag": "UI::ModSources::kUIParamMacro7Drag"
+    },
+    {
+      "name": "Macros/Macro7Name",
+      "bounds": [
+        84.0,
+        191.0,
+        80.0,
+        14.0
+      ],
+      "tag": "UI::ModSources::kUIParamMacro7Name"
+    },
+    {
+      "name": "Macros/Macro8Knob",
+      "bounds": [
+        88.0,
+        204.0,
+        40.0,
+        42.0
+      ],
+      "tag": "Macros::Macro8"
+    },
+    {
+      "name": "Macros/Macro8ModSource",
+      "bounds": [
+        137.0,
+        207.0,
+        27.0,
+        41.0
+      ],
+      "tag": "UI::ModSources::kUIParamMacro8Drag"
+    },
+    {
+      "name": "Macros/Macro8Name",
+      "bounds": [
+        84.0,
+        249.0,
+        80.0,
+        14.0
+      ],
+      "tag": "UI::ModSources::kUIParamMacro8Name"
+    },
+    {
+      "name": "Keyboard/Keyboard",
+      "bounds": [
+        0.0,
+        0.0,
+        1190.0,
+        90.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "Keyboard/PBModContainer",
+      "bounds": [
+        0.0,
+        2.0,
+        150.0,
+        88.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "Keyboard/ModWheelModSource",
+      "bounds": [
+        0.0,
+        0.0,
+        51.0,
+        74.0
+      ],
+      "tag": "UI::ModSources::kUIParamWheelDrag"
+    },
+    {
+      "name": "Keyboard/PBUpRange",
+      "bounds": [
+        44.0,
+        20.0,
+        42.0,
+        23.0
+      ],
+      "tag": "Global::BendUp"
+    },
+    {
+      "name": "Keyboard/PBDownRange",
+      "bounds": [
+        44.0,
+        50.0,
+        42.0,
+        23.0
+      ],
+      "tag": "Global::BendDown"
+    },
+    {
+      "name": "Keyboard/HoverPBUp",
+      "bounds": [
+        46.0,
+        22.0,
+        38.0,
+        19.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "Keyboard/HoverPBDown",
+      "bounds": [
+        46.0,
+        52.0,
+        38.0,
+        19.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "Keyboard/PortaContainer",
+      "bounds": [
+        1041.0,
+        2.0,
+        150.0,
+        88.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "Keyboard/AlwaysButton",
+      "bounds": [
+        9.0,
+        9.0,
+        60.0,
+        16.0
+      ],
+      "tag": "Global::PortaAlways"
+    },
+    {
+      "name": "Keyboard/ScaledButton",
+      "bounds": [
+        79.0,
+        9.0,
+        60.0,
+        16.0
+      ],
+      "tag": "Global::PortaScaled"
+    },
+    {
+      "name": "Keyboard/ReleaseKnob",
+      "bounds": [
+        1057.0,
+        24.0,
+        44.0,
+        46.0
+      ],
+      "tag": "Global::PortaTime"
+    },
+    {
+      "name": "Keyboard/ClipPlayerTabContainer",
+      "bounds": [
+        165.0,
+        3.0,
+        106.0,
+        33.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "Keyboard/ClipPlayerTab",
+      "bounds": [
+        0.0,
+        2.0,
+        106.0,
+        27.0
+      ],
+      "tag": "UI::ClipPlayer::kUIParamShowClipPlayer"
+    },
+    {
+      "name": "Keyboard/ClipPlayerEnable",
+      "bounds": [
+        1.0,
+        3.0,
+        20.0,
+        25.0
+      ],
+      "tag": "ClipPlayer::ClipPlayerEnable"
+    },
+    {
+      "name": "Keyboard/HoverClipPlayerEnable",
+      "bounds": [
+        1.0,
+        2.0,
+        19.0,
+        26.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "Keyboard/HoverClipPlayerTab",
+      "bounds": [
+        21.0,
+        2.0,
+        84.0,
+        26.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "Keyboard/ArpTabContainer",
+      "bounds": [
+        279.0,
+        3.0,
+        106.0,
+        33.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "Keyboard/ArpTab",
+      "bounds": [
+        0.0,
+        2.0,
+        106.0,
+        27.0
+      ],
+      "tag": "UI::Arp::kUIParamShowArp"
+    },
+    {
+      "name": "Keyboard/ArpEnable",
+      "bounds": [
+        1.0,
+        3.0,
+        20.0,
+        25.0
+      ],
+      "tag": "Arpeggiator::ArpEnable"
+    },
+    {
+      "name": "Keyboard/HoverArpEnable",
+      "bounds": [
+        1.0,
+        2.0,
+        19.0,
+        26.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "Keyboard/HoverArpTab",
+      "bounds": [
+        21.0,
+        2.0,
+        84.0,
+        26.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "Keyboard/ClipPlayerMidiActivityMeter",
+      "bounds": [
+        273.0,
+        8.0,
+        4.0,
+        78.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "Keyboard/ArpMidiActivityMeter",
+      "bounds": [
+        387.0,
+        8.0,
+        4.0,
+        78.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "Keyboard/TransposeParam",
+      "bounds": [
+        394.0,
+        7.0,
+        123.0,
+        23.0
+      ],
+      "tag": "Global::Transpose"
+    },
+    {
+      "name": "Keyboard/KeyMenu",
+      "bounds": [
+        516.0,
+        7.0,
+        88.0,
+        23.0
+      ],
+      "tag": "Global::Key"
+    },
+    {
+      "name": "Keyboard/ScaleName",
+      "bounds": [
+        645.0,
+        8.0,
+        106.0,
+        20.0
+      ],
+      "tag": "Global::Scale"
+    },
+    {
+      "name": "Keyboard/ScaleMenu",
+      "bounds": [
+        603.0,
+        7.0,
+        168.0,
+        23.0
+      ],
+      "tag": "UI::Keyboard::kUIParamScaleMenuMouseWheel"
+    },
+    {
+      "name": "Keyboard/HideScaleOverlay",
+      "bounds": [
+        604.0,
+        7.0,
+        166.0,
+        23.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "Keyboard/SwingTextParam",
+      "bounds": [
+        770.0,
+        7.0,
+        98.0,
+        23.0
+      ],
+      "tag": "Global::Swing"
+    },
+    {
+      "name": "Keyboard/SwingDivParam",
+      "bounds": [
+        868.0,
+        7.0,
+        69.0,
+        23.0
+      ],
+      "tag": "Global::SwingDiv"
+    },
+    {
+      "name": "Keyboard/OscMapping",
+      "bounds": [
+        936.0,
+        7.0,
+        102.0,
+        23.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "Keyboard/ClipPlayerKeys",
+      "bounds": [
+        165.0,
+        32.0,
+        104.0,
+        56.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "Keyboard/ArpKeys",
+      "bounds": [
+        279.0,
+        32.0,
+        104.0,
+        56.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "RoutingMatrix/OscS",
+      "bounds": [
+        2.0,
+        0.0,
+        108.0,
+        318.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "RoutingMatrix/Power",
+      "bounds": [
+        0.0,
+        0.0,
+        108.0,
+        26.0
+      ],
+      "tag": "Oscillator::kParamEnable"
+    },
+    {
+      "name": "RoutingMatrix/Destination",
+      "bounds": [
+        0.0,
+        26.0,
+        108.0,
+        26.0
+      ],
+      "tag": "RoutingSlot::kParamRoutingDest"
+    },
+    {
+      "name": "RoutingMatrix/DestinationOverlay",
+      "bounds": [
+        0.0,
+        26.0,
+        108.0,
+        29.0
+      ],
+      "tag": "RoutingSlot::kParamRoutingDest"
+    },
+    {
+      "name": "RoutingMatrix/FilterKnobPanel",
+      "bounds": [
+        0.0,
+        54.0,
+        108.0,
+        52.0
+      ],
+      "tag": "RoutingSlot::kParamRoutingDest"
+    },
+    {
+      "name": "RoutingMatrix/Filter",
+      "bounds": [
+        30.0,
+        55.0,
+        44.0,
+        46.0
+      ],
+      "tag": "RoutingSlot::kParamFilterBalance"
+    },
+    {
+      "name": "RoutingMatrix/FilterOverlay",
+      "bounds": [
+        26.0,
+        89.0,
+        56.0,
+        11.0
+      ],
+      "tag": "RoutingSlot::kParamFilterBalance"
+    },
+    {
+      "name": "RoutingMatrix/Bus1",
+      "bounds": [
+        6.0,
+        109.0,
+        44.0,
+        46.0
+      ],
+      "tag": "RoutingSlot::kParamFXBus1Level"
+    },
+    {
+      "name": "RoutingMatrix/Bus2",
+      "bounds": [
+        54.0,
+        109.0,
+        44.0,
+        46.0
+      ],
+      "tag": "RoutingSlot::kParamFXBus2Level"
+    },
+    {
+      "name": "RoutingMatrix/Bus1Overlay",
+      "bounds": [
+        13.0,
+        117.0,
+        34.0,
+        50.0
+      ],
+      "tag": "RoutingSlot::kParamFXBus1Level"
+    },
+    {
+      "name": "RoutingMatrix/Bus2Overlay",
+      "bounds": [
+        61.0,
+        117.0,
+        34.0,
+        50.0
+      ],
+      "tag": "RoutingSlot::kParamFXBus2Level"
+    },
+    {
+      "name": "RoutingMatrix/Volume",
+      "bounds": [
+        54.0,
+        184.0,
+        24.0,
+        125.0
+      ],
+      "tag": "Oscillator::kParamVolume"
+    },
+    {
+      "name": "RoutingMatrix/Pan",
+      "bounds": [
+        8.0,
+        176.0,
+        40.0,
+        42.0
+      ],
+      "tag": "Oscillator::kParamPan"
+    },
+    {
+      "name": "RoutingMatrix/EnvToggle",
+      "bounds": [
+        15.0,
+        287.0,
+        30.0,
+        23.0
+      ],
+      "tag": "RoutingSlot::kParamViaEnv1"
+    },
+    {
+      "name": "RoutingMatrix/Blackout",
+      "bounds": [
+        0.0,
+        26.0,
+        108.0,
+        292.0
+      ],
+      "tag": "Oscillator::kParamEnable"
+    },
+    {
+      "name": "RoutingMatrix/OscA",
+      "bounds": [
+        112.0,
+        0.0,
+        108.0,
+        318.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "RoutingMatrix/OscB",
+      "bounds": [
+        222.0,
+        0.0,
+        108.0,
+        318.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "RoutingMatrix/OscC",
+      "bounds": [
+        332.0,
+        0.0,
+        108.0,
+        318.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "RoutingMatrix/OscN",
+      "bounds": [
+        442.0,
+        0.0,
+        108.0,
+        318.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "RoutingMatrix/Filter1",
+      "bounds": [
+        552.0,
+        0.0,
+        108.0,
+        318.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "RoutingMatrix/Mix",
+      "bounds": [
+        8.0,
+        228.0,
+        40.0,
+        42.0
+      ],
+      "tag": "VoiceFilter::kParamWet"
+    },
+    {
+      "name": "RoutingMatrix/Filter2",
+      "bounds": [
+        662.0,
+        0.0,
+        108.0,
+        318.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "RoutingMatrix/Main",
+      "bounds": [
+        991.0,
+        0.0,
+        108.0,
+        318.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "RoutingMatrix/Direct",
+      "bounds": [
+        1102.0,
+        0.0,
+        86.0,
+        318.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "GlobalPage/GobalPage",
+      "bounds": [
+        0.0,
+        0.0,
+        1190.0,
+        318.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "GlobalPage/VoicePanelController",
+      "bounds": [
+        425.0,
+        1.0,
+        393.0,
+        317.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "GlobalPage/VoiceSave",
+      "bounds": [
+        43.0,
+        31.0,
+        24.0,
+        23.0
+      ],
+      "tag": "UI::VoicePanel::kUIParamSaveStyleButton"
+    },
+    {
+      "name": "GlobalPage/HoverVoiceSave",
+      "bounds": [
+        42.0,
+        31.0,
+        25.0,
+        23.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "GlobalPage/VoiceMenu",
+      "bounds": [
+        66.0,
+        31.0,
+        118.0,
+        23.0
+      ],
+      "tag": "UI::VoicePanel::kUIParamStyleMenu"
+    },
+    {
+      "name": "GlobalPage/HoverVoiceMenu",
+      "bounds": [
+        66.0,
+        31.0,
+        119.0,
+        23.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "GlobalPage/S",
+      "bounds": [
+        238.0,
+        31.0,
+        23.0,
+        23.0
+      ],
+      "tag": "VoicePanel::OSCSEnabled"
+    },
+    {
+      "name": "GlobalPage/HoverS",
+      "bounds": [
+        237.0,
+        31.0,
+        25.0,
+        23.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "GlobalPage/A",
+      "bounds": [
+        263.0,
+        31.0,
+        23.0,
+        23.0
+      ],
+      "tag": "VoicePanel::OSCAEnabled"
+    },
+    {
+      "name": "GlobalPage/HoverA",
+      "bounds": [
+        262.0,
+        31.0,
+        25.0,
+        23.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "GlobalPage/B",
+      "bounds": [
+        288.0,
+        31.0,
+        23.0,
+        23.0
+      ],
+      "tag": "VoicePanel::OSCBEnabled"
+    },
+    {
+      "name": "GlobalPage/HoverB",
+      "bounds": [
+        287.0,
+        31.0,
+        25.0,
+        23.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "GlobalPage/C",
+      "bounds": [
+        313.0,
+        31.0,
+        23.0,
+        23.0
+      ],
+      "tag": "VoicePanel::OSCCEnabled"
+    },
+    {
+      "name": "GlobalPage/HoverC",
+      "bounds": [
+        312.0,
+        31.0,
+        25.0,
+        23.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "GlobalPage/N",
+      "bounds": [
+        338.0,
+        31.0,
+        23.0,
+        23.0
+      ],
+      "tag": "VoicePanel::OSCNEnabled"
+    },
+    {
+      "name": "GlobalPage/HoverN",
+      "bounds": [
+        337.0,
+        31.0,
+        25.0,
+        23.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "GlobalPage/TooltipOscSelect",
+      "bounds": [
+        203.0,
+        31.0,
+        160.0,
+        23.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "GlobalPage/RandPan",
+      "bounds": [
+        43.0,
+        93.0,
+        61.0,
+        24.0
+      ],
+      "tag": "VoicePanel::OscPanRand"
+    },
+    {
+      "name": "GlobalPage/HoverRndPan",
+      "bounds": [
+        42.0,
+        93.0,
+        63.0,
+        24.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "GlobalPage/RandDetune",
+      "bounds": [
+        43.0,
+        119.0,
+        61.0,
+        24.0
+      ],
+      "tag": "VoicePanel::OscDetuneRnd"
+    },
+    {
+      "name": "GlobalPage/HoverRndDetune",
+      "bounds": [
+        42.0,
+        119.0,
+        63.0,
+        24.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "GlobalPage/RandCutoff",
+      "bounds": [
+        43.0,
+        145.0,
+        61.0,
+        24.0
+      ],
+      "tag": "VoicePanel::CutoffRand"
+    },
+    {
+      "name": "GlobalPage/HoverRndCutoff",
+      "bounds": [
+        42.0,
+        145.0,
+        63.0,
+        24.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "GlobalPage/RandEnv",
+      "bounds": [
+        43.0,
+        171.0,
+        61.0,
+        24.0
+      ],
+      "tag": "VoicePanel::EnvRand"
+    },
+    {
+      "name": "GlobalPage/HoverRndEnv",
+      "bounds": [
+        42.0,
+        171.0,
+        63.0,
+        24.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "GlobalPage/HoverStep1",
+      "bounds": [
+        203.0,
+        66.0,
+        20.0,
+        24.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "GlobalPage/HoverStep2",
+      "bounds": [
+        223.0,
+        66.0,
+        20.0,
+        24.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "GlobalPage/HoverStep3",
+      "bounds": [
+        243.0,
+        66.0,
+        20.0,
+        24.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "GlobalPage/HoverStep4",
+      "bounds": [
+        263.0,
+        66.0,
+        20.0,
+        24.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "GlobalPage/HoverStep5",
+      "bounds": [
+        283.0,
+        66.0,
+        20.0,
+        24.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "GlobalPage/HoverStep6",
+      "bounds": [
+        303.0,
+        66.0,
+        20.0,
+        24.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "GlobalPage/HoverStep7",
+      "bounds": [
+        323.0,
+        66.0,
+        20.0,
+        24.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "GlobalPage/HoverStep8",
+      "bounds": [
+        343.0,
+        66.0,
+        20.0,
+        24.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "GlobalPage/ScaleEnv",
+      "bounds": [
+        97.0,
+        266.0,
+        93.0,
+        24.0
+      ],
+      "tag": "VoicePanel::EnvelopeScaling"
+    },
+    {
+      "name": "GlobalPage/HoverScaleEnv",
+      "bounds": [
+        97.0,
+        266.0,
+        94.0,
+        23.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "GlobalPage/ScaleLFO",
+      "bounds": [
+        203.0,
+        266.0,
+        94.0,
+        24.0
+      ],
+      "tag": "VoicePanel::LFOScaling"
+    },
+    {
+      "name": "GlobalPage/HoverScaleLFO",
+      "bounds": [
+        203.0,
+        266.0,
+        94.0,
+        23.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "GlobalPage/ScaleLFOMode",
+      "bounds": [
+        296.0,
+        265.0,
+        68.0,
+        25.0
+      ],
+      "tag": "VoicePanel::SnapLFOScaling"
+    },
+    {
+      "name": "GlobalPage/HoverScaleLFOMode",
+      "bounds": [
+        296.0,
+        266.0,
+        69.0,
+        23.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "GlobalPage/TooltipSeqPan",
+      "bounds": [
+        130.0,
+        93.0,
+        72.0,
+        24.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "GlobalPage/TooltipSeqDetune",
+      "bounds": [
+        130.0,
+        119.0,
+        72.0,
+        24.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "GlobalPage/TooltipSeqCutoff",
+      "bounds": [
+        130.0,
+        145.0,
+        72.0,
+        24.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "GlobalPage/TooltipSeqEnvs",
+      "bounds": [
+        130.0,
+        171.0,
+        72.0,
+        24.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "GlobalPage/TooltipSeqMod1",
+      "bounds": [
+        130.0,
+        197.0,
+        72.0,
+        24.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "GlobalPage/TooltipSeqMod2",
+      "bounds": [
+        130.0,
+        223.0,
+        72.0,
+        24.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "GlobalPage/SettingsContainer",
+      "bounds": [
+        818.0,
+        0.0,
+        371.0,
+        318.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "GlobalPage/QualityLock",
+      "bounds": [
+        42.0,
+        32.0,
+        23.0,
+        23.0
+      ],
+      "tag": "UI::GlobalPage::kUIParamLockOversampling"
+    },
+    {
+      "name": "GlobalPage/HoverQualityLock",
+      "bounds": [
+        42.0,
+        32.0,
+        25.0,
+        23.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "GlobalPage/Quality",
+      "bounds": [
+        67.0,
+        32.0,
+        93.0,
+        23.0
+      ],
+      "tag": "Global::Oversampling"
+    },
+    {
+      "name": "GlobalPage/HoverQuality",
+      "bounds": [
+        66.0,
+        32.0,
+        94.0,
+        23.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "GlobalPage/S1 Compatibility",
+      "bounds": [
+        37.0,
+        67.0,
+        126.0,
+        21.0
+      ],
+      "tag": "Global::Serum1Compatibility"
+    },
+    {
+      "name": "GlobalPage/TuningLock",
+      "bounds": [
+        42.0,
+        142.0,
+        23.0,
+        23.0
+      ],
+      "tag": "UI::GlobalPage::kUIParamLockTuning"
+    },
+    {
+      "name": "GlobalPage/HoverTuningLock",
+      "bounds": [
+        42.0,
+        142.0,
+        25.0,
+        23.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "GlobalPage/TuningHz",
+      "bounds": [
+        67.0,
+        142.0,
+        83.0,
+        23.0
+      ],
+      "tag": "Global::GlobalTuning"
+    },
+    {
+      "name": "GlobalPage/HoverTuningHz",
+      "bounds": [
+        66.0,
+        142.0,
+        84.0,
+        23.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "GlobalPage/TuningFileParam",
+      "bounds": [
+        217.0,
+        142.0,
+        110.0,
+        23.0
+      ],
+      "tag": "UI::GlobalPage::kUIParamTuningFileName"
+    },
+    {
+      "name": "GlobalPage/TuningMenu",
+      "bounds": [
+        217.0,
+        142.0,
+        110.0,
+        23.0
+      ],
+      "tag": "UI::GlobalPage::kUIParamTuningMenu"
+    },
+    {
+      "name": "GlobalPage/HoverTuningMenu",
+      "bounds": [
+        219.0,
+        142.0,
+        109.0,
+        23.0
+      ],
+      "tag": ""
+    },
+    {
+      "name": "GlobalPage/BuildText",
+      "bounds": [
+        206.0,
+        226.0,
+        134.0,
+        21.0
+      ],
+      "tag": "UI::GlobalPage::kUIParamBuildString"
+    },
+    {
+      "name": "GlobalPage/DateText",
+      "bounds": [
+        206.0,
+        246.0,
+        134.0,
+        21.0
+      ],
+      "tag": "UI::GlobalPage::kUIParamDateString"
+    },
+    {
+      "name": "GlobalPage/SmoothingDisable",
+      "bounds": [
+        204.0,
+        67.0,
+        115.0,
+        21.0
+      ],
+      "tag": "Global::SmoothingDisable"
+    }
+  ]
+}

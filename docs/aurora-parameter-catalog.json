@@ -1,0 +1,6373 @@
+[
+  {
+    "auroraId": "master",
+    "name": "Master",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.6000000238418579,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "noise",
+    "name": "Noise",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "sub",
+    "name": "Sub",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.1500000059604645,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc0_mode",
+    "name": "Osc 1 engine",
+    "minimum": 0.0,
+    "maximum": 4.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "osc0_level",
+    "name": "Osc 1 level",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.699999988079071,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc0_tune",
+    "name": "Osc 1 semitones",
+    "minimum": -24.0,
+    "maximum": 24.0,
+    "default": 0.0,
+    "unit": "semitones"
+  },
+  {
+    "auroraId": "osc0_position",
+    "name": "Osc 1 table / grain position",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc0_pan",
+    "name": "Osc 1 pan",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc0_grain",
+    "name": "Osc 1 grain length ms",
+    "minimum": 10.0,
+    "maximum": 250.0,
+    "default": 80.0,
+    "unit": "ms"
+  },
+  {
+    "auroraId": "osc0_loop",
+    "name": "Osc 1 sample loop",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 1.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "osc0_unison",
+    "name": "Osc 1 unison voices",
+    "minimum": 1.0,
+    "maximum": 8.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc0_detune",
+    "name": "Osc 1 detune cents",
+    "minimum": 0.0,
+    "maximum": 50.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc0_warp",
+    "name": "Osc 1 warp",
+    "minimum": 0.0,
+    "maximum": 3.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "osc0_warp_amount",
+    "name": "Osc 1 warp amount",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.5,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc0_phase",
+    "name": "Osc 1 phase",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc0_random",
+    "name": "Osc 1 random phase",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc1_mode",
+    "name": "Osc 2 engine",
+    "minimum": 0.0,
+    "maximum": 4.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "osc1_level",
+    "name": "Osc 2 level",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc1_tune",
+    "name": "Osc 2 semitones",
+    "minimum": -24.0,
+    "maximum": 24.0,
+    "default": 0.0,
+    "unit": "semitones"
+  },
+  {
+    "auroraId": "osc1_position",
+    "name": "Osc 2 table / grain position",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc1_pan",
+    "name": "Osc 2 pan",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc1_grain",
+    "name": "Osc 2 grain length ms",
+    "minimum": 10.0,
+    "maximum": 250.0,
+    "default": 80.0,
+    "unit": "ms"
+  },
+  {
+    "auroraId": "osc1_loop",
+    "name": "Osc 2 sample loop",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 1.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "osc1_unison",
+    "name": "Osc 2 unison voices",
+    "minimum": 1.0,
+    "maximum": 8.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc1_detune",
+    "name": "Osc 2 detune cents",
+    "minimum": 0.0,
+    "maximum": 50.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc1_warp",
+    "name": "Osc 2 warp",
+    "minimum": 0.0,
+    "maximum": 3.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "osc1_warp_amount",
+    "name": "Osc 2 warp amount",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.5,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc1_phase",
+    "name": "Osc 2 phase",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc1_random",
+    "name": "Osc 2 random phase",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc2_mode",
+    "name": "Osc 3 engine",
+    "minimum": 0.0,
+    "maximum": 4.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "osc2_level",
+    "name": "Osc 3 level",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc2_tune",
+    "name": "Osc 3 semitones",
+    "minimum": -24.0,
+    "maximum": 24.0,
+    "default": 0.0,
+    "unit": "semitones"
+  },
+  {
+    "auroraId": "osc2_position",
+    "name": "Osc 3 table / grain position",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc2_pan",
+    "name": "Osc 3 pan",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc2_grain",
+    "name": "Osc 3 grain length ms",
+    "minimum": 10.0,
+    "maximum": 250.0,
+    "default": 80.0,
+    "unit": "ms"
+  },
+  {
+    "auroraId": "osc2_loop",
+    "name": "Osc 3 sample loop",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 1.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "osc2_unison",
+    "name": "Osc 3 unison voices",
+    "minimum": 1.0,
+    "maximum": 8.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc2_detune",
+    "name": "Osc 3 detune cents",
+    "minimum": 0.0,
+    "maximum": 50.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc2_warp",
+    "name": "Osc 3 warp",
+    "minimum": 0.0,
+    "maximum": 3.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "osc2_warp_amount",
+    "name": "Osc 3 warp amount",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.5,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc2_phase",
+    "name": "Osc 3 phase",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc2_random",
+    "name": "Osc 3 random phase",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env0_a",
+    "name": "Env 1 attack",
+    "minimum": 0.001000000047497451,
+    "maximum": 5.0,
+    "default": 0.009999996982514858,
+    "unit": "s"
+  },
+  {
+    "auroraId": "env0_d",
+    "name": "Env 1 decay",
+    "minimum": 0.001000000047497451,
+    "maximum": 5.0,
+    "default": 0.2000000029802322,
+    "unit": "s"
+  },
+  {
+    "auroraId": "env0_s",
+    "name": "Env 1 sustain",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.800000011920929,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env0_r",
+    "name": "Env 1 release",
+    "minimum": 0.004999999888241291,
+    "maximum": 10.0,
+    "default": 0.300000011920929,
+    "unit": "s"
+  },
+  {
+    "auroraId": "env0_mode",
+    "name": "Env 1 editor mode",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "env0_count",
+    "name": "Env 1 points",
+    "minimum": 2.0,
+    "maximum": 8.0,
+    "default": 8.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env0_tension",
+    "name": "Env 1 Bezier tension",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env0_duration",
+    "name": "Env 1 curve duration",
+    "minimum": 0.02999999932944775,
+    "maximum": 12.0,
+    "default": 1.00000011920929,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env0_loop",
+    "name": "Env 1 curve loop",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "env0_x0",
+    "name": "Env 1 point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env0_y0",
+    "name": "Env 1 point Y",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env0_x1",
+    "name": "Env 1 point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.1428571492433548,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env0_y1",
+    "name": "Env 1 point Y",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env0_x2",
+    "name": "Env 1 point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.2857142984867096,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env0_y2",
+    "name": "Env 1 point Y",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.800000011920929,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env0_x3",
+    "name": "Env 1 point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.4285714328289032,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env0_y3",
+    "name": "Env 1 point Y",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.6499999761581421,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env0_x4",
+    "name": "Env 1 point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.5714285969734192,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env0_y4",
+    "name": "Env 1 point Y",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.5,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env0_x5",
+    "name": "Env 1 point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.7142857313156128,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env0_y5",
+    "name": "Env 1 point Y",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.300000011920929,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env0_x6",
+    "name": "Env 1 point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.8571428656578064,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env0_y6",
+    "name": "Env 1 point Y",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.1500000059604645,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env0_x7",
+    "name": "Env 1 point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env0_y7",
+    "name": "Env 1 point Y",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env1_a",
+    "name": "Env 2 attack",
+    "minimum": 0.001000000047497451,
+    "maximum": 5.0,
+    "default": 0.009999996982514858,
+    "unit": "s"
+  },
+  {
+    "auroraId": "env1_d",
+    "name": "Env 2 decay",
+    "minimum": 0.001000000047497451,
+    "maximum": 5.0,
+    "default": 0.2000000029802322,
+    "unit": "s"
+  },
+  {
+    "auroraId": "env1_s",
+    "name": "Env 2 sustain",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.800000011920929,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env1_r",
+    "name": "Env 2 release",
+    "minimum": 0.004999999888241291,
+    "maximum": 10.0,
+    "default": 0.300000011920929,
+    "unit": "s"
+  },
+  {
+    "auroraId": "env1_mode",
+    "name": "Env 2 editor mode",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "env1_count",
+    "name": "Env 2 points",
+    "minimum": 2.0,
+    "maximum": 8.0,
+    "default": 8.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env1_tension",
+    "name": "Env 2 Bezier tension",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env1_duration",
+    "name": "Env 2 curve duration",
+    "minimum": 0.02999999932944775,
+    "maximum": 12.0,
+    "default": 1.00000011920929,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env1_loop",
+    "name": "Env 2 curve loop",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "env1_x0",
+    "name": "Env 2 point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env1_y0",
+    "name": "Env 2 point Y",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env1_x1",
+    "name": "Env 2 point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.1428571492433548,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env1_y1",
+    "name": "Env 2 point Y",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env1_x2",
+    "name": "Env 2 point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.2857142984867096,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env1_y2",
+    "name": "Env 2 point Y",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.800000011920929,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env1_x3",
+    "name": "Env 2 point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.4285714328289032,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env1_y3",
+    "name": "Env 2 point Y",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.6499999761581421,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env1_x4",
+    "name": "Env 2 point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.5714285969734192,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env1_y4",
+    "name": "Env 2 point Y",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.5,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env1_x5",
+    "name": "Env 2 point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.7142857313156128,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env1_y5",
+    "name": "Env 2 point Y",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.300000011920929,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env1_x6",
+    "name": "Env 2 point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.8571428656578064,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env1_y6",
+    "name": "Env 2 point Y",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.1500000059604645,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env1_x7",
+    "name": "Env 2 point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env1_y7",
+    "name": "Env 2 point Y",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env2_a",
+    "name": "Env 3 attack",
+    "minimum": 0.001000000047497451,
+    "maximum": 5.0,
+    "default": 0.009999996982514858,
+    "unit": "s"
+  },
+  {
+    "auroraId": "env2_d",
+    "name": "Env 3 decay",
+    "minimum": 0.001000000047497451,
+    "maximum": 5.0,
+    "default": 0.2000000029802322,
+    "unit": "s"
+  },
+  {
+    "auroraId": "env2_s",
+    "name": "Env 3 sustain",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.800000011920929,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env2_r",
+    "name": "Env 3 release",
+    "minimum": 0.004999999888241291,
+    "maximum": 10.0,
+    "default": 0.300000011920929,
+    "unit": "s"
+  },
+  {
+    "auroraId": "env2_mode",
+    "name": "Env 3 editor mode",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "env2_count",
+    "name": "Env 3 points",
+    "minimum": 2.0,
+    "maximum": 8.0,
+    "default": 8.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env2_tension",
+    "name": "Env 3 Bezier tension",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env2_duration",
+    "name": "Env 3 curve duration",
+    "minimum": 0.02999999932944775,
+    "maximum": 12.0,
+    "default": 1.00000011920929,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env2_loop",
+    "name": "Env 3 curve loop",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "env2_x0",
+    "name": "Env 3 point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env2_y0",
+    "name": "Env 3 point Y",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env2_x1",
+    "name": "Env 3 point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.1428571492433548,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env2_y1",
+    "name": "Env 3 point Y",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env2_x2",
+    "name": "Env 3 point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.2857142984867096,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env2_y2",
+    "name": "Env 3 point Y",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.800000011920929,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env2_x3",
+    "name": "Env 3 point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.4285714328289032,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env2_y3",
+    "name": "Env 3 point Y",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.6499999761581421,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env2_x4",
+    "name": "Env 3 point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.5714285969734192,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env2_y4",
+    "name": "Env 3 point Y",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.5,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env2_x5",
+    "name": "Env 3 point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.7142857313156128,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env2_y5",
+    "name": "Env 3 point Y",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.300000011920929,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env2_x6",
+    "name": "Env 3 point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.8571428656578064,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env2_y6",
+    "name": "Env 3 point Y",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.1500000059604645,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env2_x7",
+    "name": "Env 3 point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env2_y7",
+    "name": "Env 3 point Y",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env3_a",
+    "name": "Env 4 attack",
+    "minimum": 0.001000000047497451,
+    "maximum": 5.0,
+    "default": 0.009999996982514858,
+    "unit": "s"
+  },
+  {
+    "auroraId": "env3_d",
+    "name": "Env 4 decay",
+    "minimum": 0.001000000047497451,
+    "maximum": 5.0,
+    "default": 0.2000000029802322,
+    "unit": "s"
+  },
+  {
+    "auroraId": "env3_s",
+    "name": "Env 4 sustain",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.800000011920929,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env3_r",
+    "name": "Env 4 release",
+    "minimum": 0.004999999888241291,
+    "maximum": 10.0,
+    "default": 0.300000011920929,
+    "unit": "s"
+  },
+  {
+    "auroraId": "env3_mode",
+    "name": "Env 4 editor mode",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "env3_count",
+    "name": "Env 4 points",
+    "minimum": 2.0,
+    "maximum": 8.0,
+    "default": 8.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env3_tension",
+    "name": "Env 4 Bezier tension",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env3_duration",
+    "name": "Env 4 curve duration",
+    "minimum": 0.02999999932944775,
+    "maximum": 12.0,
+    "default": 1.00000011920929,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env3_loop",
+    "name": "Env 4 curve loop",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "env3_x0",
+    "name": "Env 4 point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env3_y0",
+    "name": "Env 4 point Y",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env3_x1",
+    "name": "Env 4 point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.1428571492433548,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env3_y1",
+    "name": "Env 4 point Y",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env3_x2",
+    "name": "Env 4 point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.2857142984867096,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env3_y2",
+    "name": "Env 4 point Y",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.800000011920929,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env3_x3",
+    "name": "Env 4 point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.4285714328289032,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env3_y3",
+    "name": "Env 4 point Y",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.6499999761581421,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env3_x4",
+    "name": "Env 4 point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.5714285969734192,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env3_y4",
+    "name": "Env 4 point Y",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.5,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env3_x5",
+    "name": "Env 4 point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.7142857313156128,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env3_y5",
+    "name": "Env 4 point Y",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.300000011920929,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env3_x6",
+    "name": "Env 4 point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.8571428656578064,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env3_y6",
+    "name": "Env 4 point Y",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.1500000059604645,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env3_x7",
+    "name": "Env 4 point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "env3_y7",
+    "name": "Env 4 point Y",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo0_rate",
+    "name": "LFO 1 Hz",
+    "minimum": 0.009999999776482582,
+    "maximum": 30.0,
+    "default": 0.9999998807907104,
+    "unit": "Hz"
+  },
+  {
+    "auroraId": "lfo0_shape",
+    "name": "LFO shape",
+    "minimum": 0.0,
+    "maximum": 4.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "lfo0_sync",
+    "name": "LFO tempo sync",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "lfo0_division",
+    "name": "LFO division",
+    "minimum": 0.0,
+    "maximum": 6.0,
+    "default": 4.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "lfo0_phase",
+    "name": "LFO phase",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo0_point0",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.5,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo0_point1",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.8909157514572144,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo0_point2",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.9874639511108398,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo0_point3",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.7169418931007385,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo0_point4",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.2830581068992615,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo0_point5",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.01253598928451538,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo0_point6",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.1090841889381409,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo0_point7",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.5000000596046448,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo0_x0",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo0_x1",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.1428571492433548,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo0_x2",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.2857142984867096,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo0_x3",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.4285714328289032,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo0_x4",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.5714285969734192,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo0_x5",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.7142857313156128,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo0_x6",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.8571428656578064,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo0_x7",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo0_count",
+    "name": "LFO points",
+    "minimum": 2.0,
+    "maximum": 8.0,
+    "default": 8.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo0_tension",
+    "name": "LFO Bezier tension",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo0_delay",
+    "name": "LFO delay seconds",
+    "minimum": 0.0,
+    "maximum": 5.0,
+    "default": 0.0,
+    "unit": "s"
+  },
+  {
+    "auroraId": "lfo0_rise",
+    "name": "LFO rise seconds",
+    "minimum": 0.0,
+    "maximum": 5.0,
+    "default": 0.0,
+    "unit": "s"
+  },
+  {
+    "auroraId": "lfo1_rate",
+    "name": "LFO 2 Hz",
+    "minimum": 0.009999999776482582,
+    "maximum": 30.0,
+    "default": 0.9999998807907104,
+    "unit": "Hz"
+  },
+  {
+    "auroraId": "lfo1_shape",
+    "name": "LFO shape",
+    "minimum": 0.0,
+    "maximum": 4.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "lfo1_sync",
+    "name": "LFO tempo sync",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "lfo1_division",
+    "name": "LFO division",
+    "minimum": 0.0,
+    "maximum": 6.0,
+    "default": 4.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "lfo1_phase",
+    "name": "LFO phase",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo1_point0",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.5,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo1_point1",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.8909157514572144,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo1_point2",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.9874639511108398,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo1_point3",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.7169418931007385,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo1_point4",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.2830581068992615,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo1_point5",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.01253598928451538,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo1_point6",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.1090841889381409,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo1_point7",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.5000000596046448,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo1_x0",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo1_x1",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.1428571492433548,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo1_x2",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.2857142984867096,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo1_x3",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.4285714328289032,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo1_x4",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.5714285969734192,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo1_x5",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.7142857313156128,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo1_x6",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.8571428656578064,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo1_x7",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo1_count",
+    "name": "LFO points",
+    "minimum": 2.0,
+    "maximum": 8.0,
+    "default": 8.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo1_tension",
+    "name": "LFO Bezier tension",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo1_delay",
+    "name": "LFO delay seconds",
+    "minimum": 0.0,
+    "maximum": 5.0,
+    "default": 0.0,
+    "unit": "s"
+  },
+  {
+    "auroraId": "lfo1_rise",
+    "name": "LFO rise seconds",
+    "minimum": 0.0,
+    "maximum": 5.0,
+    "default": 0.0,
+    "unit": "s"
+  },
+  {
+    "auroraId": "lfo2_rate",
+    "name": "LFO 3 Hz",
+    "minimum": 0.009999999776482582,
+    "maximum": 30.0,
+    "default": 0.9999998807907104,
+    "unit": "Hz"
+  },
+  {
+    "auroraId": "lfo2_shape",
+    "name": "LFO shape",
+    "minimum": 0.0,
+    "maximum": 4.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "lfo2_sync",
+    "name": "LFO tempo sync",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "lfo2_division",
+    "name": "LFO division",
+    "minimum": 0.0,
+    "maximum": 6.0,
+    "default": 4.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "lfo2_phase",
+    "name": "LFO phase",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo2_point0",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.5,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo2_point1",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.8909157514572144,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo2_point2",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.9874639511108398,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo2_point3",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.7169418931007385,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo2_point4",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.2830581068992615,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo2_point5",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.01253598928451538,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo2_point6",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.1090841889381409,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo2_point7",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.5000000596046448,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo2_x0",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo2_x1",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.1428571492433548,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo2_x2",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.2857142984867096,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo2_x3",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.4285714328289032,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo2_x4",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.5714285969734192,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo2_x5",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.7142857313156128,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo2_x6",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.8571428656578064,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo2_x7",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo2_count",
+    "name": "LFO points",
+    "minimum": 2.0,
+    "maximum": 8.0,
+    "default": 8.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo2_tension",
+    "name": "LFO Bezier tension",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo2_delay",
+    "name": "LFO delay seconds",
+    "minimum": 0.0,
+    "maximum": 5.0,
+    "default": 0.0,
+    "unit": "s"
+  },
+  {
+    "auroraId": "lfo2_rise",
+    "name": "LFO rise seconds",
+    "minimum": 0.0,
+    "maximum": 5.0,
+    "default": 0.0,
+    "unit": "s"
+  },
+  {
+    "auroraId": "lfo3_rate",
+    "name": "LFO 4 Hz",
+    "minimum": 0.009999999776482582,
+    "maximum": 30.0,
+    "default": 0.9999998807907104,
+    "unit": "Hz"
+  },
+  {
+    "auroraId": "lfo3_shape",
+    "name": "LFO shape",
+    "minimum": 0.0,
+    "maximum": 4.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "lfo3_sync",
+    "name": "LFO tempo sync",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "lfo3_division",
+    "name": "LFO division",
+    "minimum": 0.0,
+    "maximum": 6.0,
+    "default": 4.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "lfo3_phase",
+    "name": "LFO phase",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo3_point0",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.5,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo3_point1",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.8909157514572144,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo3_point2",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.9874639511108398,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo3_point3",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.7169418931007385,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo3_point4",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.2830581068992615,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo3_point5",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.01253598928451538,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo3_point6",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.1090841889381409,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo3_point7",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.5000000596046448,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo3_x0",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo3_x1",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.1428571492433548,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo3_x2",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.2857142984867096,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo3_x3",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.4285714328289032,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo3_x4",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.5714285969734192,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo3_x5",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.7142857313156128,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo3_x6",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.8571428656578064,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo3_x7",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo3_count",
+    "name": "LFO points",
+    "minimum": 2.0,
+    "maximum": 8.0,
+    "default": 8.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo3_tension",
+    "name": "LFO Bezier tension",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo3_delay",
+    "name": "LFO delay seconds",
+    "minimum": 0.0,
+    "maximum": 5.0,
+    "default": 0.0,
+    "unit": "s"
+  },
+  {
+    "auroraId": "lfo3_rise",
+    "name": "LFO rise seconds",
+    "minimum": 0.0,
+    "maximum": 5.0,
+    "default": 0.0,
+    "unit": "s"
+  },
+  {
+    "auroraId": "lfo4_rate",
+    "name": "LFO 5 Hz",
+    "minimum": 0.009999999776482582,
+    "maximum": 30.0,
+    "default": 0.9999998807907104,
+    "unit": "Hz"
+  },
+  {
+    "auroraId": "lfo4_shape",
+    "name": "LFO shape",
+    "minimum": 0.0,
+    "maximum": 4.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "lfo4_sync",
+    "name": "LFO tempo sync",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "lfo4_division",
+    "name": "LFO division",
+    "minimum": 0.0,
+    "maximum": 6.0,
+    "default": 4.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "lfo4_phase",
+    "name": "LFO phase",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo4_point0",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.5,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo4_point1",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.8909157514572144,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo4_point2",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.9874639511108398,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo4_point3",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.7169418931007385,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo4_point4",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.2830581068992615,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo4_point5",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.01253598928451538,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo4_point6",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.1090841889381409,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo4_point7",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.5000000596046448,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo4_x0",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo4_x1",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.1428571492433548,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo4_x2",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.2857142984867096,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo4_x3",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.4285714328289032,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo4_x4",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.5714285969734192,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo4_x5",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.7142857313156128,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo4_x6",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.8571428656578064,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo4_x7",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo4_count",
+    "name": "LFO points",
+    "minimum": 2.0,
+    "maximum": 8.0,
+    "default": 8.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo4_tension",
+    "name": "LFO Bezier tension",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo4_delay",
+    "name": "LFO delay seconds",
+    "minimum": 0.0,
+    "maximum": 5.0,
+    "default": 0.0,
+    "unit": "s"
+  },
+  {
+    "auroraId": "lfo4_rise",
+    "name": "LFO rise seconds",
+    "minimum": 0.0,
+    "maximum": 5.0,
+    "default": 0.0,
+    "unit": "s"
+  },
+  {
+    "auroraId": "lfo5_rate",
+    "name": "LFO 6 Hz",
+    "minimum": 0.009999999776482582,
+    "maximum": 30.0,
+    "default": 0.9999998807907104,
+    "unit": "Hz"
+  },
+  {
+    "auroraId": "lfo5_shape",
+    "name": "LFO shape",
+    "minimum": 0.0,
+    "maximum": 4.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "lfo5_sync",
+    "name": "LFO tempo sync",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "lfo5_division",
+    "name": "LFO division",
+    "minimum": 0.0,
+    "maximum": 6.0,
+    "default": 4.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "lfo5_phase",
+    "name": "LFO phase",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo5_point0",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.5,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo5_point1",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.8909157514572144,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo5_point2",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.9874639511108398,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo5_point3",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.7169418931007385,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo5_point4",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.2830581068992615,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo5_point5",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.01253598928451538,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo5_point6",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.1090841889381409,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo5_point7",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.5000000596046448,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo5_x0",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo5_x1",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.1428571492433548,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo5_x2",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.2857142984867096,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo5_x3",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.4285714328289032,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo5_x4",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.5714285969734192,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo5_x5",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.7142857313156128,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo5_x6",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.8571428656578064,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo5_x7",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo5_count",
+    "name": "LFO points",
+    "minimum": 2.0,
+    "maximum": 8.0,
+    "default": 8.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo5_tension",
+    "name": "LFO Bezier tension",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo5_delay",
+    "name": "LFO delay seconds",
+    "minimum": 0.0,
+    "maximum": 5.0,
+    "default": 0.0,
+    "unit": "s"
+  },
+  {
+    "auroraId": "lfo5_rise",
+    "name": "LFO rise seconds",
+    "minimum": 0.0,
+    "maximum": 5.0,
+    "default": 0.0,
+    "unit": "s"
+  },
+  {
+    "auroraId": "lfo6_rate",
+    "name": "LFO 7 Hz",
+    "minimum": 0.009999999776482582,
+    "maximum": 30.0,
+    "default": 0.9999998807907104,
+    "unit": "Hz"
+  },
+  {
+    "auroraId": "lfo6_shape",
+    "name": "LFO shape",
+    "minimum": 0.0,
+    "maximum": 4.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "lfo6_sync",
+    "name": "LFO tempo sync",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "lfo6_division",
+    "name": "LFO division",
+    "minimum": 0.0,
+    "maximum": 6.0,
+    "default": 4.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "lfo6_phase",
+    "name": "LFO phase",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo6_point0",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.5,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo6_point1",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.8909157514572144,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo6_point2",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.9874639511108398,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo6_point3",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.7169418931007385,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo6_point4",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.2830581068992615,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo6_point5",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.01253598928451538,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo6_point6",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.1090841889381409,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo6_point7",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.5000000596046448,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo6_x0",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo6_x1",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.1428571492433548,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo6_x2",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.2857142984867096,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo6_x3",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.4285714328289032,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo6_x4",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.5714285969734192,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo6_x5",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.7142857313156128,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo6_x6",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.8571428656578064,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo6_x7",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo6_count",
+    "name": "LFO points",
+    "minimum": 2.0,
+    "maximum": 8.0,
+    "default": 8.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo6_tension",
+    "name": "LFO Bezier tension",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo6_delay",
+    "name": "LFO delay seconds",
+    "minimum": 0.0,
+    "maximum": 5.0,
+    "default": 0.0,
+    "unit": "s"
+  },
+  {
+    "auroraId": "lfo6_rise",
+    "name": "LFO rise seconds",
+    "minimum": 0.0,
+    "maximum": 5.0,
+    "default": 0.0,
+    "unit": "s"
+  },
+  {
+    "auroraId": "lfo7_rate",
+    "name": "LFO 8 Hz",
+    "minimum": 0.009999999776482582,
+    "maximum": 30.0,
+    "default": 0.9999998807907104,
+    "unit": "Hz"
+  },
+  {
+    "auroraId": "lfo7_shape",
+    "name": "LFO shape",
+    "minimum": 0.0,
+    "maximum": 4.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "lfo7_sync",
+    "name": "LFO tempo sync",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "lfo7_division",
+    "name": "LFO division",
+    "minimum": 0.0,
+    "maximum": 6.0,
+    "default": 4.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "lfo7_phase",
+    "name": "LFO phase",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo7_point0",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.5,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo7_point1",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.8909157514572144,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo7_point2",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.9874639511108398,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo7_point3",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.7169418931007385,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo7_point4",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.2830581068992615,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo7_point5",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.01253598928451538,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo7_point6",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.1090841889381409,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo7_point7",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.5000000596046448,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo7_x0",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo7_x1",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.1428571492433548,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo7_x2",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.2857142984867096,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo7_x3",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.4285714328289032,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo7_x4",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.5714285969734192,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo7_x5",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.7142857313156128,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo7_x6",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.8571428656578064,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo7_x7",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo7_count",
+    "name": "LFO points",
+    "minimum": 2.0,
+    "maximum": 8.0,
+    "default": 8.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo7_tension",
+    "name": "LFO Bezier tension",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo7_delay",
+    "name": "LFO delay seconds",
+    "minimum": 0.0,
+    "maximum": 5.0,
+    "default": 0.0,
+    "unit": "s"
+  },
+  {
+    "auroraId": "lfo7_rise",
+    "name": "LFO rise seconds",
+    "minimum": 0.0,
+    "maximum": 5.0,
+    "default": 0.0,
+    "unit": "s"
+  },
+  {
+    "auroraId": "lfo8_rate",
+    "name": "LFO 9 Hz",
+    "minimum": 0.009999999776482582,
+    "maximum": 30.0,
+    "default": 0.9999998807907104,
+    "unit": "Hz"
+  },
+  {
+    "auroraId": "lfo8_shape",
+    "name": "LFO shape",
+    "minimum": 0.0,
+    "maximum": 4.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "lfo8_sync",
+    "name": "LFO tempo sync",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "lfo8_division",
+    "name": "LFO division",
+    "minimum": 0.0,
+    "maximum": 6.0,
+    "default": 4.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "lfo8_phase",
+    "name": "LFO phase",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo8_point0",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.5,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo8_point1",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.8909157514572144,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo8_point2",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.9874639511108398,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo8_point3",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.7169418931007385,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo8_point4",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.2830581068992615,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo8_point5",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.01253598928451538,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo8_point6",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.1090841889381409,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo8_point7",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.5000000596046448,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo8_x0",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo8_x1",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.1428571492433548,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo8_x2",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.2857142984867096,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo8_x3",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.4285714328289032,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo8_x4",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.5714285969734192,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo8_x5",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.7142857313156128,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo8_x6",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.8571428656578064,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo8_x7",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo8_count",
+    "name": "LFO points",
+    "minimum": 2.0,
+    "maximum": 8.0,
+    "default": 8.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo8_tension",
+    "name": "LFO Bezier tension",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo8_delay",
+    "name": "LFO delay seconds",
+    "minimum": 0.0,
+    "maximum": 5.0,
+    "default": 0.0,
+    "unit": "s"
+  },
+  {
+    "auroraId": "lfo8_rise",
+    "name": "LFO rise seconds",
+    "minimum": 0.0,
+    "maximum": 5.0,
+    "default": 0.0,
+    "unit": "s"
+  },
+  {
+    "auroraId": "lfo9_rate",
+    "name": "LFO 10 Hz",
+    "minimum": 0.009999999776482582,
+    "maximum": 30.0,
+    "default": 0.9999998807907104,
+    "unit": "Hz"
+  },
+  {
+    "auroraId": "lfo9_shape",
+    "name": "LFO shape",
+    "minimum": 0.0,
+    "maximum": 4.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "lfo9_sync",
+    "name": "LFO tempo sync",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "lfo9_division",
+    "name": "LFO division",
+    "minimum": 0.0,
+    "maximum": 6.0,
+    "default": 4.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "lfo9_phase",
+    "name": "LFO phase",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo9_point0",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.5,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo9_point1",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.8909157514572144,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo9_point2",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.9874639511108398,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo9_point3",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.7169418931007385,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo9_point4",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.2830581068992615,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo9_point5",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.01253598928451538,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo9_point6",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.1090841889381409,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo9_point7",
+    "name": "LFO point",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.5000000596046448,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo9_x0",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo9_x1",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.1428571492433548,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo9_x2",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.2857142984867096,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo9_x3",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.4285714328289032,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo9_x4",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.5714285969734192,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo9_x5",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.7142857313156128,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo9_x6",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.8571428656578064,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo9_x7",
+    "name": "LFO point X",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo9_count",
+    "name": "LFO points",
+    "minimum": 2.0,
+    "maximum": 8.0,
+    "default": 8.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo9_tension",
+    "name": "LFO Bezier tension",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "lfo9_delay",
+    "name": "LFO delay seconds",
+    "minimum": 0.0,
+    "maximum": 5.0,
+    "default": 0.0,
+    "unit": "s"
+  },
+  {
+    "auroraId": "lfo9_rise",
+    "name": "LFO rise seconds",
+    "minimum": 0.0,
+    "maximum": 5.0,
+    "default": 0.0,
+    "unit": "s"
+  },
+  {
+    "auroraId": "macro0_value",
+    "name": "Macro 1",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "macro1_value",
+    "name": "Macro 2",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "macro2_value",
+    "name": "Macro 3",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "macro3_value",
+    "name": "Macro 4",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "macro4_value",
+    "name": "Macro 5",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "macro5_value",
+    "name": "Macro 6",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "macro6_value",
+    "name": "Macro 7",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "macro7_value",
+    "name": "Macro 8",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "filter0_cutoff",
+    "name": "Filter 1 Hz",
+    "minimum": 20.0,
+    "maximum": 20000.0,
+    "default": 16000.0,
+    "unit": "Hz"
+  },
+  {
+    "auroraId": "filter0_res",
+    "name": "Resonance",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.1000000014901161,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "filter0_type",
+    "name": "Filter type",
+    "minimum": 0.0,
+    "maximum": 2.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "filter1_cutoff",
+    "name": "Filter 2 Hz",
+    "minimum": 20.0,
+    "maximum": 20000.0,
+    "default": 16000.0,
+    "unit": "Hz"
+  },
+  {
+    "auroraId": "filter1_res",
+    "name": "Resonance",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.1000000014901161,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "filter1_type",
+    "name": "Filter type",
+    "minimum": 0.0,
+    "maximum": 2.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "route0_balance",
+    "name": "Route 1 filter balance",
+    "minimum": -100.0,
+    "maximum": 100.0,
+    "default": -100.0,
+    "unit": "percent",
+    "canonicalId": 109000000
+  },
+  {
+    "auroraId": "route0_bus1",
+    "name": "Route 1 FX bus 1",
+    "minimum": 0.0,
+    "maximum": 100.0,
+    "default": 0.0,
+    "unit": "percent",
+    "canonicalId": 109000001
+  },
+  {
+    "auroraId": "route0_bus2",
+    "name": "Route 1 FX bus 2",
+    "minimum": 0.0,
+    "maximum": 100.0,
+    "default": 0.0,
+    "unit": "percent",
+    "canonicalId": 109000002
+  },
+  {
+    "auroraId": "route0_dest",
+    "name": "Route 1 destination [Filter, Main, Direct, None]",
+    "minimum": 0.0,
+    "maximum": 3.0,
+    "default": 1.0,
+    "unit": "enum",
+    "canonicalId": 109000003
+  },
+  {
+    "auroraId": "route0_env",
+    "name": "Route 1 Via Env1",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 1.0,
+    "unit": "bool",
+    "canonicalId": 109000004
+  },
+  {
+    "auroraId": "route1_balance",
+    "name": "Route 2 filter balance",
+    "minimum": -100.0,
+    "maximum": 100.0,
+    "default": -100.0,
+    "unit": "percent",
+    "canonicalId": 109001000
+  },
+  {
+    "auroraId": "route1_bus1",
+    "name": "Route 2 FX bus 1",
+    "minimum": 0.0,
+    "maximum": 100.0,
+    "default": 0.0,
+    "unit": "percent",
+    "canonicalId": 109001001
+  },
+  {
+    "auroraId": "route1_bus2",
+    "name": "Route 2 FX bus 2",
+    "minimum": 0.0,
+    "maximum": 100.0,
+    "default": 0.0,
+    "unit": "percent",
+    "canonicalId": 109001002
+  },
+  {
+    "auroraId": "route1_dest",
+    "name": "Route 2 destination [Filter, Main, Direct, None]",
+    "minimum": 0.0,
+    "maximum": 3.0,
+    "default": 1.0,
+    "unit": "enum",
+    "canonicalId": 109001003
+  },
+  {
+    "auroraId": "route1_env",
+    "name": "Route 2 Via Env1",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 1.0,
+    "unit": "bool",
+    "canonicalId": 109001004
+  },
+  {
+    "auroraId": "route2_balance",
+    "name": "Route 3 filter balance",
+    "minimum": -100.0,
+    "maximum": 100.0,
+    "default": -100.0,
+    "unit": "percent",
+    "canonicalId": 109002000
+  },
+  {
+    "auroraId": "route2_bus1",
+    "name": "Route 3 FX bus 1",
+    "minimum": 0.0,
+    "maximum": 100.0,
+    "default": 0.0,
+    "unit": "percent",
+    "canonicalId": 109002001
+  },
+  {
+    "auroraId": "route2_bus2",
+    "name": "Route 3 FX bus 2",
+    "minimum": 0.0,
+    "maximum": 100.0,
+    "default": 0.0,
+    "unit": "percent",
+    "canonicalId": 109002002
+  },
+  {
+    "auroraId": "route2_dest",
+    "name": "Route 3 destination [Filter, Main, Direct, None]",
+    "minimum": 0.0,
+    "maximum": 3.0,
+    "default": 1.0,
+    "unit": "enum",
+    "canonicalId": 109002003
+  },
+  {
+    "auroraId": "route2_env",
+    "name": "Route 3 Via Env1",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 1.0,
+    "unit": "bool",
+    "canonicalId": 109002004
+  },
+  {
+    "auroraId": "route3_balance",
+    "name": "Route 4 filter balance",
+    "minimum": -100.0,
+    "maximum": 100.0,
+    "default": -100.0,
+    "unit": "percent",
+    "canonicalId": 109003000
+  },
+  {
+    "auroraId": "route3_bus1",
+    "name": "Route 4 FX bus 1",
+    "minimum": 0.0,
+    "maximum": 100.0,
+    "default": 0.0,
+    "unit": "percent",
+    "canonicalId": 109003001
+  },
+  {
+    "auroraId": "route3_bus2",
+    "name": "Route 4 FX bus 2",
+    "minimum": 0.0,
+    "maximum": 100.0,
+    "default": 0.0,
+    "unit": "percent",
+    "canonicalId": 109003002
+  },
+  {
+    "auroraId": "route3_dest",
+    "name": "Route 4 destination [Filter, Main, Direct, None]",
+    "minimum": 0.0,
+    "maximum": 3.0,
+    "default": 1.0,
+    "unit": "enum",
+    "canonicalId": 109003003
+  },
+  {
+    "auroraId": "route3_env",
+    "name": "Route 4 Via Env1",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 1.0,
+    "unit": "bool",
+    "canonicalId": 109003004
+  },
+  {
+    "auroraId": "route4_balance",
+    "name": "Route 5 filter balance",
+    "minimum": -100.0,
+    "maximum": 100.0,
+    "default": -100.0,
+    "unit": "percent",
+    "canonicalId": 109004000
+  },
+  {
+    "auroraId": "route4_bus1",
+    "name": "Route 5 FX bus 1",
+    "minimum": 0.0,
+    "maximum": 100.0,
+    "default": 0.0,
+    "unit": "percent",
+    "canonicalId": 109004001
+  },
+  {
+    "auroraId": "route4_bus2",
+    "name": "Route 5 FX bus 2",
+    "minimum": 0.0,
+    "maximum": 100.0,
+    "default": 0.0,
+    "unit": "percent",
+    "canonicalId": 109004002
+  },
+  {
+    "auroraId": "route4_dest",
+    "name": "Route 5 destination [Filter, Main, Direct, None]",
+    "minimum": 0.0,
+    "maximum": 3.0,
+    "default": 1.0,
+    "unit": "enum",
+    "canonicalId": 109004003
+  },
+  {
+    "auroraId": "route4_env",
+    "name": "Route 5 Via Env1",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 1.0,
+    "unit": "bool",
+    "canonicalId": 109004004
+  },
+  {
+    "auroraId": "route5_balance",
+    "name": "Route 6 filter balance",
+    "minimum": -100.0,
+    "maximum": 100.0,
+    "default": -100.0,
+    "unit": "percent",
+    "canonicalId": 109005000
+  },
+  {
+    "auroraId": "route5_bus1",
+    "name": "Route 6 FX bus 1",
+    "minimum": 0.0,
+    "maximum": 100.0,
+    "default": 0.0,
+    "unit": "percent",
+    "canonicalId": 109005001
+  },
+  {
+    "auroraId": "route5_bus2",
+    "name": "Route 6 FX bus 2",
+    "minimum": 0.0,
+    "maximum": 100.0,
+    "default": 0.0,
+    "unit": "percent",
+    "canonicalId": 109005002
+  },
+  {
+    "auroraId": "route5_dest",
+    "name": "Route 6 destination [Filter, Main, Direct, None]",
+    "minimum": 0.0,
+    "maximum": 3.0,
+    "default": 1.0,
+    "unit": "enum",
+    "canonicalId": 109005003
+  },
+  {
+    "auroraId": "route5_env",
+    "name": "Route 6 Via Env1",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 1.0,
+    "unit": "bool",
+    "canonicalId": 109005004
+  },
+  {
+    "auroraId": "route6_balance",
+    "name": "Route 7 filter balance",
+    "minimum": -100.0,
+    "maximum": 100.0,
+    "default": -100.0,
+    "unit": "percent",
+    "canonicalId": 109006000
+  },
+  {
+    "auroraId": "route6_bus1",
+    "name": "Route 7 FX bus 1",
+    "minimum": 0.0,
+    "maximum": 100.0,
+    "default": 0.0,
+    "unit": "percent",
+    "canonicalId": 109006001
+  },
+  {
+    "auroraId": "route6_bus2",
+    "name": "Route 7 FX bus 2",
+    "minimum": 0.0,
+    "maximum": 100.0,
+    "default": 0.0,
+    "unit": "percent",
+    "canonicalId": 109006002
+  },
+  {
+    "auroraId": "route6_dest",
+    "name": "Route 7 destination [Filter, Main, Direct, None]",
+    "minimum": 0.0,
+    "maximum": 3.0,
+    "default": 1.0,
+    "unit": "enum",
+    "canonicalId": 109006003
+  },
+  {
+    "auroraId": "route6_env",
+    "name": "Route 7 Via Env1",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 1.0,
+    "unit": "bool",
+    "canonicalId": 109006004
+  },
+  {
+    "auroraId": "fx0s0_type",
+    "name": "Rack 1 slot 1 effect",
+    "minimum": 0.0,
+    "maximum": 17.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "fx0s0_amount",
+    "name": "Rack 1 slot 1 amount",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.4000000059604645,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "fx0s0_mix",
+    "name": "Rack 1 slot 1 mix",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.3499999940395355,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "fx0s0_time",
+    "name": "Rack 1 slot 1 time / cutoff",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.2000000029802322,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "fx0s1_type",
+    "name": "Rack 1 slot 2 effect",
+    "minimum": 0.0,
+    "maximum": 17.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "fx0s1_amount",
+    "name": "Rack 1 slot 2 amount",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.4000000059604645,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "fx0s1_mix",
+    "name": "Rack 1 slot 2 mix",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.3499999940395355,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "fx0s1_time",
+    "name": "Rack 1 slot 2 time / cutoff",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.2000000029802322,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "fx0s2_type",
+    "name": "Rack 1 slot 3 effect",
+    "minimum": 0.0,
+    "maximum": 17.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "fx0s2_amount",
+    "name": "Rack 1 slot 3 amount",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.4000000059604645,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "fx0s2_mix",
+    "name": "Rack 1 slot 3 mix",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.3499999940395355,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "fx0s2_time",
+    "name": "Rack 1 slot 3 time / cutoff",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.2000000029802322,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "fx0s3_type",
+    "name": "Rack 1 slot 4 effect",
+    "minimum": 0.0,
+    "maximum": 17.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "fx0s3_amount",
+    "name": "Rack 1 slot 4 amount",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.4000000059604645,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "fx0s3_mix",
+    "name": "Rack 1 slot 4 mix",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.3499999940395355,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "fx0s3_time",
+    "name": "Rack 1 slot 4 time / cutoff",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.2000000029802322,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "fx1s0_type",
+    "name": "Rack 2 slot 1 effect",
+    "minimum": 0.0,
+    "maximum": 17.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "fx1s0_amount",
+    "name": "Rack 2 slot 1 amount",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.4000000059604645,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "fx1s0_mix",
+    "name": "Rack 2 slot 1 mix",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.3499999940395355,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "fx1s0_time",
+    "name": "Rack 2 slot 1 time / cutoff",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.2000000029802322,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "fx1s1_type",
+    "name": "Rack 2 slot 2 effect",
+    "minimum": 0.0,
+    "maximum": 17.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "fx1s1_amount",
+    "name": "Rack 2 slot 2 amount",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.4000000059604645,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "fx1s1_mix",
+    "name": "Rack 2 slot 2 mix",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.3499999940395355,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "fx1s1_time",
+    "name": "Rack 2 slot 2 time / cutoff",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.2000000029802322,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "fx1s2_type",
+    "name": "Rack 2 slot 3 effect",
+    "minimum": 0.0,
+    "maximum": 17.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "fx1s2_amount",
+    "name": "Rack 2 slot 3 amount",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.4000000059604645,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "fx1s2_mix",
+    "name": "Rack 2 slot 3 mix",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.3499999940395355,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "fx1s2_time",
+    "name": "Rack 2 slot 3 time / cutoff",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.2000000029802322,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "fx1s3_type",
+    "name": "Rack 2 slot 4 effect",
+    "minimum": 0.0,
+    "maximum": 17.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "fx1s3_amount",
+    "name": "Rack 2 slot 4 amount",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.4000000059604645,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "fx1s3_mix",
+    "name": "Rack 2 slot 4 mix",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.3499999940395355,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "fx1s3_time",
+    "name": "Rack 2 slot 4 time / cutoff",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.2000000029802322,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "fx2s0_type",
+    "name": "Rack 3 slot 1 effect",
+    "minimum": 0.0,
+    "maximum": 17.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "fx2s0_amount",
+    "name": "Rack 3 slot 1 amount",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.4000000059604645,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "fx2s0_mix",
+    "name": "Rack 3 slot 1 mix",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.3499999940395355,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "fx2s0_time",
+    "name": "Rack 3 slot 1 time / cutoff",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.2000000029802322,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "fx2s1_type",
+    "name": "Rack 3 slot 2 effect",
+    "minimum": 0.0,
+    "maximum": 17.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "fx2s1_amount",
+    "name": "Rack 3 slot 2 amount",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.4000000059604645,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "fx2s1_mix",
+    "name": "Rack 3 slot 2 mix",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.3499999940395355,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "fx2s1_time",
+    "name": "Rack 3 slot 2 time / cutoff",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.2000000029802322,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "fx2s2_type",
+    "name": "Rack 3 slot 3 effect",
+    "minimum": 0.0,
+    "maximum": 17.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "fx2s2_amount",
+    "name": "Rack 3 slot 3 amount",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.4000000059604645,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "fx2s2_mix",
+    "name": "Rack 3 slot 3 mix",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.3499999940395355,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "fx2s2_time",
+    "name": "Rack 3 slot 3 time / cutoff",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.2000000029802322,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "fx2s3_type",
+    "name": "Rack 3 slot 4 effect",
+    "minimum": 0.0,
+    "maximum": 17.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "fx2s3_amount",
+    "name": "Rack 3 slot 4 amount",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.4000000059604645,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "fx2s3_mix",
+    "name": "Rack 3 slot 4 mix",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.3499999940395355,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "fx2s3_time",
+    "name": "Rack 3 slot 4 time / cutoff",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.2000000029802322,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod0_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod0_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod0_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod0_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod1_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod1_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod1_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod1_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod2_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod2_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod2_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod2_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod3_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod3_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod3_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod3_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod4_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod4_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod4_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod4_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod5_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod5_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod5_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod5_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod6_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod6_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod6_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod6_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod7_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod7_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod7_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod7_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod8_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod8_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod8_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod8_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod9_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod9_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod9_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod9_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod10_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod10_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod10_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod10_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod11_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod11_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod11_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod11_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod12_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod12_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod12_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod12_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod13_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod13_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod13_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod13_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod14_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod14_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod14_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod14_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod15_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod15_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod15_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod15_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod16_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod16_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod16_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod16_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod17_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod17_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod17_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod17_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod18_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod18_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod18_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod18_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod19_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod19_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod19_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod19_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod20_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod20_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod20_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod20_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod21_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod21_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod21_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod21_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod22_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod22_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod22_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod22_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod23_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod23_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod23_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod23_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod24_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod24_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod24_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod24_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod25_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod25_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod25_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod25_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod26_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod26_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod26_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod26_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod27_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod27_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod27_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod27_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod28_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod28_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod28_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod28_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod29_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod29_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod29_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod29_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod30_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod30_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod30_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod30_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod31_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod31_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod31_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod31_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod32_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod32_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod32_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod32_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod33_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod33_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod33_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod33_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod34_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod34_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod34_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod34_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod35_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod35_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod35_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod35_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod36_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod36_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod36_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod36_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod37_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod37_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod37_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod37_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod38_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod38_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod38_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod38_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod39_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod39_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod39_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod39_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod40_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod40_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod40_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod40_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod41_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod41_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod41_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod41_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod42_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod42_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod42_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod42_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod43_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod43_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod43_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod43_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod44_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod44_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod44_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod44_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod45_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod45_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod45_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod45_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod46_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod46_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod46_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod46_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod47_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod47_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod47_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod47_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod48_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod48_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod48_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod48_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod49_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod49_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod49_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod49_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod50_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod50_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod50_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod50_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod51_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod51_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod51_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod51_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod52_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod52_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod52_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod52_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod53_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod53_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod53_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod53_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod54_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod54_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod54_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod54_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod55_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod55_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod55_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod55_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod56_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod56_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod56_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod56_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod57_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod57_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod57_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod57_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod58_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod58_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod58_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod58_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod59_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod59_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod59_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod59_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod60_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod60_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod60_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod60_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod61_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod61_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod61_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod61_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod62_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod62_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod62_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod62_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod63_source",
+    "name": "Mod source",
+    "minimum": 0.0,
+    "maximum": 27.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod63_target",
+    "name": "Mod target",
+    "minimum": 0.0,
+    "maximum": 10.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "mod63_depth",
+    "name": "Mod depth",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mod63_curve",
+    "name": "Mod curve",
+    "minimum": 0.25,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "seq_mode",
+    "name": "Sequencer",
+    "minimum": 0.0,
+    "maximum": 2.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "seq_bpm",
+    "name": "Fallback BPM",
+    "minimum": 30.0,
+    "maximum": 240.0,
+    "default": 120.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "seq_div",
+    "name": "Step division",
+    "minimum": 0.0,
+    "maximum": 3.0,
+    "default": 2.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "seq_gate",
+    "name": "Gate",
+    "minimum": 0.05000000074505806,
+    "maximum": 0.949999988079071,
+    "default": 0.75,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "mpe_enabled",
+    "name": "MPE enabled",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 1.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "voice_mode",
+    "name": "Voicing",
+    "minimum": 0.0,
+    "maximum": 2.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "voice_limit",
+    "name": "Voice count",
+    "minimum": 1.0,
+    "maximum": 16.0,
+    "default": 16.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "portamento",
+    "name": "Portamento ms",
+    "minimum": 0.0,
+    "maximum": 500.0,
+    "default": 0.0,
+    "unit": "ms"
+  },
+  {
+    "auroraId": "porta_always",
+    "name": "Portamento always",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "transpose",
+    "name": "Transpose semitones",
+    "minimum": -24.0,
+    "maximum": 24.0,
+    "default": 0.0,
+    "unit": "semitones"
+  },
+  {
+    "auroraId": "key",
+    "name": "Key",
+    "minimum": 0.0,
+    "maximum": 11.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "scale",
+    "name": "Scale",
+    "minimum": 0.0,
+    "maximum": 2.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "arp_order",
+    "name": "Arp direction",
+    "minimum": 0.0,
+    "maximum": 3.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "arp_octaves",
+    "name": "Arp octaves",
+    "minimum": 1.0,
+    "maximum": 4.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "arp_swing",
+    "name": "Arp swing",
+    "minimum": 0.0,
+    "maximum": 0.5,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "step0_note",
+    "name": "Step 1 note",
+    "minimum": 0.0,
+    "maximum": 127.0,
+    "default": 60.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "step0_on",
+    "name": "Step enabled",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 1.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "step1_note",
+    "name": "Step 2 note",
+    "minimum": 0.0,
+    "maximum": 127.0,
+    "default": 62.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "step1_on",
+    "name": "Step enabled",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "step2_note",
+    "name": "Step 3 note",
+    "minimum": 0.0,
+    "maximum": 127.0,
+    "default": 64.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "step2_on",
+    "name": "Step enabled",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 1.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "step3_note",
+    "name": "Step 4 note",
+    "minimum": 0.0,
+    "maximum": 127.0,
+    "default": 66.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "step3_on",
+    "name": "Step enabled",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "step4_note",
+    "name": "Step 5 note",
+    "minimum": 0.0,
+    "maximum": 127.0,
+    "default": 60.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "step4_on",
+    "name": "Step enabled",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 1.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "step5_note",
+    "name": "Step 6 note",
+    "minimum": 0.0,
+    "maximum": 127.0,
+    "default": 62.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "step5_on",
+    "name": "Step enabled",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "step6_note",
+    "name": "Step 7 note",
+    "minimum": 0.0,
+    "maximum": 127.0,
+    "default": 64.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "step6_on",
+    "name": "Step enabled",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 1.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "step7_note",
+    "name": "Step 8 note",
+    "minimum": 0.0,
+    "maximum": 127.0,
+    "default": 66.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "step7_on",
+    "name": "Step enabled",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "step8_note",
+    "name": "Step 9 note",
+    "minimum": 0.0,
+    "maximum": 127.0,
+    "default": 60.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "step8_on",
+    "name": "Step enabled",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 1.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "step9_note",
+    "name": "Step 10 note",
+    "minimum": 0.0,
+    "maximum": 127.0,
+    "default": 62.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "step9_on",
+    "name": "Step enabled",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "step10_note",
+    "name": "Step 11 note",
+    "minimum": 0.0,
+    "maximum": 127.0,
+    "default": 64.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "step10_on",
+    "name": "Step enabled",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 1.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "step11_note",
+    "name": "Step 12 note",
+    "minimum": 0.0,
+    "maximum": 127.0,
+    "default": 66.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "step11_on",
+    "name": "Step enabled",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "step12_note",
+    "name": "Step 13 note",
+    "minimum": 0.0,
+    "maximum": 127.0,
+    "default": 60.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "step12_on",
+    "name": "Step enabled",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 1.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "step13_note",
+    "name": "Step 14 note",
+    "minimum": 0.0,
+    "maximum": 127.0,
+    "default": 62.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "step13_on",
+    "name": "Step enabled",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "step14_note",
+    "name": "Step 15 note",
+    "minimum": 0.0,
+    "maximum": 127.0,
+    "default": 64.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "step14_on",
+    "name": "Step enabled",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 1.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "step15_note",
+    "name": "Step 16 note",
+    "minimum": 0.0,
+    "maximum": 127.0,
+    "default": 66.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "step15_on",
+    "name": "Step enabled",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "bool"
+  }
+]

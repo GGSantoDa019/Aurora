@@ -724,6 +724,7 @@ static void setValueAndNotifyIfChanged (AudioProcessorParameter& param, float ne
 //==============================================================================
 class JuceVST3EditController final : public Vst::EditController,
                                      public Vst::IMidiMapping,
+                                     public Vst::INoteExpressionController,
                                      public Vst::IUnitInfo,
                                      public Vst::ChannelContext::IInfoListener,
                                     #if JucePlugin_Enable_ARA
@@ -768,6 +769,32 @@ public:
     }
 
     //==============================================================================
+    bool expressionChannel(int32 bus,int16 channel) const {
+        auto *sink=dynamic_cast<NativeNoteEventSink*>(getPluginInstance());
+        return bus==0 && channel==0 && sink && sink->nativeNoteExpressionEnabled();
+    }
+    int32 PLUGIN_API getNoteExpressionCount(int32 bus,int16 channel) override {return expressionChannel(bus,channel)?4:0;}
+    tresult PLUGIN_API getNoteExpressionInfo(int32 bus,int16 channel,int32 index,Vst::NoteExpressionTypeInfo &info) override {
+        if(!expressionChannel(bus,channel)||index<0||index>=4)return kInvalidArgument;
+        static constexpr Vst::NoteExpressionTypeID ids[]{0,1,2,5};
+        static constexpr const char *names[]{"Volume","Pan","Tuning","Brightness"};
+        zerostruct(info);info.typeId=ids[index];toString128(info.title,names[index]);toString128(info.shortTitle,names[index]);
+        toString128(info.units,index==2?"semitones":"");info.unitId=-1;
+        info.valueDesc={index==0?.25:.5,0,1,0};
+        info.flags=Vst::NoteExpressionTypeInfo::kIsAbsolute | ((index==1||index==2)?Vst::NoteExpressionTypeInfo::kIsBipolar:0);
+        return kResultOk;
+    }
+    tresult PLUGIN_API getNoteExpressionStringByValue(int32 bus,int16 channel,Vst::NoteExpressionTypeID id,Vst::NoteExpressionValue value,Vst::String128 text) override {
+        if(!expressionChannel(bus,channel)||(id!=0&&id!=1&&id!=2&&id!=5)||!std::isfinite(value)||value<0||value>1)return kInvalidArgument;
+        toString128(text,String(id==2?240*(value-.5):value,6));return kResultOk;
+    }
+    tresult PLUGIN_API getNoteExpressionValueByString(int32 bus,int16 channel,Vst::NoteExpressionTypeID id,const Vst::TChar *text,Vst::NoteExpressionValue &value) override {
+        if(!text||!expressionChannel(bus,channel)||(id!=0&&id!=1&&id!=2&&id!=5))return kInvalidArgument;
+        auto s=toString(text);if(!s.containsAnyOf("0123456789"))return kInvalidArgument;
+        auto number=s.getDoubleValue();value=id==2?number/240+.5:number;
+        return std::isfinite(value)&&value>=0&&value<=1?kResultOk:kInvalidArgument;
+    }
+    bool lastNativeExpression=false;
     tresult PLUGIN_API initialize (FUnknown* context) override
     {
         if (hostContext != context)
@@ -1314,6 +1341,8 @@ public:
     void audioProcessorParameterChanged (AudioProcessor*, int index, float newValue) override
     {
         paramChanged (index, audioProcessor->getVSTParamIDForIndex (index), newValue);
+        bool enabled=expressionChannel(0,0);
+        if(enabled!=lastNativeExpression){lastNativeExpression=enabled;componentRestarter.restart(Vst::kNoteExpressionChanged);}
     }
 
     void audioProcessorChanged (AudioProcessor*, const ChangeDetails& details) override
@@ -1499,6 +1528,7 @@ private:
                                              UniqueBase<Vst::IEditController2>{},
                                              UniqueBase<Vst::IConnectionPoint>{},
                                              UniqueBase<Vst::IMidiMapping>{},
+                                             UniqueBase<Vst::INoteExpressionController>{},
                                              UniqueBase<Vst::IUnitInfo>{},
                                              UniqueBase<Vst::ChannelContext::IInfoListener>{},
                                              SharedBase<IPluginBase, Vst::IEditController>{},
@@ -3464,7 +3494,7 @@ public:
     }
 
     //==============================================================================
-    void processParameterChanges (Vst::IParameterChanges& paramChanges)
+    void processParameterChanges (Vst::IParameterChanges& paramChanges, int blockSamples)
     {
         jassert (pluginInstance != nullptr);
 
@@ -3505,7 +3535,13 @@ public:
                 if (const auto change = getPointFromQueue (paramQueue, numPoints - 1))
                 {
                     if (auto* param = comPluginInstance->getParamForVSTParamID (vstParamID))
+                    {
+                        if (auto* sink = blockSamples > 0 ? dynamic_cast<SampleAccurateParameterSink*> (pluginInstance) : nullptr)
+                            for (Steinberg::int32 point = 0; point < numPoints; ++point)
+                                if (const auto item = getPointFromQueue (paramQueue, point))
+                                    sink->enqueueParameterPoint (param->getParameterIndex(), item->offsetSamples, (float) item->value);
                         setValueAndNotifyIfChanged (*param, (float) change->value);
+                    }
                 }
             }
         }
@@ -3559,11 +3595,27 @@ public:
         midiBuffer.clear();
 
         if (data.inputParameterChanges != nullptr)
-            processParameterChanges (*data.inputParameterChanges);
+            processParameterChanges (*data.inputParameterChanges, data.numSamples);
 
        #if JucePlugin_WantsMidiInput
         if (isMidiInputBusEnabled && data.inputEvents != nullptr)
+        {
             MidiEventList::toMidiBuffer (midiBuffer, *data.inputEvents);
+            if (auto* sink = dynamic_cast<NativeNoteEventSink*> (pluginInstance))
+                for (Steinberg::int32 i=0; i<data.inputEvents->getEventCount(); ++i)
+                {
+                    Vst::Event event{};
+                    if (data.inputEvents->getEvent(i,event) != kResultOk) continue;
+                    if (event.type == Vst::Event::kNoteOnEvent)
+                        sink->enqueueNativeNote(0,event.sampleOffset,event.noteOn.noteId,event.noteOn.channel+1,event.noteOn.pitch,0,event.noteOn.velocity);
+                    else if (event.type == Vst::Event::kNoteOffEvent)
+                        sink->enqueueNativeNote(1,event.sampleOffset,event.noteOff.noteId,event.noteOff.channel+1,event.noteOff.pitch,0,event.noteOff.velocity);
+                    else if (event.type == Vst::Event::kPolyPressureEvent)
+                        sink->enqueueNativeNote(2,event.sampleOffset,event.polyPressure.noteId,event.polyPressure.channel+1,event.polyPressure.pitch,0,event.polyPressure.pressure);
+                    else if (event.type == Vst::Event::kNoteExpressionValueEvent)
+                        sink->enqueueNativeNote(3,event.sampleOffset,event.noteExpressionValue.noteId,1,0,int(event.noteExpressionValue.typeId),float(event.noteExpressionValue.value));
+                }
+        }
        #endif
 
         if (detail::PluginUtilities::getHostType().isWavelab())

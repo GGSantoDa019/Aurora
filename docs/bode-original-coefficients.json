@@ -1,0 +1,272 @@
+{
+  "constructor": "0x1803573f0",
+  "renderer": "0x180376ac0",
+  "core": "0x1803781c0",
+  "vtable": "0x180a5ab88",
+  "reaEvidenceId": "ev_6cdc7bb472df72a379e6782150efb4826df06910121eca2a26863d63b6909a98",
+  "sampleRateObserved": 48000,
+  "bitExactConstructorMatch": true,
+  "channelCoefficientsEqual": true,
+  "coefficients": [
+    {
+      "index": 0,
+      "value": -0.97327866881245,
+      "float64Bits": "bfef25194e8e3454",
+      "leftByteOffset": "0x200d8",
+      "rightByteOffset": "0x20328"
+    },
+    {
+      "index": 1,
+      "value": -0.95421598532099,
+      "float64Bits": "bfee88eff648c52a",
+      "leftByteOffset": "0x200e8",
+      "rightByteOffset": "0x20338"
+    },
+    {
+      "index": 2,
+      "value": -0.98446840698176,
+      "float64Bits": "bfef80c3e37dd1f0",
+      "leftByteOffset": "0x200f8",
+      "rightByteOffset": "0x20348"
+    },
+    {
+      "index": 3,
+      "value": -0.92208660673119,
+      "float64Bits": "bfed81bbc57faeb1",
+      "leftByteOffset": "0x20108",
+      "rightByteOffset": "0x20358"
+    },
+    {
+      "index": 4,
+      "value": -0.99099609497292,
+      "float64Bits": "bfefb63d714beab6",
+      "leftByteOffset": "0x20118",
+      "rightByteOffset": "0x20368"
+    },
+    {
+      "index": 5,
+      "value": -0.8688904499758,
+      "float64Bits": "bfebcdf3584e7d37",
+      "leftByteOffset": "0x20128",
+      "rightByteOffset": "0x20378"
+    },
+    {
+      "index": 6,
+      "value": -0.99479171047647,
+      "float64Bits": "bfefd5556cda81c1",
+      "leftByteOffset": "0x20138",
+      "rightByteOffset": "0x20388"
+    },
+    {
+      "index": 7,
+      "value": -0.78330938107578,
+      "float64Bits": "bfe910ded5cbdaf1",
+      "leftByteOffset": "0x20148",
+      "rightByteOffset": "0x20398"
+    },
+    {
+      "index": 8,
+      "value": -0.99699702022633,
+      "float64Bits": "bfefe7664b829bf5",
+      "leftByteOffset": "0x20158",
+      "rightByteOffset": "0x203a8"
+    },
+    {
+      "index": 9,
+      "value": -0.65155844971524,
+      "float64Bits": "bfe4d9911b1eb38a",
+      "leftByteOffset": "0x20168",
+      "rightByteOffset": "0x203b8"
+    },
+    {
+      "index": 10,
+      "value": -0.99828206984464,
+      "float64Bits": "bfeff1ed3d454f30",
+      "leftByteOffset": "0x20178",
+      "rightByteOffset": "0x203c8"
+    },
+    {
+      "index": 11,
+      "value": -0.4608878271014,
+      "float64Bits": "bfdd7f2fa82199db",
+      "leftByteOffset": "0x20188",
+      "rightByteOffset": "0x203d8"
+    },
+    {
+      "index": 12,
+      "value": -0.9990395689761,
+      "float64Bits": "bfeff821d4853172",
+      "leftByteOffset": "0x20198",
+      "rightByteOffset": "0x203e8"
+    },
+    {
+      "index": 13,
+      "value": -0.20457411911458,
+      "float64Bits": "bfca2f7c179a41b0",
+      "leftByteOffset": "0x201a8",
+      "rightByteOffset": "0x203f8"
+    },
+    {
+      "index": 14,
+      "value": -0.9995017935762,
+      "float64Bits": "bfeffbeb2f767ff9",
+      "leftByteOffset": "0x201b8",
+      "rightByteOffset": "0x20408"
+    },
+    {
+      "index": 15,
+      "value": 0.12021343848708,
+      "float64Bits": "3fbec64ed2d77ab8",
+      "leftByteOffset": "0x201c8",
+      "rightByteOffset": "0x20418"
+    },
+    {
+      "index": 16,
+      "value": -0.99981076459242,
+      "float64Bits": "bfeffe7325039f53",
+      "leftByteOffset": "0x201d8",
+      "rightByteOffset": "0x20428"
+    },
+    {
+      "index": 17,
+      "value": 0.54051735355057,
+      "float64Bits": "3fe14beb0c8d7203",
+      "leftByteOffset": "0x201e8",
+      "rightByteOffset": "0x20438"
+    },
+    {
+      "index": 18,
+      "value": -0.97961974843038,
+      "float64Bits": "bfef590b83c0c67d",
+      "leftByteOffset": "0x201f8",
+      "rightByteOffset": "0x20448"
+    },
+    {
+      "index": 19,
+      "value": -0.94020954569694,
+      "float64Bits": "bfee16325444f8d5",
+      "leftByteOffset": "0x20208",
+      "rightByteOffset": "0x20458"
+    },
+    {
+      "index": 20,
+      "value": -0.98817112911538,
+      "float64Bits": "bfef9f190f4cdcc7",
+      "leftByteOffset": "0x20218",
+      "rightByteOffset": "0x20468"
+    },
+    {
+      "index": 21,
+      "value": -0.8987512824333,
+      "float64Bits": "bfecc2920ca9402b",
+      "leftByteOffset": "0x20228",
+      "rightByteOffset": "0x20478"
+    },
+    {
+      "index": 22,
+      "value": -0.99315001125198,
+      "float64Bits": "bfefc7e2884b2d5a",
+      "leftByteOffset": "0x20238",
+      "rightByteOffset": "0x20488"
+    },
+    {
+      "index": 23,
+      "value": -0.83097764464175,
+      "float64Bits": "bfea975e6dee308b",
+      "leftByteOffset": "0x20248",
+      "rightByteOffset": "0x20498"
+    },
+    {
+      "index": 24,
+      "value": -0.99604296946453,
+      "float64Bits": "bfefdf9581685927",
+      "leftByteOffset": "0x20258",
+      "rightByteOffset": "0x204a8"
+    },
+    {
+      "index": 25,
+      "value": -0.72408783367051,
+      "float64Bits": "bfe72bba3fa17b85",
+      "leftByteOffset": "0x20268",
+      "rightByteOffset": "0x204b8"
+    },
+    {
+      "index": 26,
+      "value": -0.99772519250535,
+      "float64Bits": "bfefed5d620695c5",
+      "leftByteOffset": "0x20278",
+      "rightByteOffset": "0x204c8"
+    },
+    {
+      "index": 27,
+      "value": -0.56419440359805,
+      "float64Bits": "bfe20de16c014672",
+      "leftByteOffset": "0x20288",
+      "rightByteOffset": "0x204d8"
+    },
+    {
+      "index": 28,
+      "value": -0.99870947842365,
+      "float64Bits": "bfeff56d94811d09",
+      "leftByteOffset": "0x20298",
+      "rightByteOffset": "0x204e8"
+    },
+    {
+      "index": 29,
+      "value": -0.34106232091529,
+      "float64Bits": "bfd5d3f70e8ea862",
+      "leftByteOffset": "0x202a8",
+      "rightByteOffset": "0x204f8"
+    },
+    {
+      "index": 30,
+      "value": -0.99929720072757,
+      "float64Bits": "bfeffa3e1f837f10",
+      "leftByteOffset": "0x202b8",
+      "rightByteOffset": "0x20508"
+    },
+    {
+      "index": 31,
+      "value": -0.05123707751327,
+      "float64Bits": "bfaa3bbf08863380",
+      "leftByteOffset": "0x202c8",
+      "rightByteOffset": "0x20518"
+    },
+    {
+      "index": 32,
+      "value": -0.99966878040355,
+      "float64Bits": "bfeffd4961d54b64",
+      "leftByteOffset": "0x202d8",
+      "rightByteOffset": "0x20528"
+    },
+    {
+      "index": 33,
+      "value": 0.313981083588,
+      "float64Bits": "3fd418441d64adb5",
+      "leftByteOffset": "0x202e8",
+      "rightByteOffset": "0x20538"
+    },
+    {
+      "index": 34,
+      "value": -0.99993846753881,
+      "float64Bits": "bfefff7ef502edf3",
+      "leftByteOffset": "0x202f8",
+      "rightByteOffset": "0x20548"
+    },
+    {
+      "index": 35,
+      "value": 0.82318933964829,
+      "float64Bits": "3fea57912b869157",
+      "leftByteOffset": "0x20308",
+      "rightByteOffset": "0x20558"
+    },
+    {
+      "index": 36,
+      "value": -0.965,
+      "float64Bits": "bfeee147ae147ae1",
+      "leftByteOffset": "0x20318",
+      "rightByteOffset": "0x20568"
+    }
+  ],
+  "scope": "The 37 fixed coefficients written by this constructor and observed in this 48 kHz configuration. Complete effect behavior and all configuration changes remain outside this validation."
+}

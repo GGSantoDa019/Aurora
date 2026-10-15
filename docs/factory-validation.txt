@@ -1,0 +1,4 @@
+PASS 626 original procedural factory files
+PASS 626 distinct structured states
+PASS indices 1..626 and provenance metadata
+PASS all 626 decode and JSON/CBOR/Zstd semantic round-trips

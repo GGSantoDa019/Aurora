@@ -1,3 +1,22 @@
+PASS Wavetable 16-tap / 512-phase reader matches 1028 captured native outputs bit-for-bit
+PASS Wavetable 64-evaluation crossfade matches captured native outputs bit-for-bit
+PASS Wavetable per-reader level transition settles in 64 evaluations and resets on asset change
+PASS Wavetable periodic taps safely wrap negative and boundary phases with recovered DC gain
+PASS 10ms linear smoothing reaches target exactly and handles interrupted ramps
+PASS 7 canonical RoutingSlots / plain ranges / exact destination and Env1 boundary quantization
+PASS SVF exact clamped cubic x - 0.14814815*x^3
+PASS 8192 ring mask / wrap / fractional read
+PASS Compressor detector recurrence coefficient exactly 0.00025
+PASS Bode two independent 18-section chains / extra section / second-output sign
+PASS FIR direct head + partitioned FFT overlap-add equals direct reference / 1-Nfft gain / non-power-of-two IR lengths
+PASS SIMD four-sample M/S and scalar remainder / M-M and S-minus-S reconstruction
+PASS SIMD four-complex spectral MAC equals scalar including remainder
+PASS MXCSR saves/restores exact environment and enables DAZ/FTZ
+PASS Recovered Bode coefficients match all 37 IEEE-754 words / quadrature phase at 48kHz
+PASS Runtime host catalog: 2623 distinct IDs, 2080 MIDI, 420 numeric overlaps; static domain separate
+PASS AuroraState JSON+CBOR+Zstd / metadata+unknown fields / lossless document roundtrip / migration / future-version rejection
+PASS Static catalog: 2637 distinct canonical IDs; 35 confirmed RoutingSlot descriptors; unknown descriptors explicit
+PASS Processor sample-offset automation / block invariance / native note-ID expression / MPE / per-voice LFO independence
 PASS nonlinear polynomial
 PASS delay impulse / wrap indexing
 PASS fractional delay interpolation
@@ -36,18 +55,26 @@ PASS editor software-rendered preview
 PASS UI pages / resize / modulation drop / FX reorder / MIDI learn / undo-redo
 PASS Mono/legato fallback / portamento / unison / Bezier envelope stability
 PASS OSC filter routing / envelope cutoff and LFO level affect rendered audio
+PASS Live DSP filter animation / ENV and LFO / source buttons / reverse serial / cycle guard / state
 PASS OpenGL shader compilation on native context
 PASS Serum XferJson/Zstd/CBOR maps oscillator, envelope, LFO polarity and modulation
 PASS Serum truncated payload, oversized metadata and unsupported encoding rejected
 PASS Serum CBOR truncation and nesting limits
 PASS Serum external wavetable / audio / native state round-trip / invalid import preserves sound
 PASS Serum relative sample reference / audio / native state round-trip
-PASS Imported wavetable FFT mipmaps retain fundamental amplitude
+PASS Imported wavetable FFT retains fundamental amplitude before recovered reader gain
 PASS VST3 factory enumerates component
 PASS VST3 host creates component/controller
 PASS VST3 renders audio in host
 PASS VST3 editor constructs
+INFO native queue test parameter=1066216034 found=1
+INFO native queue processing complete
+PASS Native VST3 IParameterChanges preserves multiple sample-offset points through wrapper
+PASS Native INoteExpressionController advertises supported types / MPE switch / text-value conversion
 PASS VST3 factory enumerates component
 PASS VST3 host creates component/controller
 PASS VST3 renders audio in host
 PASS VST3 editor constructs
+PASS Procedural factory preset loads, preserves metadata and renders finite nonzero audio
+PASS Procedural factory preset loads, preserves metadata and renders finite nonzero audio
+PASS Procedural factory preset loads, preserves metadata and renders finite nonzero audio

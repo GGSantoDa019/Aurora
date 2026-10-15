@@ -1,4 +1,6 @@
 #include "Dsp.h"
+#include "CoreTests.h"
+#include "NativeVst3Tests.h"
 #include "SerumFixtureTests.h"
 #include <iostream>
 extern juce::AudioProcessor *JUCE_CALLTYPE createPluginFilter();
@@ -8,7 +10,11 @@ extern bool auroraUIForTest(juce::AudioProcessor &, const juce::File &);
 extern int auroraGpuForTest(juce::AudioProcessor &);
 extern bool auroraPerformanceForTest();
 extern bool auroraRoutingModulationForTest();
+extern bool auroraCoreProcessorForTest();
+extern bool auroraFactoryGenerate(const juce::File &);
+extern bool auroraFilterDisplayForTest(const juce::File &);
 int main(int argc, char **argv) {
+    std::cout << std::unitbuf;
     juce::ScopedJuceInitialiser_GUI initialise;
     using namespace aurora;
     int fail = 0;
@@ -17,6 +23,10 @@ int main(int argc, char **argv) {
         if (!ok)
             ++fail;
     };
+    coreInfrastructureTests(check);
+    check(auroraCoreProcessorForTest(),"Processor sample-offset automation / block invariance / native note-ID expression / MPE / per-voice LFO independence");
+    if(argc==2 && juce::String(argv[1]).startsWith("--factory="))
+        return auroraFactoryGenerate(juce::File(juce::String(argv[1]).substring(10)))?fail:1;
     check(std::abs(nonlinear(1) - .85185185f) < 1e-6f, "nonlinear polynomial");
     Delay d;
     d.prepare(48000);
@@ -231,6 +241,8 @@ int main(int argc, char **argv) {
           "Mono/legato fallback / portamento / unison / Bezier envelope stability");
     check(auroraRoutingModulationForTest(),
           "OSC filter routing / envelope cutoff and LFO level affect rendered audio");
+    check(auroraFilterDisplayForTest(outputs),
+          "Live DSP filter animation / ENV and LFO / source buttons / reverse serial / cycle guard / state");
     int gpu = auroraGpuForTest(*plugin);
     if (gpu == 0)
         std::cout << "SKIP OpenGL native driver not available\n";
@@ -241,6 +253,18 @@ int main(int argc, char **argv) {
         juce::AudioPluginFormatManager manager;
         manager.addFormat(new juce::VST3PluginFormat);
         for (int a = 1; a < argc; ++a) {
+            if(juce::String(argv[a]).startsWith("--native=")){
+                juce::File file(juce::String(argv[a]).substring(9));juce::MemoryBlock bytes,saved;
+                aurora::PresetDocument before,after;
+                bool okay=file.loadFileAsData(bytes)&&aurora::decodeDocument(bytes.getData(),int(bytes.getSize()),before);
+                auto native=std::unique_ptr<juce::AudioProcessor>(createPluginFilter());
+                if(okay){native->setStateInformation(bytes.getData(),int(bytes.getSize()));native->getStateInformation(saved);
+                    okay &= aurora::decodeDocument(saved.getData(),int(saved.getSize()),after) && juce::JSON::toString(before.metadata)==juce::JSON::toString(after.metadata);
+                    native->prepareToPlay(48000,256);juce::AudioBuffer<float> sound(2,256);juce::MidiBuffer events;
+                    double energy=0;for(int b=0;b<8;++b){events.clear();if(!b)events.addEvent(juce::MidiMessage::noteOn(1,60,.8f),0);native->processBlock(sound,events);energy+=sound.getRMSLevel(0,0,256);okay &= std::isfinite(energy)&&sound.getMagnitude(0,256)<=1.01f;}
+                    okay &= energy>1.e-6;native->releaseResources();}
+                check(okay,"Procedural factory preset loads, preserves metadata and renders finite nonzero audio");continue;
+            }
             if (juce::String(argv[a]).startsWith("--serum=")) {
                 juce::String details;
                 bool ok = auroraSerumForTest(juce::File(juce::String(argv[a]).substring(8)),
@@ -262,7 +286,7 @@ int main(int argc, char **argv) {
                 std::cout << error << "\n";
                 continue;
             }
-            instance->prepareToPlay(48000, 256);
+            instance->prepareToPlay(48000, 1024);
             juce::AudioBuffer<float> block(2, 256);
             juce::MidiBuffer events;
             block.clear();
@@ -278,6 +302,10 @@ int main(int argc, char **argv) {
             std::unique_ptr<juce::AudioProcessorEditor> editor(instance->createEditorIfNeeded());
             check(editor != nullptr, "VST3 editor constructs");
             editor.reset();
+            if(instance->acceptsMidi()){
+                check(aurora_test::sampleAccurateHost(*instance),"Native VST3 IParameterChanges preserves multiple sample-offset points through wrapper");
+                check(aurora_test::expressionAnnouncement(*instance),"Native INoteExpressionController advertises supported types / MPE switch / text-value conversion");
+            }
             instance->releaseResources();
         }
     }

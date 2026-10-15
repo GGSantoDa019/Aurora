@@ -1,14 +1,17 @@
 #pragma once
 #include "AdvancedEditor.h"
+#include "ReferenceLayout.h"
 
 namespace aurora_ui {
 static const Colour ink{0xff1b252a}, panel{0xff334149}, line{0xff11191e}, accent{0xff22b9e9},
     text{0xffe0e8eb}, muted{0xffa2b2bb}, waveGreen{0xffa7d957};
 inline float read(Aurora &p, const String &id) {
     auto *value = p.state.getRawParameterValue(id);
-    return value ? value->load() : 0;
+    float plain=value?value->load():0;
+    return id.startsWith("route")&&id.endsWith("_dest")?plain*.25f:plain;
 }
 inline void write(Aurora &p, const String &id, float plain) {
+    if(id.startsWith("route")&&id.endsWith("_dest"))plain=RoutingDescriptor::plain(3,plain);
     if (auto *parameter = p.state.getParameter(id)) {
         parameter->beginChangeGesture();
         parameter->setValueNotifyingHost(parameter->convertTo0to1(plain));
@@ -136,9 +139,9 @@ class Knob : public Component, public DragAndDropTarget {
         bool percent = range.start >= 0 && range.end <= 1 && !id.endsWith("_dest");
         slider.textFromValueFunction = [key = id, percent](double value) {
             if (key.endsWith("_dest"))
-                return String(value < .25   ? "Filter"
-                              : value < .5  ? "Main"
-                              : value < .75 ? "Direct"
+                return String(value < .5   ? "Filter"
+                              : value < 1.5  ? "Main"
+                              : value < 2.5 ? "Direct"
                                             : "None");
             if (percent)
                 return String(value * 100, 0) + " %";
@@ -153,11 +156,11 @@ class Knob : public Component, public DragAndDropTarget {
         slider.valueFromTextFunction = [key = id, percent](const String &value) {
             if (key.endsWith("_dest")) {
                 if (value.containsIgnoreCase("main"))
-                    return .25;
+                    return 1.;
                 if (value.containsIgnoreCase("direct"))
-                    return .5;
+                    return 2.;
                 if (value.containsIgnoreCase("none"))
-                    return .75;
+                    return 3.;
             }
             return value.getDoubleValue() / (percent ? 100. : 1.);
         };
@@ -345,6 +348,81 @@ class SourceButton : public TextButton {
     }
 };
 #include "CurveEditor.h"
+// Uses the existing route parameters, so old presets and host automation retain
+// their IDs. Buttons select audio sources, while ENV/LFO modulation stays on knobs.
+class FilterRouting : public Component, private Timer {
+    Aurora &p;
+    int filter;
+    ComboBox output;
+    std::array<TextButton, 5> inputs;
+    static constexpr std::array<int, 5> sources{4, 0, 1, 2, 3};
+    bool receives(int source, int target) const {
+        if (read(p, key("route", source, "dest")) >= .25f)
+            return false;
+        float balance = read(p, key("route", source, "balance"));
+        return target == 0 ? balance < 99.9f : balance > -99.9f;
+    }
+    void timerCallback() override {
+        int selected = juce::jlimit(1, 4, int(read(p, key("route", filter + 5, "dest")) * 4) + 1);
+        output.setSelectedId(selected, dontSendNotification);
+        bool wouldCycle = read(p, key("route", 6 - filter, "dest")) < .25f;
+        output.setItemEnabled(1, !wouldCycle);
+        output.setTooltip(wouldCycle ? "Other filter already feeds this filter; serial feedback is disabled."
+                                     : "Filter output destination");
+        for (int i = 0; i < 5; ++i)
+            inputs[size_t(i)].setToggleState(receives(sources[size_t(i)], filter), dontSendNotification);
+    }
+  public:
+    FilterRouting(Aurora &processor, int index) : p(processor), filter(index) {
+        output.addItem("Filter " + String(2 - filter), 1);
+        output.addItem("Main", 2);
+        output.addItem("Direct", 3);
+        output.addItem("None", 4);
+        output.setName("Filter " + String(filter + 1) + " output");
+        addAndMakeVisible(output);
+        output.onChange = [this] {
+            int selection = output.getSelectedId();
+            if (selection == 1 && read(p, key("route", 6 - filter, "dest")) < .25f) {
+                timerCallback();
+                return;
+            }
+            write(p, key("route", filter + 5, "dest"), (selection - 1) * .25f);
+        };
+        const StringArray labels{"S", "A", "B", "C", "N"};
+        const StringArray names{"Sub", "Oscillator A", "Oscillator B", "Oscillator C", "Noise"};
+        for (int i = 0; i < 5; ++i) {
+            auto &button = inputs[size_t(i)];
+            button.setButtonText(labels[i]);
+            button.setName(names[i] + " to Filter " + String(filter + 1));
+            button.setTooltip(names[i] + " through this filter. Both selected: 50/50 split. "
+                              "Last filter deselected: source returns to Main.");
+            button.setColour(TextButton::textColourOnId, accent);
+            button.setColour(TextButton::buttonOnColourId, accent.withAlpha(.22f));
+            addAndMakeVisible(button);
+            button.onClick = [this, i] { toggleSource(i); };
+        }
+        timerCallback();
+        startTimerHz(30);
+    }
+    void selectOutputForTest(int item) { output.setSelectedId(item, sendNotificationSync); }
+    void toggleSource(int button) {
+        int source = sources[size_t(button)];
+        bool on = !receives(source, filter), other = receives(source, 1 - filter);
+        p.undo.beginNewTransaction("Filter source routing");
+        write(p, key("route", source, "balance"), on && other ? 0.f
+              : (on ? filter : 1 - filter) == 0 ? -100.f : 100.f);
+        write(p, key("route", source, "dest"), on || other ? 0.f : .25f);
+        timerCallback();
+    }
+    void resized() override {
+        output.setBounds(filter == 0 ? 79 : 180, 1, 21, 24);
+        auto row = getLocalBounds().removeFromBottom(21);
+        for (int i = 0; i < 5; ++i) {
+            int left = i * row.getWidth() / 5, right = (i + 1) * row.getWidth() / 5;
+            inputs[size_t(i)].setBounds(left, row.getY(), right - left - 1, row.getHeight());
+        }
+    }
+};
 class Card : public Component, public DragAndDropTarget {
   public:
     Aurora &p;
@@ -353,6 +431,7 @@ class Card : public Component, public DragAndDropTarget {
     int compactKind = 0;
     std::unique_ptr<SourceButton> source;
     std::unique_ptr<Curve> curve;
+    std::unique_ptr<FilterRouting> filterRouting;
     std::vector<std::unique_ptr<Knob>> knobs;
     std::vector<std::unique_ptr<Choice>> choices;
     std::vector<std::unique_ptr<TextButton>> actions;
@@ -375,6 +454,10 @@ class Card : public Component, public DragAndDropTarget {
     void addCurve(String kind, int index) {
         curve = std::make_unique<Curve>(p, kind, index);
         addAndMakeVisible(*curve);
+    }
+    void addFilterRouting(int index) {
+        filterRouting = std::make_unique<FilterRouting>(p, index);
+        addAndMakeVisible(*filterRouting);
     }
     void button(String label, std::function<void()> click) {
         auto b = std::make_unique<TextButton>(label);
@@ -413,6 +496,15 @@ class Card : public Component, public DragAndDropTarget {
         g.fillRect(1, 1, getWidth() - 2, 21);
         g.setColour(compactKind == 1 ? waveGreen : accent);
         g.fillRect(5, 7, 5, 7);
+        if(compactKind==6) {
+            g.setColour(ink); g.fillRect(1,54,getWidth()-2,117);
+            Path shape; for(int i=0;i<getWidth()-4;++i){
+                float y=112.f+24.f*std::sin(float(i)*(title=="SUB"?.12f:1.71f));
+                if(i==0)shape.startNewSubPath(float(i+2),y);else shape.lineTo(float(i+2),y);
+            }
+            g.setColour(waveGreen);g.strokePath(shape,PathStrokeType(1));
+            g.setFont(9.f);g.drawText(title=="SUB"?"SINE / -1 OCT":"WHITE",2,28,getWidth()-4,20,Justification::centred);
+        }
         if (!source) {
             g.setColour(Colour(0xff19252c));
             g.setFont(Font(10.f, Font::bold));
@@ -425,25 +517,21 @@ class Card : public Component, public DragAndDropTarget {
             if (source)
                 source->setBounds(14, 1, w - 18, 20);
             if (compactKind == 1) {
-                if (!choices.empty())
-                    choices[0]->setBounds(5, 25, w - 10, 23);
-                if (choices.size() > 1)
-                    choices[1]->setBounds(5, 50, w - 10, 23);
-                if (curve)
-                    curve->setBounds(5, 77, w - 10, h - 241);
-                int kw = (w - 10) / 5;
-                for (size_t i = 0; i < knobs.size(); ++i)
-                    knobs[i]->setBounds(5 + int(i) % 5 * kw, h - 161 + int(i) / 5 * 52, kw, 52);
-                for (size_t i = 0; i < actions.size(); ++i)
-                    actions[i]->setBounds(5, h - 27 * int(actions.size() - i), w - 10, 22);
+                choices[0]->setBounds(58, 1, 188, 24);
+                choices[1]->setBounds(49, 269, 156, 22);
+                curve->setBounds(1, 72, 268, 99);
+                const Rectangle<int> positions[]{{2,199,44,53},{218,254,44,53},
+                    {2,27,62,43},{218,199,44,53},{164,199,44,53},{66,199,44,53},
+                    {115,199,44,53},{2,254,44,53},{82,27,62,43},{166,27,62,43}};
+                for(size_t i=0;i<knobs.size();++i)knobs[i]->setBounds(positions[i]);
+                actions[0]->setBounds(3,173,155,21);
+                actions[1]->setBounds(160,173,107,21);
             } else if (compactKind == 2) {
-                if (!choices.empty())
-                    choices[0]->setBounds(5, 27, w - 10, 25);
-                if (curve)
-                    curve->setBounds(5, 56, w - 10, h - 160);
-                int kw = (w - 10) / 2;
-                for (size_t i = 0; i < knobs.size(); ++i)
-                    knobs[i]->setBounds(5 + int(i) % 2 * kw, h - 100 + int(i) / 2 * 68, kw, 65);
+                if(filterRouting)filterRouting->setBounds(1,0,w-2,193);
+                if(!choices.empty())choices[0]->setBounds(3,27,w-6,23);
+                if(curve)curve->setBounds(1,54,w-2,117);
+                for(size_t i=0;i<knobs.size();++i)
+                    knobs[i]->setBounds(8+int(i)%3*58,199+int(i)/3*55,50,53);
             } else if (compactKind == 3 || compactKind == 4) {
                 int top = 25;
                 if (compactKind == 4) {
@@ -459,6 +547,12 @@ class Card : public Component, public DragAndDropTarget {
                     knobs[i]->setBounds(5 + int(i) * kw, h - 69, kw, 64);
                 for (auto &button : actions)
                     button->setBounds(w - 94, h - 65, 88, 24);
+            } else if(compactKind == 7) {
+                choices[0]->setBounds(6,30,w-12,23);
+                for(size_t i=0;i<knobs.size();++i)knobs[i]->setBounds(10+int(i)*66,65,64,62);
+            } else if(compactKind == 6) {
+                for(size_t i=0;i<knobs.size();++i)
+                    knobs[i]->setBounds((w-50)/2, i==0?254:199,50,53);
             } else if (compactKind == 5) {
                 int kw = (w - 10) / 2;
                 for (size_t i = 0; i < knobs.size(); ++i)
@@ -535,6 +629,9 @@ class Scope : public Component, public SettableTooltipClient, private Timer {
         setTooltip("Output waveform and peak / FIFO from DSP");
     }
     void paint(Graphics &g) override {
+        if(getWidth()<100){g.fillAll(ink);g.setColour(peak>1?Colours::orange:accent);
+            int h=int((getHeight()-16)*std::min(1.f,peak));g.fillRect(10,getHeight()-4-h,getWidth()-20,h);
+            g.setColour(text);g.setFont(8.f);g.drawText("OUT",0,0,getWidth(),12,Justification::centred);return;}
         g.setColour(line);
         g.drawHorizontalLine(getHeight() / 2, 0, float(getWidth() - 85));
         g.setColour(accent);
@@ -654,6 +751,9 @@ class Editor : public AudioProcessorEditor, public DragAndDropContainer, private
     Label brand, preset, status;
     TextButton save{"Save"}, load{"Load"}, undo{"Undo"}, redo{"Redo"}, advanced{"All parameters"};
     std::array<TextButton, 5> tabs;
+    std::array<TextButton,2> filterTabs;
+    int selectedFilter=0;
+    std::unique_ptr<aurora_ui::Knob> masterControl;
     Viewport viewport;
     PageHost content;
     MidiKeyboardComponent keyboard;
@@ -706,6 +806,22 @@ class Editor : public AudioProcessorEditor, public DragAndDropContainer, private
 
   public:
     void refreshForTest() { timerCallback(); }
+    bool referenceLayoutForTest() {
+        showPage(0);
+        bool okay=cards.size()==11;
+        for(int i=0;i<3;++i)okay &= cards[size_t(i)]->getBounds()==Rectangle<int>(76+270*i,0,270,318);
+        for(int f=0;f<2;++f){filterTabs[size_t(f)].onClick();
+            okay &= cards[size_t(3+f)]->isVisible() && !cards[size_t(4-f)]->isVisible();}
+        filterTabs[0].onClick();
+        for(auto &c:cards)for(auto &k:c->knobs)
+            okay &= c->getLocalBounds().contains(k->getBounds());
+        for(int width:{660,960,1190,1600}){
+            setSize(width,roundToInt(width*740.0/1190.0));okay &= pageFitsForTest();
+        }
+        setSize(960,roundToInt(960*740.0/1190.0));
+        return okay;
+    }
+
     bool pageFitsForTest() {
         auto bounds = content.getBoundsInParent();
         return bounds.getBottom() <= viewport.getHeight() + 1 &&
@@ -734,6 +850,12 @@ class Editor : public AudioProcessorEditor, public DragAndDropContainer, private
           keyboard(a.keyboard, MidiKeyboardComponent::horizontalKeyboard), scope(a.telemetry),
           matrixModel(a, matrix), browserModel(*this) {
         setLookAndFeel(&theme);
+        masterControl=std::make_unique<aurora_ui::Knob>(p,"master","MAIN");
+        masterControl->setCompact();addAndMakeVisible(*masterControl);
+        for(int i=0;i<2;++i){auto &b=filterTabs[size_t(i)];
+            b.setButtonText("FILTER "+String(i+1));addAndMakeVisible(b);
+            b.onClick=[this,i]{selectedFilter=i;layoutPage();};}
+
         for (int i = 0; i < 4; ++i) {
             auto button = std::make_unique<aurora_ui::SourceButton>("ENV " + String(i + 1), 4 + i);
             button->onClick = [this, i] {
@@ -758,13 +880,13 @@ class Editor : public AudioProcessorEditor, public DragAndDropContainer, private
         setResizable(true, true);
         setResizeLimits(660, 390, 1800, 1064);
         if (auto *limits = getConstrainer())
-            limits->setFixedAspectRatio(1320.0 / 780.0);
+            limits->setFixedAspectRatio(1190.0 / 740.0);
         for (Component *c :
              std::initializer_list<Component *>{&brand, &preset, &status, &save, &load, &undo,
                                                 &redo, &advanced, &viewport, &keyboard, &scope})
             addAndMakeVisible(c);
         brand.setText(AURORA_FX ? "AURORA FX" : "AURORA", dontSendNotification);
-        brand.setFont(Font(24.f, Font::bold));
+        brand.setFont(Font(19.f, Font::bold));
         preset.setText("Init / Independent Audio", dontSendNotification);
         preset.setFont(Font(14.f));
         status.setText(
@@ -873,8 +995,8 @@ class Editor : public AudioProcessorEditor, public DragAndDropContainer, private
             initialWidth =
                 jlimit(660, 960,
                        int(std::min(display->userArea.getWidth() * .9,
-                                    display->userArea.getHeight() * .85 * 1320.0 / 780.0)));
-        setSize(initialWidth, roundToInt(initialWidth * 780.0 / 1320.0));
+                                    display->userArea.getHeight() * .85 * 1190.0 / 740.0)));
+        setSize(initialWidth, roundToInt(initialWidth * 740.0 / 1190.0));
         showPage(AURORA_FX ? 2 : 0);
         startTimerHz(30);
     }
@@ -1009,6 +1131,7 @@ class Editor : public AudioProcessorEditor, public DragAndDropContainer, private
                 c.addKnob(key("filter", f, "cutoff"), "Cutoff Hz", 9 + f);
                 c.addKnob(key("filter", f, "res"), "Resonance");
                 c.addCurve("filter", f);
+                c.addFilterRouting(f);
                 c.makeCompact(2);
             }
             auto &env = card("ENV " + String(envIndex + 1), 4 + envIndex);
@@ -1029,9 +1152,7 @@ class Editor : public AudioProcessorEditor, public DragAndDropContainer, private
             auto &macros = card("MACROS");
             for (int i = 0; i < 8; ++i)
                 macros.addKnob(key("macro", i, "value"), "M" + String(i + 1));
-            macros.addKnob("noise", "Noise");
-            macros.addKnob("sub", "Sub");
-            macros.addKnob("master", "Master");
+
             macros.makeCompact(5);
             auto &lfo = card("LFO " + String(lfoIndex + 1), 8 + lfoIndex);
             lfo.addCurve("lfo", lfoIndex);
@@ -1056,7 +1177,12 @@ class Editor : public AudioProcessorEditor, public DragAndDropContainer, private
             voicing.addChoice("voice_mode", "Mode");
             voicing.addKnob("voice_limit", "Voices");
             voicing.addKnob("portamento", "Porta ms");
-            voicing.makeCompact(2);
+            voicing.makeCompact(7);
+            auto &sub = card("SUB"); sub.addKnob("sub", "Level");
+            sub.addKnob(key("route",4,"balance"), "Filter"); sub.makeCompact(6);
+            auto &noise = card("NOISE"); noise.addKnob("noise", "Level");
+            noise.addKnob(key("route",3,"balance"), "Filter"); noise.makeCompact(6);
+
             lfoSelector.clear(dontSendNotification);
             for (int i = 0; i < 10; ++i)
                 lfoSelector.addItem("LFO " + String(i + 1), i + 1);
@@ -1181,40 +1307,29 @@ class Editor : public AudioProcessorEditor, public DragAndDropContainer, private
         layoutPage();
     }
     void layoutPage() {
-        int w = std::max(900, viewport.getWidth() - 16), gap = 12;
+        int w = 1190, gap = 12;
+        for(auto &b:filterTabs){b.setVisible(page==0);b.toFront(false);}
         if (cards.empty() && page != 5) {
             content.setSize(w, 100);
             return;
         }
         if (page == 0) {
-            int sidebar = 100, fw = 132, cw = (w - sidebar - fw * 2 - 15) / 3;
-            for (int i = 0; i < 3; ++i)
-                cards[size_t(i)]->setBounds(sidebar + i * (cw + 3), 0, cw, 305);
-            cards[3]->setBounds(sidebar + 3 * (cw + 3), 0, fw, 305);
-            cards[4]->setBounds(sidebar + 3 * (cw + 3) + fw + 3, 0,
-                                w - (sidebar + 3 * (cw + 3) + fw + 3), 305);
-            int ew = int((w - sidebar) * .43);
-            cards[5]->setBounds(sidebar, 309, ew, 266);
-            cards[6]->setBounds(0, 0, 96, 575);
-            cards[7]->setBounds(sidebar + ew + 4, 309, w - sidebar - ew - 152, 266);
-            cards[8]->setBounds(w - 144, 309, 144, 266);
-            selector.setBounds(sidebar + ew - 136, 311, 130, 20);
-            for (int i = 0; i < 4; ++i) {
-                envDock[size_t(i)]->setBounds(8 + sidebar + i * ew / 4, 66 + 311, ew / 4 - 2, 20);
-                envDock[size_t(i)]->setToggleState(i == envIndex, dontSendNotification);
-                envDock[size_t(i)]->toFront(false);
-            }
-            int lw = w - sidebar - ew - 152;
-            for (int i = 0; i < 10; ++i) {
-                lfoDock[size_t(i)]->setBounds(8 + sidebar + ew + 4 + i * lw / 10, 66 + 311,
-                                              lw / 10 - 2, 20);
-                lfoDock[size_t(i)]->setToggleState(i == lfoIndex, dontSendNotification);
-                lfoDock[size_t(i)]->toFront(false);
-            }
-            lfoSelector.setBounds(w - 136, 311, 130, 20);
-            content.setSize(w, 575);
-            selector.setVisible(false);
-            lfoSelector.setVisible(false);
+            const char *oscPanels[]{"OscPage/OSC A","OscPage/OSC B","OscPage/OSC C"};
+            for(int i=0;i<3;++i)cards[size_t(i)]->setBounds(aurora_ui::reference::bounds(oscPanels[i]));
+            for(int i=0;i<2;++i){cards[size_t(3+i)]->setBounds(986,0,204,318);
+                cards[size_t(3+i)]->setVisible(i==selectedFilter);
+                filterTabs[size_t(i)].setToggleState(i==selectedFilter,dontSendNotification);}
+            cards[5]->setBounds(166,356,350,225);
+            cards[6]->setBounds(0,318,166,265);
+            cards[7]->setBounds(518,356,520,225);
+            cards[8]->setBounds(1038,356,152,225);
+            cards[9]->setBounds(0,0,76,318);
+            cards[10]->setBounds(886,0,100,318);
+            for(int i=0;i<4;++i){envDock[size_t(i)]->setBounds(166+i*87,387,86,37);
+                envDock[size_t(i)]->setToggleState(i==envIndex,dontSendNotification);}
+            for(int i=0;i<10;++i){lfoDock[size_t(i)]->setBounds(518+i*52,387,51,37);
+                lfoDock[size_t(i)]->setToggleState(i==lfoIndex,dontSendNotification);}
+            content.setSize(w,583);selector.setVisible(false);lfoSelector.setVisible(false);
         } else if (page == 1) {
             int cw = (w - 3 * gap) / 4;
             for (size_t i = 0; i < cards.size(); ++i)
@@ -1255,32 +1370,24 @@ class Editor : public AudioProcessorEditor, public DragAndDropContainer, private
         viewport.setScrollBarsShown(false, false);
     }
     void resized() override {
-        int w = 1320;
-        const int logicalHeight = 780;
-        brand.setBounds(12, 5, 160, 28);
-        preset.setBounds(180, 5, w - 620, 28);
-        presetsButton.setBounds(w - 493, 8, 65, 23);
-        save.setBounds(w - 420, 8, 64, 23);
-        load.setBounds(w - 347, 8, 64, 23);
-        undo.setBounds(w - 272, 8, 62, 23);
-        redo.setBounds(w - 203, 8, 62, 23);
-        advanced.setBounds(w - 134, 8, 114, 23);
-        for (int i = 0; i < 5; ++i)
-            tabs[size_t(i)].setBounds(12 + i * 125, 37, 120, 22);
-        scope.setBounds(w - 230, 36, 210, 25);
-        viewport.setBounds(8, 66, w - 16, logicalHeight - (AURORA_FX ? 120 : 176));
-        status.setBounds(8, logicalHeight - (AURORA_FX ? 42 : 103), w - 16, 20);
-        modulationPicker.setBounds(8, logicalHeight - 81, 150, 22);
-        modulationDrag.setBounds(165, logicalHeight - 81, 135, 22);
-        keyboard.setBounds(8, logicalHeight - 54, w - 16, 45);
-        pitchCaption.setBounds(315, logicalHeight - 81, 45, 22);
-        pitchWheel.setBounds(360, logicalHeight - 81, 105, 22);
-        modCaption.setBounds(485, logicalHeight - 81, 40, 22);
-        modWheel.setBounds(525, logicalHeight - 81, 105, 22);
-        if (advancedEditor)
-            advancedEditor->setBounds(18, 103, w - 36, logicalHeight - 185);
+        constexpr int w=aurora_ui::reference::width, logicalHeight=aurora_ui::reference::height;
+        brand.setBounds(10,4,150,31);advanced.setBounds(9,39,148,23);
+        for(int i=0;i<5;++i)tabs[size_t(i)].setBounds(166+i*68,0,67,68);
+        preset.setBounds(516,5,550,27);
+        presetsButton.setBounds(516,39,100,23);load.setBounds(623,39,90,23);
+        save.setBounds(720,39,90,23);undo.setBounds(817,39,90,23);redo.setBounds(914,39,90,23);
+        masterControl->setBounds(1087,4,52,60);scope.setBounds(1146,7,36,53);
+        viewport.setBounds(0,69,w,583);
+        filterTabs[0].setBounds(986,69,79,26);filterTabs[1].setBounds(1087,69,79,26);
+        status.setBounds(170,641,1015,12);status.setFont(Font(9.f));
+        pitchCaption.setBounds(3,655,43,17);modCaption.setBounds(47,655,43,17);
+        pitchWheel.setSliderStyle(Slider::LinearVertical);modWheel.setSliderStyle(Slider::LinearVertical);
+        pitchWheel.setBounds(8,676,29,57);modWheel.setBounds(51,676,29,57);
+        modulationPicker.setBounds(95,656,285,25);modulationDrag.setBounds(95,688,285,25);
+        keyboard.setBounds(393,657,790,77);
+        if(advancedEditor)advancedEditor->setBounds(18,103,w-36,logicalHeight-185);
         layoutPage();
-        float zoom = std::min(float(getWidth()) / 1320.f, float(getHeight()) / 780.f);
+        float zoom=std::min(float(getWidth())/1190.f,float(getHeight())/740.f);
         for (int i = 0; i < getNumChildComponents(); ++i) {
             auto *child = getChildComponent(i);
             if (dynamic_cast<ResizableCornerComponent *>(child)) {

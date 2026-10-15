@@ -54,3 +54,7 @@ O leitor C++ é independente. As referências públicas usadas para conferir o c
 - [serum2vital: formatos e fontes de modulação](https://github.com/btesser/serum2vital/blob/main/docs/FORMATS.md)
 
 Os dados de presets locais foram lidos para conferir os campos e testar a implementação. Não foi incorporado código executável do Serum.
+
+## Preview wavetable posterior à 0.2.2
+
+As tabelas importadas agora usam o leitor recuperado de 16 taps/512 fases e transições de nível por subvoz. Isso substitui a interpolação linear anterior; não altera os limites de importação de warp/FM, multisamples e demais motores. Os níveis FFT e sua seleção continuam próprios do Aurora. Consulte WAVETABLE_ADVANCE.md.
