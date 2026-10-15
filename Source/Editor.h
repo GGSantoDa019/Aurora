@@ -98,10 +98,13 @@ class Knob : public Component, public DragAndDropTarget {
     String id;
     Label label;
     LearnSlider slider;
+    Slider depthSlider;
+    int routeIndex = -1, preferredRoute = -1;
+    std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> depthAttachment;
     std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment> attachment;
     int target;
     bool hovering = false;
-    float modulation = 0;
+    float modulation = 0, minimum = 0, maximum = 0;
     bool compact = false;
 
   public:
@@ -109,6 +112,12 @@ class Knob : public Component, public DragAndDropTarget {
         : p(a), id(key), slider(a, key), target(destination) {
         addAndMakeVisible(label);
         addAndMakeVisible(slider);
+        addChildComponent(depthSlider);
+        depthSlider.setSliderStyle(Slider::LinearHorizontal);
+        depthSlider.setTextBoxStyle(Slider::NoTextBox, false, 0, 0);
+        depthSlider.setPopupDisplayEnabled(true, true, this);
+        depthSlider.setTooltip("Modulation depth: left = negative, centre = zero, right = "
+                               "positive. Base value and signed depth define the minimum/maximum.");
         label.setText(title, dontSendNotification);
         label.setJustificationType(Justification::centred);
         label.setFont(Font(11.f));
@@ -167,17 +176,78 @@ class Knob : public Component, public DragAndDropTarget {
     }
     void itemDropped(const SourceDetails &d) override {
         hovering = false;
-        for (int i = 0; i < 64; ++i)
-            if (read(p, key("mod", i, "source")) == 0) {
-                p.undo.beginNewTransaction("Create modulation");
-                write(p, key("mod", i, "source"), float(int(d.description)));
-                write(p, key("mod", i, "target"), float(target));
-                write(p, key("mod", i, "depth"), .25f);
+        int source = int(d.description), slot = -1;
+        for (int i = 0; i < 64; ++i) {
+            int existing = int(read(p, key("mod", i, "source")));
+            if (existing == source && int(read(p, key("mod", i, "target"))) == target) {
+                slot = i;
                 break;
             }
+            if (slot < 0 && existing == 0)
+                slot = i;
+        }
+        if (slot < 0)
+            return;
+        if (read(p, key("mod", slot, "source")) == 0) {
+            p.undo.beginNewTransaction("Create modulation");
+            write(p, key("mod", slot, "source"), float(source));
+            write(p, key("mod", slot, "target"), float(target));
+            float base = p.state.getParameter(id)->convertTo0to1(float(slider.getValue()));
+            bool high = target >= 9 ? slider.getValue() > 1000.0 : base > .5f;
+            write(p, key("mod", slot, "depth"), high ? -.75f : .5f);
+        }
+        preferredRoute = slot;
+        refresh();
         repaint();
     }
     void refresh() {
+        int found = -1;
+        for (int i = 0; i < 64; ++i)
+            if (target > 0 && int(read(p, key("mod", i, "target"))) == target &&
+                read(p, key("mod", i, "source")) > 0)
+                found = i;
+        if (preferredRoute >= 0 && read(p, key("mod", preferredRoute, "source")) > 0 &&
+            int(read(p, key("mod", preferredRoute, "target"))) == target)
+            found = preferredRoute;
+        if (found != routeIndex) {
+            depthAttachment.reset();
+            routeIndex = found;
+            depthSlider.setVisible(found >= 0);
+            if (found >= 0)
+                depthAttachment = std::make_unique<AudioProcessorValueTreeState::SliderAttachment>(
+                    p.state, key("mod", found, "depth"), depthSlider);
+            resized();
+        }
+        if (found >= 0) {
+            float depth = read(p, key("mod", found, "depth"));
+            bool bipolar = read(p, key("mod", found, "source")) >= 8 &&
+                           read(p, key("mod", found, "source")) < 18;
+            auto *param = p.state.getParameter(id);
+            float base = float(slider.getValue());
+            auto range = param->getNormalisableRange();
+            auto valueAt = [&](float offset) {
+                return jlimit(range.start, range.end,
+                              target >= 9   ? base * std::pow(2.f, offset * 8)
+                              : target == 7 ? base + offset * 24
+                                            : base + offset);
+            };
+            float lo = valueAt(bipolar ? -std::abs(depth) : std::min(0.f, depth)),
+                  hi = valueAt(bipolar ? std::abs(depth) : std::max(0.f, depth));
+            depthSlider.setTooltip("Depth " + String(depth, 2) + " | Min " +
+                                   param->getText(param->convertTo0to1(lo), 32) + " | Max " +
+                                   param->getText(param->convertTo0to1(hi), 32));
+            depthSlider.textFromValueFunction = [this](double amount) {
+                return "Depth " + String(amount, 2) + " | " +
+                       depthSlider.getTooltip().fromFirstOccurrenceOf("Min", true, false);
+            };
+            float nextMinimum = param->convertTo0to1(lo), nextMaximum = param->convertTo0to1(hi);
+            if (std::abs(minimum - nextMinimum) > .001f ||
+                std::abs(maximum - nextMaximum) > .001f) {
+                minimum = nextMinimum;
+                maximum = nextMaximum;
+                repaint();
+            }
+        }
         float amount = 0;
         if (target)
             for (int i = 0; i < 64; ++i)
@@ -195,19 +265,30 @@ class Knob : public Component, public DragAndDropTarget {
             g.setColour(accent.withAlpha(.15f));
             g.fillRoundedRectangle(getLocalBounds().toFloat(), 7);
         }
-        if (modulation > 0) {
-            g.setColour(accent.withAlpha(.3f + .7f * modulation));
-            g.drawEllipse(getWidth() * .5f - 31, 23, 62, 62, 1.5f);
-        }
+    }
+    void paintOverChildren(Graphics &g) override {
+        if (routeIndex < 0)
+            return;
+        auto bounds = slider.getBounds().toFloat().reduced(2.f);
+        if (!compact)
+            bounds.removeFromBottom(20.f);
+        float radius = std::min(bounds.getWidth(), bounds.getHeight()) * .5f;
+        Path limits;
+        limits.addCentredArc(bounds.getCentreX(), bounds.getCentreY(), radius, radius, 0,
+                             -2.35f + minimum * 4.7f, -2.35f + maximum * 4.7f, true);
+        g.setColour(waveGreen);
+        g.strokePath(limits, PathStrokeType(2.f));
     }
     void resized() override {
         if (compact) {
             label.setBounds(0, getHeight() - 16, getWidth(), 16);
-            slider.setBounds(0, 0, getWidth(), getHeight() - 15);
+            slider.setBounds(0, 0, getWidth(), getHeight() - (routeIndex >= 0 ? 28 : 15));
+            depthSlider.setBounds(3, getHeight() - 29, getWidth() - 6, 12);
             return;
         }
         label.setBounds(0, 0, getWidth(), 18);
-        slider.setBounds(0, 18, getWidth(), getHeight() - 18);
+        slider.setBounds(0, 18, getWidth(), getHeight() - (routeIndex >= 0 ? 33 : 18));
+        depthSlider.setBounds(3, getHeight() - 15, getWidth() - 6, 12);
     }
     void setCompact() {
         compact = true;
@@ -348,12 +429,12 @@ class Card : public Component, public DragAndDropTarget {
                 if (choices.size() > 1)
                     choices[1]->setBounds(5, 50, w - 10, 23);
                 if (curve)
-                    curve->setBounds(5, 77, w - 10, h - 214);
+                    curve->setBounds(5, 77, w - 10, h - 241);
                 int kw = (w - 10) / 5;
                 for (size_t i = 0; i < knobs.size(); ++i)
-                    knobs[i]->setBounds(5 + int(i) % 5 * kw, h - 134 + int(i) / 5 * 52, kw, 52);
-                for (auto &button : actions)
-                    button->setBounds(5, h - 27, w - 10, 22);
+                    knobs[i]->setBounds(5 + int(i) % 5 * kw, h - 161 + int(i) / 5 * 52, kw, 52);
+                for (size_t i = 0; i < actions.size(); ++i)
+                    actions[i]->setBounds(5, h - 27 * int(actions.size() - i), w - 10, 22);
             } else if (compactKind == 2) {
                 if (!choices.empty())
                     choices[0]->setBounds(5, 27, w - 10, 25);
@@ -623,6 +704,15 @@ class Editor : public AudioProcessorEditor, public DragAndDropContainer, private
     } browserModel;
 
   public:
+    void refreshForTest() { timerCallback(); }
+    bool pageFitsForTest() {
+        auto bounds = content.getBoundsInParent();
+        return bounds.getBottom() <= viewport.getHeight() + 1 &&
+               bounds.getRight() <= viewport.getWidth() + 1 &&
+               !viewport.getVerticalScrollBar().isVisible() &&
+               !viewport.getHorizontalScrollBar().isVisible() &&
+               keyboard.getBoundsInParent().getBottom() <= getHeight() + 1;
+    }
     int testGPU() {
 #if JUCE_MODAL_LOOPS_PERMITTED
         showPage(0);
@@ -665,7 +755,9 @@ class Editor : public AudioProcessorEditor, public DragAndDropContainer, private
         addAndMakeVisible(presetsButton);
         presetsButton.onClick = [this] { showPage(5); };
         setResizable(true, true);
-        setResizeLimits(1060, 650, 1800, 1200);
+        setResizeLimits(660, 390, 1800, 1064);
+        if (auto *limits = getConstrainer())
+            limits->setFixedAspectRatio(1320.0 / 780.0);
         for (Component *c :
              std::initializer_list<Component *>{&brand, &preset, &status, &save, &load, &undo,
                                                 &redo, &advanced, &viewport, &keyboard, &scope})
@@ -775,7 +867,13 @@ class Editor : public AudioProcessorEditor, public DragAndDropContainer, private
                     safe->showPage(0);
             });
         };
-        setSize(1320, 780);
+        int initialWidth = 960;
+        if (auto *display = Desktop::getInstance().getDisplays().getPrimaryDisplay())
+            initialWidth =
+                jlimit(660, 960,
+                       int(std::min(display->userArea.getWidth() * .9,
+                                    display->userArea.getHeight() * .85 * 1320.0 / 780.0)));
+        setSize(initialWidth, roundToInt(initialWidth * 780.0 / 1320.0));
         showPage(AURORA_FX ? 2 : 0);
         startTimerHz(30);
     }
@@ -793,7 +891,25 @@ class Editor : public AudioProcessorEditor, public DragAndDropContainer, private
         for (auto &c : cards)
             for (auto &knob : c->knobs)
                 knob->refresh();
-        if(page==0&&cards.size()>2)for(int i=0;i<3;++i){bool table=read(p,key("osc",i,"mode"))<.5f;for(int k=5;k<10;++k)cards[size_t(i)]->knobs[size_t(k)]->setEnabled(table);cards[size_t(i)]->knobs[4]->setEnabled(int(read(p,key("osc",i,"mode")))==3);cards[size_t(i)]->choices[1]->setEnabled(table);}
+        if (page == 0 && cards.size() > 2)
+            for (int i = 0; i < 3; ++i) {
+                bool table = read(p, key("osc", i, "mode")) < .5f;
+                for (int k = 5; k < 10; ++k)
+                    cards[size_t(i)]->knobs[size_t(k)]->setEnabled(table);
+                cards[size_t(i)]->knobs[4]->setEnabled(int(read(p, key("osc", i, "mode"))) == 3);
+                cards[size_t(i)]->choices[1]->setEnabled(table);
+            }
+        if (page == 0 && cards.size() > 2)
+            for (int i = 0; i < 3; ++i) {
+                float dest = read(p, key("route", i, "dest")),
+                      blend = read(p, key("route", i, "balance"));
+                cards[size_t(i)]->actions[1]->setButtonText(dest >= .75f   ? "Route: None"
+                                                            : dest >= .5f  ? "Route: Direct"
+                                                            : dest >= .25f ? "Route: Main"
+                                                            : blend < -50  ? "Route: Filter 1"
+                                                            : blend > 50   ? "Route: Filter 2"
+                                                                           : "Route: Both filters");
+            }
         if (roll)
             roll->repaint();
         undo.setEnabled(p.undo.canUndo());
@@ -860,6 +976,24 @@ class Editor : public AudioProcessorEditor, public DragAndDropContainer, private
                 c.addKnob(key("osc", s, "random"), "Random");
                 c.addChoice(key("osc", s, "warp"), "Warp mode");
                 c.button("Import audio / SFZ", [this, s] { chooseSample(s); });
+                float destination = read(p, key("route", s, "dest")),
+                      balance = read(p, key("route", s, "balance"));
+                String routeLabel = destination >= .75f   ? "Route: None"
+                                    : destination >= .5f  ? "Route: Direct"
+                                    : destination >= .25f ? "Route: Main"
+                                    : balance < -50       ? "Route: Filter 1"
+                                    : balance > 50        ? "Route: Filter 2"
+                                                          : "Route: Both filters";
+                c.button(routeLabel, [this, s] {
+                    float dest = read(p, key("route", s, "dest")),
+                          balance = read(p, key("route", s, "balance"));
+                    int next = dest >= .25f ? 0 : balance < -50 ? 1 : balance > 50 ? 2 : 3;
+                    write(p, key("route", s, "dest"), next == 3 ? .25f : 0.f);
+                    write(p, key("route", s, "balance"),
+                          next == 0   ? -100.f
+                          : next == 1 ? 100.f
+                                      : 0.f);
+                });
                 c.makeCompact(1);
             }
             for (int f = 0; f < 2; ++f) {
@@ -911,7 +1045,11 @@ class Editor : public AudioProcessorEditor, public DragAndDropContainer, private
                            });
                        });
             lfo.makeCompact(4);
-            auto& voicing=card("VOICING");voicing.addChoice("voice_mode","Mode");voicing.addKnob("voice_limit","Voices");voicing.addKnob("portamento","Porta ms");voicing.makeCompact(2);
+            auto &voicing = card("VOICING");
+            voicing.addChoice("voice_mode", "Mode");
+            voicing.addKnob("voice_limit", "Voices");
+            voicing.addKnob("portamento", "Porta ms");
+            voicing.makeCompact(2);
             lfoSelector.clear(dontSendNotification);
             for (int i = 0; i < 10; ++i)
                 lfoSelector.addItem("LFO " + String(i + 1), i + 1);
@@ -1051,7 +1189,8 @@ class Editor : public AudioProcessorEditor, public DragAndDropContainer, private
             int ew = int((w - sidebar) * .43);
             cards[5]->setBounds(sidebar, 309, ew, 266);
             cards[6]->setBounds(0, 0, 96, 575);
-            cards[7]->setBounds(sidebar+ew+4,309,w-sidebar-ew-152,266);cards[8]->setBounds(w-144,309,144,266);
+            cards[7]->setBounds(sidebar + ew + 4, 309, w - sidebar - ew - 152, 266);
+            cards[8]->setBounds(w - 144, 309, 144, 266);
             selector.setBounds(sidebar + ew - 136, 311, 130, 20);
             for (int i = 0; i < 4; ++i) {
                 envDock[size_t(i)]->setBounds(8 + sidebar + i * ew / 4, 66 + 311, ew / 4 - 2, 20);
@@ -1103,9 +1242,14 @@ class Editor : public AudioProcessorEditor, public DragAndDropContainer, private
             browserList.setBounds(0, 44, w, 490);
             content.setSize(w, 548);
         }
+        float fit =
+            std::min(1.f, float(viewport.getHeight()) / float(std::max(1, content.getHeight())));
+        content.setTransform(AffineTransform::scale(fit));
+        viewport.setScrollBarsShown(false, false);
     }
     void resized() override {
-        int w = getWidth();
+        int w = 1320;
+        const int logicalHeight = 780;
         brand.setBounds(12, 5, 160, 28);
         preset.setBounds(180, 5, w - 620, 28);
         presetsButton.setBounds(w - 493, 8, 65, 23);
@@ -1117,18 +1261,30 @@ class Editor : public AudioProcessorEditor, public DragAndDropContainer, private
         for (int i = 0; i < 5; ++i)
             tabs[size_t(i)].setBounds(12 + i * 125, 37, 120, 22);
         scope.setBounds(w - 230, 36, 210, 25);
-        viewport.setBounds(8, 66, w - 16, getHeight() - (AURORA_FX ? 120 : 176));
-        status.setBounds(8, getHeight() - (AURORA_FX ? 42 : 103), w - 16, 20);
-        modulationPicker.setBounds(8, getHeight() - 81, 150, 22);
-        modulationDrag.setBounds(165, getHeight() - 81, 135, 22);
-        keyboard.setBounds(8, getHeight() - 54, w - 16, 45);
-        pitchCaption.setBounds(315, getHeight() - 81, 45, 22);
-        pitchWheel.setBounds(360, getHeight() - 81, 105, 22);
-        modCaption.setBounds(485, getHeight() - 81, 40, 22);
-        modWheel.setBounds(525, getHeight() - 81, 105, 22);
+        viewport.setBounds(8, 66, w - 16, logicalHeight - (AURORA_FX ? 120 : 176));
+        status.setBounds(8, logicalHeight - (AURORA_FX ? 42 : 103), w - 16, 20);
+        modulationPicker.setBounds(8, logicalHeight - 81, 150, 22);
+        modulationDrag.setBounds(165, logicalHeight - 81, 135, 22);
+        keyboard.setBounds(8, logicalHeight - 54, w - 16, 45);
+        pitchCaption.setBounds(315, logicalHeight - 81, 45, 22);
+        pitchWheel.setBounds(360, logicalHeight - 81, 105, 22);
+        modCaption.setBounds(485, logicalHeight - 81, 40, 22);
+        modWheel.setBounds(525, logicalHeight - 81, 105, 22);
         if (advancedEditor)
-            advancedEditor->setBounds(18, 103, w - 36, getHeight() - 185);
+            advancedEditor->setBounds(18, 103, w - 36, logicalHeight - 185);
         layoutPage();
+        float zoom = std::min(float(getWidth()) / 1320.f, float(getHeight()) / 780.f);
+        for (int i = 0; i < getNumChildComponents(); ++i) {
+            auto *child = getChildComponent(i);
+            if (dynamic_cast<ResizableCornerComponent *>(child)) {
+                child->setTransform({});
+                child->setBounds(getWidth() - 16, getHeight() - 16, 16, 16);
+            } else if (dynamic_cast<ResizableBorderComponent *>(child)) {
+                child->setTransform({});
+                child->setBounds(getLocalBounds());
+            } else
+                child->setTransform(AffineTransform::scale(zoom));
+        }
     }
     void paint(Graphics &g) override {
         g.fillAll(aurora_ui::ink);

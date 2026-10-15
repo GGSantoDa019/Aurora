@@ -1237,6 +1237,7 @@ bool auroraUIForTest(AudioProcessor &processor, const File &folder) {
     bool okay = true;
     for (int page = 0; page < 6; ++page) {
         editor.showPage(page);
+        okay &= editor.pageFitsForTest();
         auto image = editor.createComponentSnapshot(editor.getLocalBounds());
         auto file = folder.getChildFile("interface-" + String(page) + ".png");
         file.deleteFile();
@@ -1244,8 +1245,9 @@ bool auroraUIForTest(AudioProcessor &processor, const File &folder) {
         PNGImageFormat png;
         okay &= stream && png.writeImageToStream(image, *stream);
     }
-    editor.setSize(980, 720);
+    editor.setSize(660, 390);
     editor.showPage(0);
+    okay &= editor.pageFitsForTest();
     auto image = editor.createComponentSnapshot(editor.getLocalBounds());
     auto file = folder.getChildFile("interface-small.png");
     file.deleteFile();
@@ -1278,6 +1280,15 @@ bool auroraUIForTest(AudioProcessor &processor, const File &folder) {
     p.state.copyState();
     okay &= p.undo.undo() && std::abs(aurora_ui::read(p, "master") - before) < .001f;
     okay &= p.undo.redo() && std::abs(aurora_ui::read(p, "master") - .25f) < .001f;
+    editor.setSize(960, 567);
+    editor.showPage(0);
+    editor.refreshForTest();
+    auto modulationPreview = folder.getChildFile("interface-modulation.png");
+    modulationPreview.deleteFile();
+    auto modulationStream = modulationPreview.createOutputStream();
+    okay &= modulationStream &&
+            png.writeImageToStream(editor.createComponentSnapshot(editor.getLocalBounds()),
+                                   *modulationStream);
     return okay;
 }
 int auroraGpuForTest(AudioProcessor &processor) {
@@ -1330,3 +1341,56 @@ bool auroraPerformanceForTest() {
     return okay;
 }
 
+bool auroraRoutingModulationForTest() {
+    auto render = [](int scenario) {
+        Aurora p;
+        auto set = [&](String id, float value) {
+            auto *param = p.state.getParameter(id);
+            param->setValueNotifyingHost(param->convertTo0to1(value));
+        };
+        set("noise", 0);
+        set("sub", 0);
+        set("osc0_random", 0);
+        set("osc0_level", .8f);
+        set("route0_dest", scenario == 0 ? .25f : 0.f);
+        set("route0_balance", -100);
+        set("filter0_cutoff", scenario <= 1 ? 150.f : 8000.f);
+        std::unique_ptr<aurora_ui::Knob> control;
+        if (scenario == 3) {
+            set("env1_a", .001f);
+            set("env1_s", 1);
+            control = std::make_unique<aurora_ui::Knob>(p, "filter0_cutoff", "Cutoff", 9);
+            control->itemDropped(DragAndDropTarget::SourceDetails(var(5), nullptr, {}));
+        }
+        if (scenario == 4) {
+            set("lfo0_rate", 5);
+            set("lfo0_phase", .25f);
+            control = std::make_unique<aurora_ui::Knob>(p, "osc0_level", "Level", 1);
+            control->itemDropped(DragAndDropTarget::SourceDetails(var(8), nullptr, {}));
+        }
+        p.prepareToPlay(48000, 256);
+        AudioBuffer<float> result(2, 8192), block(2, 256);
+        MidiBuffer midi;
+        for (int offset = 0; offset < 8192; offset += 256) {
+            midi.clear();
+            if (!offset)
+                midi.addEvent(MidiMessage::noteOn(1, 72, .8f), 0);
+            p.processBlock(block, midi);
+            for (int c = 0; c < 2; ++c)
+                result.copyFrom(c, offset, block, c, 0, 256);
+        }
+        p.releaseResources();
+        return result;
+    };
+    auto dry = render(0), filtered = render(1), base = render(2), env = render(3), lfo = render(4);
+    auto difference = [](const AudioBuffer<float> &a, const AudioBuffer<float> &b) {
+        double energy = 0;
+        for (int i = 0; i < a.getNumSamples(); ++i) {
+            double d = a.getSample(0, i) - b.getSample(0, i);
+            energy += d * d;
+        }
+        return energy;
+    };
+    return filtered.getRMSLevel(0, 1024, 4096) < dry.getRMSLevel(0, 1024, 4096) * .5f &&
+           difference(base, env) > .1 && difference(base, lfo) > .1;
+}

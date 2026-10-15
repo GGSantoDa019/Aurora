@@ -4,28 +4,30 @@
 
 Aurora combina três osciladores com motores selecionáveis, modulação por envelopes e LFOs, racks de efeitos e uma interface com visualização OpenGL. O projeto inclui o instrumento **Aurora**, o efeito estéreo **Aurora FX** e um aplicativo **Standalone**.
 
-[Baixar versão 0.1.0](https://github.com/GGSantoDa019/Aurora/releases/tag/v0.1.0) · [Reportar problema](https://github.com/GGSantoDa019/Aurora/issues) · [Licença](LICENSE.txt)
+[Baixar versão 0.1.1](https://github.com/GGSantoDa019/Aurora/releases/tag/v0.1.1) · [Reportar problema](https://github.com/GGSantoDa019/Aurora/issues) · [Licença](LICENSE.txt)
 
 ![Interface do Aurora](interface.png)
 
 ## Downloads
 
-Na [página da release](https://github.com/GGSantoDa019/Aurora/releases/tag/v0.1.0):
+Na [página da release](https://github.com/GGSantoDa019/Aurora/releases/tag/v0.1.1):
 
 | Arquivo | Conteúdo |
 | --- | --- |
-| `Aurora-Expanded-Windows-x64.zip` | Aurora VST3, Aurora FX VST3, aplicativo Standalone, demonstração e documentação |
-| `Aurora-Expanded-Source.zip` | Código C++, JUCE e Zstandard incluídos |
-| `Aurora-Release-SHA256SUMS.txt` | Checksums SHA-256 dos dois pacotes |
+| `Aurora-0.1.1-Windows-x64.zip` | Aurora VST3, Aurora FX VST3, aplicativo Standalone, demonstração e documentação |
+| `Aurora-0.1.1-Source.zip` | Código C++, JUCE e Zstandard incluídos |
+| `Aurora-0.1.1-SHA256SUMS.txt` | Checksums SHA-256 dos dois pacotes |
 
-A versão 0.1.0 é uma versão inicial experimental. Os binários disponíveis foram compilados e validados em Windows x64; outros sistemas não foram validados.
+A versão 0.1.1 é uma versão inicial experimental. Os binários disponíveis foram compilados e validados em Windows x64; outros sistemas não foram validados.
 
 ## Instalação
 
-1. Extraia o pacote Windows.
+1. Extraia o pacote Windows. Feche a DAW antes de atualizar.
 2. Copie as **pastas completas** `Aurora.vst3` e `Aurora FX.vst3` para uma pasta reconhecida pela sua DAW. A pasta padrão no Windows é `C:\Program Files\Common Files\VST3`; copiar para ela pode exigir privilégios administrativos.
 3. Faça uma nova varredura de plugins na DAW.
 4. Abra **Aurora** numa pista MIDI ou **Aurora FX** numa pista de áudio.
+
+O pacote inclui `Instalar-Aurora.ps1`, que pode ser executado no PowerShell como administrador. Ele instala os dois VST3 na pasta padrão e preserva a instalação anterior em `Backups` dentro da pasta extraída. No FL Studio, ative **Verify plugins** e **Rescan previously verified plugins** antes de **Find installed plugins**.
 
 Para usar sem DAW, abra `Standalone/Aurora.exe` e configure o dispositivo de áudio. O pacote inclui `Demo.aurora` e `demo.wav`.
 
@@ -44,6 +46,15 @@ Para usar sem DAW, abra `Standalone/Aurora.exe` e configure o dispositivo de áu
 | Interface | Abas OSC/MIX/FX/MATRIX/GLOBAL, fontes de modulação arrastáveis, MIDI learn, undo/redo, teclado e piano roll |
 | Presets | Formato próprio `.aurora`, com samples, zonas e respostas ao impulso incorporados ao estado |
 | Visualização | Superfícies sombreadas em perspectiva via OpenGL, com renderização por software para previews e fallback |
+
+## Correções da versão 0.1.1
+
+- Janela inicial de 960×567; os controles escalam juntos ao redimensionar. As páginas principais cabem na área disponível sem rolagem externa.
+- Botão **Route** em cada oscilador da tela OSC: clique para alternar Filter 1, Filter 2, Both filters e Main. MIX continua oferecendo os controles completos de destino e balanço.
+- Ao arrastar uma fonte para um knob, aparece uma barra de profundidade assinada abaixo dele. O arco verde indica o intervalo; o popup/tooltip mostra Depth, Min e Max. O valor base do knob e a profundidade definem os extremos. Cada knob exibe uma rota por vez; ao arrastar, seleciona a rota criada ou já existente para aquela fonte. Use MATRIX para editar as demais.
+- A profundidade inicial aponta para baixo quando o valor base já está alto, evitando que uma modulação positiva fique inaudível por atingir o limite do parâmetro.
+- Removido o splash/logo JUCE da interface; os avisos de licença permanecem nos arquivos do projeto.
+- Teste de áudio confirma roteamento para filtro, envelope sobre cutoff e LFO sobre nível. As faixas exibidas são limites da rota selecionada; não representam a soma de todas as rotas nem um medidor instantâneo da modulação.
 
 ## Primeiros passos
 
@@ -88,7 +99,7 @@ O projeto também pode ser configurado com CMake em um Developer PowerShell para
 
 ## Validação
 
-O [relatório da release](validation.txt) registra **46 verificações aprovadas**, incluindo DSP, estabilidade dos efeitos, MIDI, presets, UI, Mono/Legato, compilação de shader num contexto OpenGL nativo e carregamento/reprodução dos dois plugins num host VST3 de testes.
+O [relatório da release](validation.txt) registra **47 verificações aprovadas**, incluindo DSP, estabilidade dos efeitos, MIDI, presets, UI, Mono/Legato, compilação de shader num contexto OpenGL nativo e carregamento/reprodução dos dois plugins num host VST3 de testes.
 
 Para executar os testes após uma compilação Release com Ninja, a partir da raiz do projeto:
 

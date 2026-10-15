@@ -6,6 +6,7 @@ extern bool auroraImportSFZForTest(juce::AudioProcessor &, int, const juce::File
 extern bool auroraUIForTest(juce::AudioProcessor &, const juce::File &);
 extern int auroraGpuForTest(juce::AudioProcessor &);
 extern bool auroraPerformanceForTest();
+extern bool auroraRoutingModulationForTest();
 int main(int argc, char **argv) {
     juce::ScopedJuceInitialiser_GUI initialise;
     using namespace aurora;
@@ -100,15 +101,16 @@ int main(int argc, char **argv) {
     juce::MemoryBlock restored;
     copy->getStateInformation(restored);
     check(state == restored, "preset state round-trip");
-    auto legacyFile = juce::File(__FILE__).getParentDirectory().getChildFile("Fixtures/Legacy.aurora");
+    auto legacyFile =
+        juce::File(__FILE__).getParentDirectory().getChildFile("Fixtures/Legacy.aurora");
     juce::MemoryBlock legacyState;
     bool legacyOk = legacyFile.loadFileAsData(legacyState);
     auto legacy = std::unique_ptr<juce::AudioProcessor>(createPluginFilter());
     if (legacyOk) {
         legacy->setStateInformation(legacyState.getData(), int(legacyState.getSize()));
         bool foundUnison = false;
-        for (auto* param : legacy->getParameters())
-            if (auto* id = dynamic_cast<juce::AudioProcessorParameterWithID*>(param))
+        for (auto *param : legacy->getParameters())
+            if (auto *id = dynamic_cast<juce::AudioProcessorParameterWithID *>(param))
                 if (id->paramID == "osc0_unison") {
                     foundUnison = true;
                     legacyOk &= std::abs(param->getValue() - param->getDefaultValue()) < 1e-6f;
@@ -226,6 +228,8 @@ int main(int argc, char **argv) {
           "UI pages / resize / modulation drop / FX reorder / MIDI learn / undo-redo");
     check(auroraPerformanceForTest(),
           "Mono/legato fallback / portamento / unison / Bezier envelope stability");
+    check(auroraRoutingModulationForTest(),
+          "OSC filter routing / envelope cutoff and LFO level affect rendered audio");
     int gpu = auroraGpuForTest(*plugin);
     if (gpu == 0)
         std::cout << "SKIP OpenGL native driver not available\n";
@@ -269,4 +273,3 @@ int main(int argc, char **argv) {
     }
     return fail ? 1 : 0;
 }
-

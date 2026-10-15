@@ -5,3 +5,7 @@
 *.suo
 /interface-[0-9].png
 /interface-small.png
+/work/
+/outputs/
+/Backups/
+/installation-result.txt
