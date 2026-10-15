@@ -221,7 +221,8 @@ class Knob : public Component, public DragAndDropTarget {
         if (found >= 0) {
             float depth = read(p, key("mod", found, "depth"));
             bool bipolar = read(p, key("mod", found, "source")) >= 8 &&
-                           read(p, key("mod", found, "source")) < 18;
+                           read(p, key("mod", found, "source")) < 18 &&
+                           !p.importedLfoUnipolar.load();
             auto *param = p.state.getParameter(id);
             float base = float(slider.getValue());
             auto range = param->getNormalisableRange();
@@ -674,7 +675,7 @@ class Editor : public AudioProcessorEditor, public DragAndDropContainer, private
     struct BrowserState {
         CriticalSection lock;
         Array<File> files;
-        String message, presetName;
+        String message, presetName, importReport;
         std::atomic<bool> ready{false};
     };
     std::shared_ptr<BrowserState> browser = std::make_shared<BrowserState>();
@@ -879,7 +880,7 @@ class Editor : public AudioProcessorEditor, public DragAndDropContainer, private
     }
     ~Editor() override {
         stopTimer();
-        jobs.removeAllJobs(true, 2000);
+        jobs.removeAllJobs(true, -1);
         advancedEditor.reset();
         cards.clear();
         sources.clear();
@@ -928,6 +929,12 @@ class Editor : public AudioProcessorEditor, public DragAndDropContainer, private
                     preset.setText(browser->presetName, dontSendNotification);
                     browser->presetName.clear();
                 }
+            }
+            if (browser->importReport.isNotEmpty()) {
+                AlertWindow::showMessageBoxAsync(AlertWindow::InfoIcon, "Serum preset import",
+                                                 browser->importReport.substring(0, 5000));
+                browser->importReport.clear();
+                showPage(page);
             }
         }
     }
@@ -1330,7 +1337,8 @@ class Editor : public AudioProcessorEditor, public DragAndDropContainer, private
     }
     void choosePreset(bool writing) {
         chooser = std::make_unique<FileChooser>(
-            writing ? "Save Aurora preset" : "Load Aurora preset", File{}, "*.aurora");
+            writing ? "Save Aurora preset" : "Load Aurora / Serum preset", File{},
+            writing ? "*.aurora" : "*.aurora;*.serumpreset;*.SerumPreset");
         chooser->launchAsync(
             (writing ? FileBrowserComponent::saveMode : FileBrowserComponent::openMode) |
                 FileBrowserComponent::canSelectFiles,
@@ -1350,15 +1358,35 @@ class Editor : public AudioProcessorEditor, public DragAndDropContainer, private
             });
     }
     void loadFile(File file) {
+        status.setText(file.hasFileExtension("serumpreset") ? "Importing Serum preset..."
+                                                            : "Loading preset...",
+                       dontSendNotification);
         auto *processor = &p;
         auto result = browser;
         jobs.addJob([processor, result, file] {
             MemoryBlock data;
-            bool ok = file.loadFileAsData(data);
-            if (ok)
-                processor->setStateInformation(data.getData(), int(data.getSize()));
+            bool foreign = file.hasFileExtension("serumpreset");
+            SerumImportReport report;
+            bool ok = false;
+            if (foreign)
+                ok = processor->importSerumPreset(file, report);
+            else if (file.getSize() > 0 && file.getSize() <= 128 * 1024 * 1024 &&
+                     file.loadFileAsData(data)) {
+                MemoryBlock binary;
+                if (decodePreset(data.getData(), int(data.getSize()), binary)) {
+                    auto xml =
+                        AudioProcessor::getXmlFromBinary(binary.getData(), int(binary.getSize()));
+                    if (xml && xml->hasTagName("AuroraState")) {
+                        processor->setStateInformation(data.getData(), int(data.getSize()));
+                        ok = true;
+                    }
+                }
+            }
             const ScopedLock lock(result->lock);
-            result->message = ok ? file.getFileNameWithoutExtension() : "Preset load failed";
+            result->message = ok ? file.getFileNameWithoutExtension()
+                                 : "Preset load failed; previous sound preserved";
+            if (foreign)
+                result->importReport = report.text();
             if (ok)
                 result->presetName = file.getFileNameWithoutExtension();
             result->ready.store(true);
@@ -1373,7 +1401,8 @@ class Editor : public AudioProcessorEditor, public DragAndDropContainer, private
                     auto directory = fc.getResult();
                     auto result = safe->browser;
                     safe->jobs.addJob([directory, result] {
-                        auto files = directory.findChildFiles(File::findFiles, true, "*.aurora");
+                        auto files = directory.findChildFiles(
+                            File::findFiles, true, "*.aurora;*.serumpreset;*.SerumPreset");
                         const ScopedLock lock(result->lock);
                         result->files = std::move(files);
                         result->message = "Preset folder scanned";

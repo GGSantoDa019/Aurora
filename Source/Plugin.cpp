@@ -1,7 +1,9 @@
 #include "Dsp.h"
+#include "ImportedWavetable.h"
 #include "LegacyParamOrder.h"
 #include "ModCurve.h"
 #include "Preset.h"
+#include "SerumImport.h"
 #include <memory>
 #include <regex>
 using namespace juce;
@@ -159,6 +161,16 @@ class Aurora : public AudioProcessor {
     std::array<double, 10> lfoTime{};
     float previousNote = 60;
     Wavetables tables;
+    std::array<std::shared_ptr<ImportedWavetable>, 3> importedTables;
+    std::atomic<bool> importedLfoUnipolar{false};
+    std::atomic<bool> importedSendOnlyRouting{false};
+    std::shared_ptr<ImportedWavetable> importedTable(int slot) const {
+        return std::atomic_load(&importedTables[size_t(slot)]);
+    }
+    float displayWave(int slot, double phase, float position, double hz, double sr) const {
+        auto table = importedTable(slot);
+        return table ? table->read(phase, position, hz, sr) : tables.read(phase, position, hz, sr);
+    }
     MidiKeyboardState keyboard;
     MidiBuffer midiScratch, sequenceOutput;
     std::atomic<int> uiPitch{8192}, uiMod{0};
@@ -474,7 +486,7 @@ class Aurora : public AudioProcessor {
             r *= env;
         }
         const int dest = config.dest;
-        if (dest == 3)
+        if (dest == 3 && !importedSendOnlyRouting.load())
             return;
         if (dest == 0 && index < 5) {
             float b = config.balance;
@@ -483,7 +495,7 @@ class Aurora : public AudioProcessor {
                 buses[2].addSample(c, sample, x * (1 - b));
                 buses[3].addSample(c, sample, x * b);
             }
-        } else {
+        } else if (dest != 3) {
             buses[0].addSample(0, sample, l);
             buses[0].addSample(1, sample, r);
         }
@@ -658,6 +670,8 @@ class Aurora : public AudioProcessor {
                     : val(key("lfo", j, "rise")) > 0
                         ? juce::jlimit(0.f, 1.f, float(elapsed) / val(key("lfo", j, "rise")))
                         : 1;
+                if (importedLfoUnipolar.load())
+                    lfoValue[size_t(j)] = (lfoValue[size_t(j)] + 1) * .5f;
                 lfoValue[size_t(j)] *= fade;
             }
             if (AURORA_FX) {
@@ -730,7 +744,7 @@ class Aurora : public AudioProcessor {
                     for (int i = 0; i < 256; ++i) {
                         if (frame.mode == 0 || samples[size_t(slot)].empty())
                             frame.samples[size_t(i)] =
-                                tables.read(i / 256., frame.position, 220, rate);
+                                displayWave(slot, i / 256., frame.position, 220, rate);
                         else {
                             const auto &source = samples[size_t(slot)][0].data;
                             int at = juce::jlimit(0, source.getNumSamples() - 1,
@@ -896,9 +910,308 @@ class Aurora : public AudioProcessor {
         auto &ir = irData[size_t(rack)];
         return applyIR(rack);
     }
+    File resolveSerumAsset(String path, const String &category, const File &presetFile,
+                           const File &library) {
+        path = path.replace("\\", "/");
+        if (path.startsWith("//"))
+            return {}; // Do not follow network paths from a preset.
+        if (File::isAbsolutePath(path) && path.contains(":")) {
+            File direct(path);
+            if (direct.existsAsFile())
+                return direct;
+        }
+        while (path.startsWithChar('/'))
+            path = path.substring(1);
+        if (path.isEmpty() || path.contains("../") || path == "..")
+            return {};
+        Array<File> roots;
+        if (library.isDirectory())
+            roots.add(library);
+        File folder = presetFile.getParentDirectory();
+        for (int i = 0; i < 8; ++i) {
+            roots.addIfNotAlreadyThere(folder);
+            auto parent = folder.getParentDirectory();
+            if (parent == folder)
+                break;
+            folder = parent;
+        }
+        auto prefs = File::getSpecialLocation(File::userApplicationDataDirectory)
+                         .getChildFile("Xfer/Serum 2/Serum2Prefs.json");
+        auto settings = JSON::parse(prefs.loadFileAsString());
+        String configured = settings["Serum Presets Path"].toString();
+        if (configured.isNotEmpty() && File::isAbsolutePath(configured))
+            roots.addIfNotAlreadyThere(File(configured));
+        int count = roots.size();
+        for (int i = 0; i < count; ++i)
+            roots.addIfNotAlreadyThere(roots[i].getSiblingFile("Serum Presets"));
+        for (const auto &root : roots) {
+            for (const auto &base : {root.getChildFile(category), root}) {
+                auto candidate = base.getChildFile(path);
+                if (candidate.isAChildOf(base) && candidate.existsAsFile())
+                    return candidate;
+            }
+        }
+        return {};
+    }
+    bool readSerumAudio(const File &file, AudioBuffer<float> &audio, double &sampleRate,
+                        double seconds) {
+        if (!file.hasFileExtension("wav;flac;aiff;aif"))
+            return false;
+        std::unique_ptr<AudioFormatReader> reader(formats.createReaderFor(file));
+        if (!reader || reader->sampleRate < 8000 || reader->sampleRate > 192000 ||
+            reader->lengthInSamples <= 0 ||
+            reader->lengthInSamples > reader->sampleRate * seconds ||
+            reader->lengthInSamples > 8 * 1024 * 1024 || reader->numChannels < 1 ||
+            reader->numChannels > 8)
+            return false;
+        audio.setSize(int(std::min(2u, reader->numChannels)), int(reader->lengthInSamples));
+        if (!reader->read(&audio, 0, audio.getNumSamples(), 0, true, audio.getNumChannels() > 1))
+            return false;
+        sampleRate = reader->sampleRate;
+        for (int c = 0; c < audio.getNumChannels(); ++c)
+            for (int i = 0; i < audio.getNumSamples(); ++i)
+                if (!std::isfinite(audio.getSample(c, i)) || std::abs(audio.getSample(c, i)) > 16)
+                    return false;
+        return true;
+    }
+    bool importSerumPreset(const File &file, SerumImportReport &report, const File &library = {}) {
+        if (AURORA_FX) {
+            report.error = "Use the Aurora instrument to import Serum presets.";
+            return false;
+        }
+        if (file.getSize() <= 0 || file.getSize() > 64 * 1024 * 1024) {
+            report.error = "Preset is missing or exceeds 64 MB.";
+            return false;
+        }
+        MemoryBlock bytes;
+        SerumDocument document;
+        if (!file.loadFileAsData(bytes)) {
+            report.error = "Could not read the preset file.";
+            return false;
+        }
+        if (!decodeSerum(bytes.getData(), bytes.getSize(), document, report))
+            return false;
+        auto plan = mapSerum(document, report);
+        ValueTree tree("AuroraState");
+        tree.setProperty("serumLfoUnipolar", true, nullptr);
+        tree.setProperty("serumSendOnlyRouting", true, nullptr);
+        for (auto *base : getParameters())
+            if (auto *parameter = dynamic_cast<RangedAudioParameter *>(base)) {
+                ValueTree child("PARAM");
+                child.setProperty("id", parameter->paramID, nullptr);
+                auto found = plan.values.find(parameter->paramID);
+                float value = found == plan.values.end()
+                                  ? parameter->convertFrom0to1(parameter->getDefaultValue())
+                                  : found->second;
+                auto range = parameter->getNormalisableRange();
+                value = range.snapToLegalValue(jlimit(range.start, range.end, value));
+                child.setProperty("value", value, nullptr);
+                tree.addChild(child, -1, nullptr);
+            }
+        auto set = [&](const String &id, float value) {
+            tree.getChildWithProperty("id", id).setProperty("value", value, nullptr);
+        };
+        int available = 0, missing = 0;
+        for (int slot = 0; slot < 3; ++slot) {
+            int mode = plan.engines[size_t(slot)];
+            auto asset = plan.oscillatorAssets[size_t(slot)];
+            auto common = serumParams(
+                document.payload.getProperty(Identifier("Oscillator" + String(slot)), {}));
+            if (serumNumber(common, "kParamEnable", slot == 0 ? 1 : 0) < .5)
+                continue;
+            String path =
+                asset.getProperty(mode == 0 ? "relativePathToWT" : "samplePath", {}).toString();
+            if (mode != 0 && path.isEmpty())
+                path = asset["samplePathRelative"].toString();
+            if (mode == 0 && path.isEmpty())
+                path = "S2 Tables/Default Shapes.wav";
+            auto resolved =
+                resolveSerumAsset(path, mode == 0 ? "Tables" : "Samples", file, library);
+            AudioBuffer<float> audio;
+            double sourceRate = 44100;
+            if (mode == 2) {
+                set(key("osc", slot, "level"), 0);
+                ++missing;
+                report.note("Multisample zones are not imported; affected oscillator disabled.");
+                continue;
+            }
+            if (!resolved.existsAsFile() || !readSerumAudio(resolved, audio, sourceRate, 120)) {
+                if (mode == 0) {
+                    report.note("Wavetable not found/readable: " + File(path).getFileName() +
+                                ". Using Aurora's generated table.");
+                    ++available;
+                } else {
+                    set(key("osc", slot, "level"), 0);
+                    ++missing;
+                    report.note("Sample not found/readable: " + File(path).getFileName() +
+                                ". Oscillator disabled.");
+                }
+                continue;
+            }
+            std::vector<float> mono(size_t(audio.getNumSamples()));
+            for (int i = 0; i < audio.getNumSamples(); ++i) {
+                float sample = audio.getSample(0, i);
+                if (audio.getNumChannels() > 1)
+                    sample = (sample + audio.getSample(1, i)) * .5f;
+                mono[size_t(i)] = sample;
+            }
+            if (mode == 0) {
+                if (mono.size() % ImportedWavetable::period) {
+                    report.note(
+                        "Unsupported wavetable frame length; using Aurora's generated table.");
+                    ++available;
+                    continue;
+                }
+                int frames = int(mono.size() / ImportedWavetable::period);
+                if (frames > ImportedWavetable::maxFrames) {
+                    std::vector<float> reduced(
+                        size_t(ImportedWavetable::maxFrames * ImportedWavetable::period));
+                    for (int i = 0; i < ImportedWavetable::maxFrames; ++i) {
+                        int source =
+                            roundToInt(i * double(frames - 1) / (ImportedWavetable::maxFrames - 1));
+                        std::copy_n(mono.data() + source * ImportedWavetable::period,
+                                    ImportedWavetable::period,
+                                    reduced.data() + i * ImportedWavetable::period);
+                    }
+                    mono = std::move(reduced);
+                    report.note("Wavetable reduced to 256 frames.");
+                }
+                ValueTree wave("ImportedTable");
+                wave.setProperty("slot", slot, nullptr);
+                wave.setProperty("data", Base64::toBase64(mono.data(), mono.size() * sizeof(float)),
+                                 nullptr);
+                tree.addChild(wave, -1, nullptr);
+            } else {
+                // Store at the current processing rate, matching native sample imports.
+                if (std::abs(sourceRate - rate) > 1) {
+                    size_t length = size_t(mono.size() * rate / sourceRate);
+                    if (!length || length > size_t(rate * 120)) {
+                        report.error = "Resampled audio exceeds supported length.";
+                        return false;
+                    }
+                    std::vector<float> resampled(length);
+                    for (size_t i = 0; i < length; ++i) {
+                        double at = i * sourceRate / rate;
+                        size_t a = std::min(mono.size() - 1, size_t(at)),
+                               b = std::min(mono.size() - 1, a + 1);
+                        resampled[i] = mono[a] + float(at - std::floor(at)) * (mono[b] - mono[a]);
+                    }
+                    mono = std::move(resampled);
+                }
+                ValueTree bank("Bank"), zone("Zone");
+                bank.setProperty("slot", slot, nullptr);
+                zone.setProperty("rate", rate, nullptr);
+                zone.setProperty("root", 60, nullptr);
+                zone.setProperty("low", 0, nullptr);
+                zone.setProperty("high", 127, nullptr);
+                zone.setProperty("data", Base64::toBase64(mono.data(), mono.size() * sizeof(float)),
+                                 nullptr);
+                bank.addChild(zone, -1, nullptr);
+                if (mode == 4) {
+                    std::array<float, 4096> spectrum{};
+                    for (int i = 0; i < std::min(2048, int(mono.size())); ++i)
+                        spectrum[size_t(i)] =
+                            mono[size_t(i)] * (.5f - .5f * std::cos(2 * pi * i / 2048));
+                    dsp::FFT fft(11);
+                    fft.performFrequencyOnlyForwardTransform(spectrum.data());
+                    float sum = 0;
+                    std::array<float, 64> harmonics{};
+                    for (int h = 0; h < 64; ++h) {
+                        int bin = jlimit(
+                            1, 1023,
+                            int(MidiMessage::getMidiNoteInHertz(60) * (h + 1) * 2048 / rate));
+                        harmonics[size_t(h)] = spectrum[size_t(bin)];
+                        sum += harmonics[size_t(h)];
+                    }
+                    for (int h = 0; h < 64; ++h)
+                        bank.setProperty("h" + String(h),
+                                         harmonics[size_t(h)] / std::max(.0001f, sum), nullptr);
+                }
+                tree.addChild(bank, -1, nullptr);
+                report.note("Sample root assumed MIDI 60; playback, granular and spectral settings "
+                            "use Aurora's simplified engines.");
+            }
+            ++available;
+            ++report.assets;
+        }
+        if (!available && missing && plan.values["noise"] <= 0 && plan.values["sub"] <= 0) {
+            report.error = "No playable oscillator asset was found. Original sound was preserved.";
+            return false;
+        }
+        for (int rack = 0; rack < 3; ++rack) {
+            auto node = plan.irAssets[size_t(rack)];
+            if (!node.isObject())
+                continue;
+            MemoryBlock ir;
+            auto embedded = node["embeddedIR"];
+            if (embedded.isArray() && embedded.size() > 0 && embedded.size() <= 2 &&
+                embedded[0].isArray()) {
+                int length = embedded[0].size();
+                double sr = serumNumber(node, "sampleRate", 44100);
+                if (sr >= 8000 && sr <= 192000 && length > 0 && length <= sr * 10) {
+                    AudioBuffer<float> buffer(embedded.size(), length);
+                    bool valid = true;
+                    for (int c = 0; c < embedded.size(); ++c) {
+                        if (!embedded[c].isArray() || embedded[c].size() != length) {
+                            valid = false;
+                            break;
+                        }
+                        for (int i = 0; i < length; ++i) {
+                            auto value = embedded[c][i];
+                            float sample = float(value);
+                            if (!(value.isDouble() || value.isInt() || value.isInt64()) ||
+                                !std::isfinite(sample) || std::abs(sample) > 16) {
+                                valid = false;
+                                break;
+                            }
+                            buffer.setSample(c, i, sample);
+                        }
+                    }
+                    if (valid) {
+                        WavAudioFormat wav;
+                        std::unique_ptr<AudioFormatWriter> writer(
+                            wav.createWriterFor(new MemoryOutputStream(ir, false), sr,
+                                                unsigned(buffer.getNumChannels()), 24, {}, 0));
+                        if (writer)
+                            writer->writeFromAudioSampleBuffer(buffer, 0, length);
+                    }
+                }
+            } else {
+                auto path = resolveSerumAsset(node["relativePathToIR"].toString(), "Impulses", file,
+                                              library);
+                AudioBuffer<float> buffer;
+                double sr = 44100;
+                if (path.getSize() <= 32 * 1024 * 1024 && readSerumAudio(path, buffer, sr, 10))
+                    path.loadFileAsData(ir);
+            }
+            if (ir.getSize()) {
+                tree.setProperty("irData" + String(rack),
+                                 Base64::toBase64(ir.getData(), ir.getSize()), nullptr);
+                ++report.assets;
+            } else {
+                for (int slot = 0; slot < 4; ++slot) {
+                    String key = "fx" + String(rack) + "s" + String(slot) + "_type";
+                    if (int(tree.getChildWithProperty("id", key)["value"]) == 12)
+                        set(key, 0);
+                }
+                report.note("Missing or unsupported impulse response; convolution was disabled.");
+            }
+        }
+        auto xml = tree.createXml();
+        if (!xml) {
+            report.error = "Could not create converted state.";
+            return false;
+        }
+        MemoryBlock binary;
+        copyXmlToBinary(*xml, binary);
+        setStateInformation(binary.getData(), int(binary.getSize()));
+        return true;
+    }
     void getStateInformation(MemoryBlock &out) override {
         const ScopedLock lock(getCallbackLock());
         auto tree = state.copyState();
+        tree.setProperty("serumLfoUnipolar", importedLfoUnipolar.load(), nullptr);
+        tree.setProperty("serumSendOnlyRouting", importedSendOnlyRouting.load(), nullptr);
         for (int cc = 0; cc < 128; ++cc) {
             int index = midiMappings[size_t(cc)].load();
             auto *parameter =
@@ -906,9 +1219,18 @@ class Aurora : public AudioProcessor {
             tree.setProperty("cc" + String(cc), parameter ? parameter->paramID : String{}, nullptr);
         }
         for (int j = tree.getNumChildren() - 1; j >= 0; --j)
-            if (tree.getChild(j).hasType("Bank"))
+            if (tree.getChild(j).hasType("Bank") || tree.getChild(j).hasType("ImportedTable"))
                 tree.removeChild(j, nullptr);
         for (int s = 0; s < 3; ++s) {
+            if (auto table = importedTable(s)) {
+                ValueTree wave("ImportedTable");
+                wave.setProperty("slot", s, nullptr);
+                wave.setProperty("data",
+                                 Base64::toBase64(table->original.data(),
+                                                  table->original.size() * sizeof(float)),
+                                 nullptr);
+                tree.addChild(wave, -1, nullptr);
+            }
             tree.setProperty(
                 "irData" + String(s),
                 Base64::toBase64(irData[size_t(s)].getData(), irData[size_t(s)].getSize()),
@@ -946,6 +1268,27 @@ class Aurora : public AudioProcessor {
         if (!xml || !xml->hasTagName("AuroraState"))
             return;
         auto tree = ValueTree::fromXml(*xml);
+        std::array<std::shared_ptr<ImportedWavetable>, 3> decodedTables;
+        for (auto child : tree)
+            if (child.hasType("ImportedTable")) {
+                int slot = int(child["slot"]);
+                if (slot < 0 || slot >= 3 || child["data"].toString().length() > 3000000)
+                    return;
+                MemoryOutputStream bytes;
+                if (!Base64::convertFromBase64(bytes, child["data"].toString()) ||
+                    bytes.getDataSize() % sizeof(float))
+                    return;
+                size_t count = bytes.getDataSize() / sizeof(float);
+                if (!count ||
+                    count > size_t(ImportedWavetable::maxFrames * ImportedWavetable::period))
+                    return;
+                std::vector<float> original(count);
+                std::memcpy(original.data(), bytes.getData(), bytes.getDataSize());
+                auto table = std::make_shared<ImportedWavetable>();
+                if (!table->build(std::move(original)))
+                    return;
+                decodedTables[size_t(slot)] = std::move(table);
+            }
         for (int cc = 0; cc < 128; ++cc) {
             var value = tree.getProperty("cc" + String(cc), -1);
             String id;
@@ -970,6 +1313,10 @@ class Aurora : public AudioProcessor {
                 }
         const ScopedLock lock(getCallbackLock());
         synth.allNotesOff(0, false);
+        for (int s = 0; s < 3; ++s)
+            std::atomic_store(&importedTables[size_t(s)], std::move(decodedTables[size_t(s)]));
+        importedLfoUnipolar.store(bool(tree.getProperty("serumLfoUnipolar", false)));
+        importedSendOnlyRouting.store(bool(tree.getProperty("serumSendOnlyRouting", false)));
         for (auto &b : samples)
             b.clear();
         for (auto bank : tree)
@@ -1087,6 +1434,9 @@ void Voice::renderNextBlock(AudioBuffer<float> &, int start, int n) {
         float detune = 0, warpAmount = .5f;
     };
     std::array<OscConfig, 3> config;
+    std::array<std::shared_ptr<ImportedWavetable>, 3> customTables;
+    for (int s = 0; s < 3; ++s)
+        customTables[size_t(s)] = owner.importedTable(s);
     for (int s = 0; s < 3; ++s)
         config[size_t(s)] = {int(owner.val(key("osc", s, "mode"))),
                              owner.val(key("osc", s, "position")),
@@ -1166,9 +1516,12 @@ void Voice::renderNextBlock(AudioBuffer<float> &, int start, int n) {
                         phase *= 1 + cfg.warpAmount * 7;
                         phase -= std::floor(phase);
                     }
-                    float value = owner.tables.read(
-                        phase, pos, uf * (cfg.warp == 2 ? 1 + cfg.warpAmount * 7 : 1),
-                        getSampleRate());
+                    double effectiveFrequency = uf * (cfg.warp == 2 ? 1 + cfg.warpAmount * 7 : 1);
+                    float value =
+                        customTables[size_t(s)]
+                            ? customTables[size_t(s)]->read(phase, pos, effectiveFrequency,
+                                                            getSampleRate())
+                            : owner.tables.read(phase, pos, effectiveFrequency, getSampleRate());
                     if (cfg.warp == 3)
                         value = std::sin(value * (1 + cfg.warpAmount * 5));
                     x += value / cfg.unison;
@@ -1355,6 +1708,11 @@ bool auroraRoutingModulationForTest() {
         set("route0_dest", scenario == 0 ? .25f : 0.f);
         set("route0_balance", -100);
         set("filter0_cutoff", scenario <= 1 ? 150.f : 8000.f);
+        if (scenario == 5 || scenario == 6) {
+            set("route0_dest", .75f);
+            set("route0_bus1", 100);
+            p.importedSendOnlyRouting.store(scenario == 5);
+        }
         std::unique_ptr<aurora_ui::Knob> control;
         if (scenario == 3) {
             set("env1_a", .001f);
@@ -1382,7 +1740,8 @@ bool auroraRoutingModulationForTest() {
         p.releaseResources();
         return result;
     };
-    auto dry = render(0), filtered = render(1), base = render(2), env = render(3), lfo = render(4);
+    auto dry = render(0), filtered = render(1), base = render(2), env = render(3), lfo = render(4),
+         sends = render(5), nativeNone = render(6);
     auto difference = [](const AudioBuffer<float> &a, const AudioBuffer<float> &b) {
         double energy = 0;
         for (int i = 0; i < a.getNumSamples(); ++i) {
@@ -1392,5 +1751,70 @@ bool auroraRoutingModulationForTest() {
         return energy;
     };
     return filtered.getRMSLevel(0, 1024, 4096) < dry.getRMSLevel(0, 1024, 4096) * .5f &&
-           difference(base, env) > .1 && difference(base, lfo) > .1;
+           difference(base, env) > .1 && difference(base, lfo) > .1 &&
+           sends.getRMSLevel(0, 1024, 4096) > .001f && nativeNone.getMagnitude(0, 8192) < 1e-8f;
+}
+
+bool auroraSerumForTest(const File &file, String &details, bool fixture) {
+    Aurora p;
+    p.prepareToPlay(48000, 256);
+    MemoryBlock previous;
+    p.getStateInformation(previous);
+    SerumImportReport report;
+    if (!p.importSerumPreset(file, report)) {
+        MemoryBlock unchanged;
+        p.getStateInformation(unchanged);
+        details =
+            "ERROR " + report.text() + (previous == unchanged ? "\nUNCHANGED" : "\nSTATE CHANGED");
+        return false;
+    }
+    bool valid = true;
+    if (fixture) {
+        auto table = p.importedTable(0);
+        valid = table && table->frames == 2 && std::abs(p.val("env0_a") - .01f) < 1e-6f &&
+                p.val("mod0_source") == 8 && p.val("mod0_target") == 4 &&
+                p.importedLfoUnipolar.load();
+    }
+    MemoryBlock state;
+    p.getStateInformation(state);
+    if (fixture) {
+        auto broken = file.getSiblingFile("Broken.SerumPreset");
+        broken.replaceWithData(state.getData(), std::min(size_t(20), state.getSize()));
+        SerumImportReport error;
+        bool rejected = !p.importSerumPreset(broken, error);
+        MemoryBlock unchanged;
+        p.getStateInformation(unchanged);
+        valid &= rejected && unchanged == state;
+        file.getParentDirectory().getChildFile("Tables/AuroraFixture.wav").deleteFile();
+    }
+    Aurora copy;
+    copy.prepareToPlay(48000, 256);
+    copy.setStateInformation(state.getData(), int(state.getSize()));
+    MemoryBlock restored;
+    copy.getStateInformation(restored);
+    valid &= state == restored;
+    AudioBuffer<float> block(2, 256);
+    MidiBuffer midi;
+    double energy = 0;
+    for (int j = 0; j < 128; ++j) {
+        midi.clear();
+        if (!j)
+            midi.addEvent(MidiMessage::noteOn(1, 60, .8f), 0);
+        copy.processBlock(block, midi);
+        for (int c = 0; c < 2; ++c)
+            for (int i = 0; i < 256; ++i) {
+                float x = block.getSample(c, i);
+                valid &= std::isfinite(x) && std::abs(x) <= 1.01f;
+                energy += x * x;
+            }
+    }
+    valid &= energy > 1e-8;
+    for (float value : copy.lfoValue)
+        valid &= value >= 0 && value <= 1;
+    p.releaseResources();
+    copy.releaseResources();
+    details = (valid ? "OK " : "ERROR ") + String(report.parameters) + " params, " +
+              String(report.assets) + " assets, " + String(report.modulations) +
+              " routes, energy " + String(energy, 6) + ", notes " + String(report.notes.size());
+    return valid;
 }

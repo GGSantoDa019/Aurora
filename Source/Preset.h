@@ -22,7 +22,7 @@ inline bool encodePreset(const juce::MemoryBlock &xml, juce::MemoryBlock &result
         return false;
     juce::MemoryOutputStream out;
     out.write("AuroraJson", 11);
-    juce::String metadata = "{\"product\":\"Aurora\",\"version\":\"0.1.1\",\"schema\":1,"
+    juce::String metadata = "{\"product\":\"Aurora\",\"version\":\"0.1.2\",\"schema\":1,"
                             "\"payload\":\"CBOR+Zstandard\"}";
     out.writeInt(metadata.getNumBytesAsUTF8());
     out.write(metadata.toRawUTF8(), size_t(metadata.getNumBytesAsUTF8()));

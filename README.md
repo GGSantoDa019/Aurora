@@ -4,21 +4,21 @@
 
 Aurora combina três osciladores com motores selecionáveis, modulação por envelopes e LFOs, racks de efeitos e uma interface com visualização OpenGL. O projeto inclui o instrumento **Aurora**, o efeito estéreo **Aurora FX** e um aplicativo **Standalone**.
 
-[Baixar versão 0.1.1](https://github.com/GGSantoDa019/Aurora/releases/tag/v0.1.1) · [Reportar problema](https://github.com/GGSantoDa019/Aurora/issues) · [Licença](LICENSE.txt)
+[Baixar versão 0.1.2](https://github.com/GGSantoDa019/Aurora/releases/tag/v0.1.2) · [Reportar problema](https://github.com/GGSantoDa019/Aurora/issues) · [Licença](LICENSE.txt)
 
 ![Interface do Aurora](interface.png)
 
 ## Downloads
 
-Na [página da release](https://github.com/GGSantoDa019/Aurora/releases/tag/v0.1.1):
+Na [página da release](https://github.com/GGSantoDa019/Aurora/releases/tag/v0.1.2):
 
 | Arquivo | Conteúdo |
 | --- | --- |
-| `Aurora-0.1.1-Windows-x64.zip` | Aurora VST3, Aurora FX VST3, aplicativo Standalone, demonstração e documentação |
-| `Aurora-0.1.1-Source.zip` | Código C++, JUCE e Zstandard incluídos |
-| `Aurora-0.1.1-SHA256SUMS.txt` | Checksums SHA-256 dos dois pacotes |
+| `Aurora-0.1.2-Windows-x64.zip` | Aurora VST3, Aurora FX VST3, aplicativo Standalone, demonstração e documentação |
+| `Aurora-0.1.2-Source.zip` | Código C++, JUCE e Zstandard incluídos |
+| `Aurora-0.1.2-SHA256SUMS.txt` | Checksums SHA-256 dos dois pacotes |
 
-A versão 0.1.1 é uma versão inicial experimental. Os binários disponíveis foram compilados e validados em Windows x64; outros sistemas não foram validados.
+A versão 0.1.2 é uma versão inicial experimental. Os binários disponíveis foram compilados e validados em Windows x64; outros sistemas não foram validados.
 
 ## Instalação
 
@@ -47,7 +47,13 @@ Para usar sem DAW, abra `Standalone/Aurora.exe` e configure o dispositivo de áu
 | Presets | Formato próprio `.aurora`, com samples, zonas e respostas ao impulso incorporados ao estado |
 | Visualização | Superfícies sombreadas em perspectiva via OpenGL, com renderização por software para previews e fallback |
 
-## Correções da versão 0.1.1
+## Novidade da versão 0.1.2: importação de SerumPreset
+
+**Load** e o navegador **Presets** aceitam `.SerumPreset` e `.serumpreset` do Serum 2. A tradução é experimental e aproximada: importa parâmetros básicos, wavetables/samples externos, envelopes, LFOs, macros, rotas e parte dos efeitos, com relatório de recursos ausentes. Salve em `.aurora` para incorporar os assets carregados.
+
+Não há equivalência sonora com o Serum. Multisamples SFZ internos, warp/FM e vários recursos avançados não são traduzidos. Veja [o guia de importação e os limites](docs/SERUM_IMPORT.md).
+
+## Correções de interface incluídas desde 0.1.1
 
 - Janela inicial de 960×567; os controles escalam juntos ao redimensionar. As páginas principais cabem na área disponível sem rolagem externa.
 - Botão **Route** em cada oscilador da tela OSC: clique para alternar Filter 1, Filter 2, Both filters e Main. MIX continua oferecendo os controles completos de destino e balanço.
@@ -99,7 +105,7 @@ O projeto também pode ser configurado com CMake em um Developer PowerShell para
 
 ## Validação
 
-O [relatório da release](validation.txt) registra **47 verificações aprovadas**, incluindo DSP, estabilidade dos efeitos, MIDI, presets, UI, Mono/Legato, compilação de shader num contexto OpenGL nativo e carregamento/reprodução dos dois plugins num host VST3 de testes.
+O [relatório da release](validation.txt) registra **53 verificações aprovadas**, incluindo DSP, estabilidade dos efeitos, MIDI, presets, UI, Mono/Legato, compilação de shader num contexto OpenGL nativo e carregamento/reprodução dos dois plugins num host VST3 de testes.
 
 Para executar os testes após uma compilação Release com Ninja, a partir da raiz do projeto:
 
@@ -114,7 +120,7 @@ Os testes geram arquivos de demonstração e imagens em `outputs/Aurora`. Os cam
 
 ## Limitações conhecidas
 
-- Os algoritmos e assets são próprios. Não há compatibilidade com presets Serum/XferJson nem equivalência sonora demonstrada com outros sintetizadores.
+- Os algoritmos e assets são próprios. Existe importação experimental e parcial de SerumPreset/XferJson; não há equivalência sonora demonstrada com outros sintetizadores.
 - Sample, Granular e Spectral são motores básicos. SFZ suporta um subconjunto de opcodes; Spectral analisa um quadro, sem sequência espectral completa. Não há time-stretch avançado ou editor completo de zonas.
 - Curvas de envelope modulam um gate ADSR; a release desse gate controla o fim da voz. Delay/rise dos LFOs usam o relógio global, sem envelopes independentes por voz.
 - Parâmetros do host e LFOs são atualizados por bloco. Não há MPE completo nem garantia de automação por amostra ou resultados idênticos entre tamanhos de bloco.

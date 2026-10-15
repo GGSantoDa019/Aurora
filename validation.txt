@@ -37,6 +37,12 @@ PASS UI pages / resize / modulation drop / FX reorder / MIDI learn / undo-redo
 PASS Mono/legato fallback / portamento / unison / Bezier envelope stability
 PASS OSC filter routing / envelope cutoff and LFO level affect rendered audio
 PASS OpenGL shader compilation on native context
+PASS Serum XferJson/Zstd/CBOR maps oscillator, envelope, LFO polarity and modulation
+PASS Serum truncated payload, oversized metadata and unsupported encoding rejected
+PASS Serum CBOR truncation and nesting limits
+PASS Serum external wavetable / audio / native state round-trip / invalid import preserves sound
+PASS Serum relative sample reference / audio / native state round-trip
+PASS Imported wavetable FFT mipmaps retain fundamental amplitude
 PASS VST3 factory enumerates component
 PASS VST3 host creates component/controller
 PASS VST3 renders audio in host

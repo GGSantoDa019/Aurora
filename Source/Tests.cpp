@@ -1,4 +1,5 @@
 #include "Dsp.h"
+#include "SerumFixtureTests.h"
 #include <iostream>
 extern juce::AudioProcessor *JUCE_CALLTYPE createPluginFilter();
 extern bool auroraImportSampleForTest(juce::AudioProcessor &, int, const juce::File &);
@@ -235,10 +236,19 @@ int main(int argc, char **argv) {
         std::cout << "SKIP OpenGL native driver not available\n";
     else
         check(gpu > 0, "OpenGL shader compilation on native context");
+    serumFixtureTests(check);
     if (argc > 1) {
         juce::AudioPluginFormatManager manager;
         manager.addFormat(new juce::VST3PluginFormat);
         for (int a = 1; a < argc; ++a) {
+            if (juce::String(argv[a]).startsWith("--serum=")) {
+                juce::String details;
+                bool ok = auroraSerumForTest(juce::File(juce::String(argv[a]).substring(8)),
+                                             details, false);
+                check(ok, "Local Serum preset imports, renders finite audio and round-trips");
+                std::cout << details << "\n";
+                continue;
+            }
             juce::OwnedArray<juce::PluginDescription> descriptions;
             manager.getFormat(0)->findAllTypesForFile(
                 descriptions, juce::File(juce::String(argv[a])).getFullPathName());

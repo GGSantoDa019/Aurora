@@ -6,4 +6,4 @@
 - O SDK VST3 incorporado no JUCE tem seus próprios avisos e licença, preservados em `third_party/JUCE/modules/juce_audio_processors/format_types/VST3_SDK`.
 - As bibliotecas de runtime estaticamente vinculadas pelo LLVM-MinGW preservam suas licenças próprias. O pacote inclui avisos relevantes em `licenses/`.
 
-O código não utiliza imagens, tabelas, presets ou binários do instrumento investigado. Os nomes Hyper, Bode e Dimension identificam as famílias funcionais descritas pelo usuário; não afirmam compatibilidade nem equivalência sonora.
+A distribuição não inclui imagens, tabelas, presets ou binários comerciais do instrumento investigado. O importador experimental lê arquivos e assets locais selecionados pelo usuário; consulte docs/SERUM_IMPORT.md. Os nomes Hyper, Bode e Dimension identificam as famílias funcionais descritas pelo usuário; não afirmam compatibilidade nem equivalência sonora.

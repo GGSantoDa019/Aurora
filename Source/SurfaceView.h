@@ -47,7 +47,7 @@ class SurfaceView : public Component, private Timer, private OpenGLRenderer {
             frame.mode = mode;
             frame.position = position;
             for (int i = 0; i < 256; ++i)
-                frame.samples[size_t(i)] = p.tables.read(i / 256., position, 220, 48000);
+                frame.samples[size_t(i)] = p.displayWave(slot,i / 256., position, 220, 48000);
             updated = true;
         }
         if (updated) {
@@ -129,7 +129,7 @@ gl_FragColor=vec4(colour,1.0);})";
         frame.mode = int(read(p, key("osc", slot, "mode")));
         frame.position = read(p, key("osc", slot, "position"));
         for (int i = 0; i < 256; ++i)
-            frame.samples[size_t(i)] = p.tables.read(i / 256., frame.position, 220, 48000);
+            frame.samples[size_t(i)] = p.displayWave(slot,i / 256., frame.position, 220, 48000);
         gpuQueue.push(frame);
         context.setRenderer(this);
         context.setComponentPaintingEnabled(false);
