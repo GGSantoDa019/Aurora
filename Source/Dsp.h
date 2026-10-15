@@ -5,6 +5,7 @@
 #include <vector>
 #include "ExactKernels.h"
 #include "WavetableReader.h"
+#include "ImportedWavetable.h"
 namespace aurora {
 struct WaveTap {
     juce::AbstractFifo fifo{4096};
@@ -35,6 +36,7 @@ inline float nonlinear(float x) {
     return x - 0.14814815f * x * x * x;
 }
 struct Wavetables {
+    ImportedWavetable compatible;
     std::array<std::array<std::array<float, 2048>, 4>, 8> data{};
     Wavetables() {
         (void)WavetableReader::coefficients();
@@ -52,6 +54,9 @@ struct Wavetables {
                     }
                 }
             }
+        std::vector<float> input;input.reserve(8192);
+        for(int frame=0;frame<4;++frame)input.insert(input.end(),data[0][size_t(frame)].begin(),data[0][size_t(frame)].end());
+        compatible.build(std::move(input));
     }
     float read(double phase, float position, double hz, double sr, WavetableReadState *state=nullptr) const {
         if (hz >= sr * .45)
@@ -71,9 +76,13 @@ struct Wavetables {
 };
 struct SVF {
     float s1 = 0, s2 = 0;
+    float lastHz=-1,lastRes=-1,g=0,k=0,a=0;double lastRate=-1;
     float tick(float x, float hz, float resonance, double sr, int mode = 0) {
-        const float g = std::tan(pi * juce::jlimit(10.f, float(sr * .45), hz) / float(sr));
-        const float k = 2.f - 1.9f * juce::jlimit(0.f, 1.f, resonance), a = 1.f / (1 + g * (g + k));
+        if(hz!=lastHz || sr!=lastRate || resonance!=lastRes){
+            g=std::tan(pi*juce::jlimit(10.f,float(sr*.45),hz)/float(sr));
+            k=2.f-1.9f*juce::jlimit(0.f,1.f,resonance);a=1.f/(1+g*(g+k));
+            lastHz=hz;lastRate=sr;lastRes=resonance;
+        }
         const float v1 = a * (s1 + g * (nonlinear(x) - s2)), v2 = s2 + g * v1;
         s1 = 2 * v1 - s1;
         s2 = 2 * v2 - s2;

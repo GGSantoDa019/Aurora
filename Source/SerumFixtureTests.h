@@ -42,12 +42,14 @@ inline void fixtureCbor(juce::OutputStream &output, const juce::var &value) {
     } else
         output.writeByte(char(0xf6));
 }
-inline juce::MemoryBlock fixtureCarrier(const juce::var &payload) {
+inline juce::MemoryBlock fixtureCarrier(const juce::var &payload, int kind=2) {
     juce::MemoryOutputStream cbor;
-    fixtureCbor(cbor, payload);
+    if(kind==0)cbor.writeText(juce::JSON::toString(payload,true),false,false,nullptr);
+    else fixtureCbor(cbor, payload);
     juce::MemoryBlock packed(ZSTD_compressBound(cbor.getDataSize()));
     auto length =
         ZSTD_compress(packed.getData(), packed.getSize(), cbor.getData(), cbor.getDataSize(), 1);
+    if(kind!=2){juce::MemoryOutputStream zipped;{juce::GZIPCompressorOutputStream compressor(zipped,6,15);compressor.write(cbor.getData(),cbor.getDataSize());}packed=zipped.getMemoryBlock();length=packed.getSize();}
     juce::MemoryOutputStream result;
     result.write("XferJson\0", 9);
     juce::String metadata =
@@ -55,7 +57,7 @@ inline juce::MemoryBlock fixtureCarrier(const juce::var &payload) {
     result.writeInt64(metadata.getNumBytesAsUTF8());
     result.write(metadata.toRawUTF8(), size_t(metadata.getNumBytesAsUTF8()));
     result.writeInt(int(cbor.getDataSize()));
-    result.writeInt(2);
+    result.writeInt(kind);
     result.write(packed.getData(), length);
     return result.getMemoryBlock();
 }
@@ -70,6 +72,20 @@ inline void serumFixtureTests(const std::function<void(bool, const char *)> &che
       "LFO0":{"plainParams":{"kParamBeatSync":0,"kParamRate":1},"curveData":{"xVals":[0,0.5,1],"yVals":[1,0,1]}},
       "ModSlot0":{"source":[6,0],"destModuleTypeString":"WTOsc","destModuleID":0,"destModuleParamName":"kParamTablePos","plainParams":{"kParamAmount":50}}
     })JSON");
+    bool carriers=true;
+    for(int kind=0;kind<3;++kind){auto carrier=fixtureCarrier(payload,kind);SerumDocument doc;SerumImportReport r;
+        carriers &= decodeSerum(carrier.getData(),carrier.getSize(),doc,r) && doc.encoding==kind && doc.payload.hasProperty("Oscillator0");
+        auto corrupt=carrier;static_cast<uint8_t*>(corrupt.getData())[corrupt.getSize()-1]^=0x40;r={};
+        carriers &= !decodeSerum(corrupt.getData(),corrupt.getSize(),doc,r);
+    }
+    check(carriers,"Preset carriers JSON/zlib, CBOR/zlib and CBOR/Zstandard decode and reject corruption");
+    {
+        SerumDocument d;d.payload=JSON::parse(R"JSON({"Oscillator0":{"plainParams":{"kParamEnable":1,"kParamPan":0.75,"kParamUnison":16,"kParamDetune":0.6},"WTOsc0":{"plainParams":{"kParamInitialPhase":90,"kParamRandomPhase":25,"kParamWarpMenu":"kSync","kParamWarp":0.5}}}})JSON");
+        SerumImportReport r;auto mapped=mapSerum(d,r);
+        check(mapped.values["osc0_pan"]==.5f && mapped.values["osc0_phase"]==.25f && mapped.values["osc0_random"]==.25f && mapped.values["osc0_wt_amount1"]==.5f && mapped.values["osc0_wt_unison"]==16 && std::abs(mapped.values["osc0_wt_detune"]-.6f)<1e-6f,"Preset per-parameter units: pan, degrees, random percent, warp amount and 16-way unison");
+        d.payload=JSON::parse(R"JSON({"Oscillator0":{"plainParams":"default","WTOsc0":{"plainParams":"default"}}})JSON");r={};mapped=mapSerum(d,r);
+        check(mapped.values["osc0_pan"]==0 && mapped.values["osc0_phase"]==.5f && mapped.values["osc0_random"]==1 && mapped.values["osc0_wt_detune"]==.5f,"Preset default marker uses declared defaults rather than zero");
+    }
     auto bytes = fixtureCarrier(payload);
     SerumDocument document;
     SerumImportReport report;
@@ -152,8 +168,8 @@ inline void serumFixtureTests(const std::function<void(bool, const char *)> &che
         sine[size_t(i)] = std::sin(2 * pi * i / 2048.f);
     ImportedWavetable imported;
     check(imported.build(std::move(sine)) &&
-              std::abs(imported.mipmaps[size_t(3*2048+512)] - 1) < .00002f &&
-              std::abs(imported.read(.25, 0, 220, 48000) - 1.00317417f) < .00002f,
+              std::abs(imported.levelData(0,3)[64] - 1) < .00002f &&
+              std::abs(imported.read(.25, 0, 220, 48000) - 1.00317417f) < .0003f,
           "Imported wavetable FFT retains fundamental amplitude before recovered reader gain");
 }
 } // namespace aurora

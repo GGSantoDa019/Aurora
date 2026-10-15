@@ -1,5 +1,6 @@
 #include "Dsp.h"
 #include "CoreTests.h"
+#include "WavetableIntegrationTests.h"
 #include "NativeVst3Tests.h"
 #include "SerumFixtureTests.h"
 #include <iostream>
@@ -11,12 +12,16 @@ extern int auroraGpuForTest(juce::AudioProcessor &);
 extern bool auroraPerformanceForTest();
 extern bool auroraRoutingModulationForTest();
 extern bool auroraCoreProcessorForTest();
+extern bool auroraOptimizationRegressionForTest();
+extern bool auroraWavetableVoiceForTest();
 extern bool auroraFactoryGenerate(const juce::File &);
 extern bool auroraFilterDisplayForTest(const juce::File &);
+extern int auroraOptimizationBenchmark(const juce::File &);
 int main(int argc, char **argv) {
     std::cout << std::unitbuf;
     juce::ScopedJuceInitialiser_GUI initialise;
     using namespace aurora;
+    if(argc==2 && juce::String(argv[1]).startsWith("--benchmark="))return auroraOptimizationBenchmark(juce::File(juce::String(argv[1]).substring(12)));
     int fail = 0;
     auto check = [&](bool ok, const char *message) {
         std::cout << (ok ? "PASS " : "FAIL ") << message << "\n";
@@ -24,6 +29,9 @@ int main(int argc, char **argv) {
             ++fail;
     };
     coreInfrastructureTests(check);
+    wavetableIntegrationTests(check);
+    check(auroraWavetableVoiceForTest(),"Wavetable cached voice path: 16 subvoices, finite audio and enabled silent oscillator modulation");
+    check(auroraOptimizationRegressionForTest(),"Batched sample-accurate filter/master ramps preserve audible routing, delay tails and independent shared-IR histories");
     check(auroraCoreProcessorForTest(),"Processor sample-offset automation / block invariance / native note-ID expression / MPE / per-voice LFO independence");
     if(argc==2 && juce::String(argv[1]).startsWith("--factory="))
         return auroraFactoryGenerate(juce::File(juce::String(argv[1]).substring(10)))?fail:1;
@@ -244,10 +252,7 @@ int main(int argc, char **argv) {
     check(auroraFilterDisplayForTest(outputs),
           "Live DSP filter animation / ENV and LFO / source buttons / reverse serial / cycle guard / state");
     int gpu = auroraGpuForTest(*plugin);
-    if (gpu == 0)
-        std::cout << "SKIP OpenGL native driver not available\n";
-    else
-        check(gpu > 0, "OpenGL shader compilation on native context");
+    check(gpu==0,"Wavetable renderer uses composited components without native OpenGL overlays");
     serumFixtureTests(check);
     if (argc > 1) {
         juce::AudioPluginFormatManager manager;

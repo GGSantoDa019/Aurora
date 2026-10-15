@@ -203,8 +203,10 @@ class Knob : public Component, public DragAndDropTarget {
         refresh();
         repaint();
     }
-    void refresh() {
-        int found = -1;
+    void refresh(bool routesDirty=true) {
+        int found = routeIndex;
+        if(routesDirty){
+        found=-1;
         for (int i = 0; i < 64; ++i)
             if (target > 0 && int(read(p, key("mod", i, "target"))) == target &&
                 read(p, key("mod", i, "source")) > 0)
@@ -212,6 +214,7 @@ class Knob : public Component, public DragAndDropTarget {
         if (preferredRoute >= 0 && read(p, key("mod", preferredRoute, "source")) > 0 &&
             int(read(p, key("mod", preferredRoute, "target"))) == target)
             found = preferredRoute;
+        }
         if (found != routeIndex) {
             depthAttachment.reset();
             routeIndex = found;
@@ -317,6 +320,8 @@ class Choice : public Component {
         box.setName(name);
         if (auto *choice = dynamic_cast<AudioParameterChoice *>(p.state.getParameter(id)))
             box.addItemList(choice->choices, 1);
+        if(id.endsWith("wt_warp1") || id.endsWith("wt_warp2"))
+            for(int mode=0;mode<70;++mode)box.setItemEnabled(mode+1,aurora::supportedWavetableWarp(mode));
         attachment =
             std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment>(p.state, id, box);
     }
@@ -761,6 +766,7 @@ class Editor : public AudioProcessorEditor, public DragAndDropContainer, private
     Label pitchCaption, modCaption;
     aurora_ui::Scope scope;
     std::vector<std::unique_ptr<Card>> cards;
+    std::array<int,128> previousRouting{};
     std::vector<std::unique_ptr<aurora_ui::SourceButton>> sources;
     std::vector<std::unique_ptr<aurora_ui::SourceButton>> envDock, lfoDock;
     std::unique_ptr<PianoRoll> roll;
@@ -849,6 +855,8 @@ class Editor : public AudioProcessorEditor, public DragAndDropContainer, private
         : AudioProcessorEditor(a), p(a),
           keyboard(a.keyboard, MidiKeyboardComponent::horizontalKeyboard), scope(a.telemetry),
           matrixModel(a, matrix), browserModel(*this) {
+        ++p.displaySubscribers;
+        ++p.displayEpoch;
         setLookAndFeel(&theme);
         masterControl=std::make_unique<aurora_ui::Knob>(p,"master","MAIN");
         masterControl->setCompact();addAndMakeVisible(*masterControl);
@@ -1001,6 +1009,7 @@ class Editor : public AudioProcessorEditor, public DragAndDropContainer, private
         startTimerHz(30);
     }
     ~Editor() override {
+        --p.displaySubscribers;
         stopTimer();
         jobs.removeAllJobs(true, -1);
         advancedEditor.reset();
@@ -1011,9 +1020,10 @@ class Editor : public AudioProcessorEditor, public DragAndDropContainer, private
         setLookAndFeel(nullptr);
     }
     void timerCallback() override {
-        for (auto &c : cards)
-            for (auto &knob : c->knobs)
-                knob->refresh();
+        bool routesDirty=false;
+        for(int i=0;i<64;++i)for(int field=0;field<2;++field){int value=int(read(p,key("mod",i,field==0?"source":"target")));
+            auto &previous=previousRouting[size_t(i*2+field)];routesDirty |= previous!=value;previous=value;}
+        if(viewport.isVisible())for(auto &c:cards)if(c->isVisible())for(auto &knob:c->knobs)knob->refresh(routesDirty);
         if (page == 0 && cards.size() > 2)
             for (int i = 0; i < 3; ++i) {
                 bool table = read(p, key("osc", i, "mode")) < .5f;
@@ -1067,6 +1077,7 @@ class Editor : public AudioProcessorEditor, public DragAndDropContainer, private
         return *cards.back();
     }
     void clearPage() {
+        previousRouting.fill(-1);
         selector.setVisible(false);
         lfoSelector.setVisible(false);
         matrix.setVisible(false);
@@ -1079,12 +1090,12 @@ class Editor : public AudioProcessorEditor, public DragAndDropContainer, private
     }
     void showPage(int next) {
         page = next;
+        if(advancedEditor)advancedEditor->setVisible(false);
         clearPage();
         for (auto &button : envDock)
             button->setVisible(page == 0);
         for (auto &button : lfoDock)
             button->setVisible(page == 0);
-        content.activate(page);
         content.activate(page);
         for (int i = 0; i < 5; ++i)
             tabs[size_t(i)].setToggleState(page == i, dontSendNotification);
@@ -1098,12 +1109,13 @@ class Editor : public AudioProcessorEditor, public DragAndDropContainer, private
                 c.addKnob(key("osc", s, "tune"), "Tune", 7);
                 c.addKnob(key("osc", s, "pan"), "Pan", 8);
                 c.addKnob(key("osc", s, "grain"), "Grain ms");
-                c.addKnob(key("osc", s, "unison"), "Unison");
-                c.addKnob(key("osc", s, "detune"), "Detune");
-                c.addKnob(key("osc", s, "warp_amount"), "Warp");
+                const bool advanced=read(p,key("osc",s,"wt_compat"))>=.5f;
+                c.addKnob(key("osc", s, advanced ? "wt_unison" : "unison"), "Unison");
+                c.addKnob(key("osc", s, advanced ? "wt_detune" : "detune"), "Detune");
+                c.addKnob(key("osc", s, advanced ? "wt_amount1" : "warp_amount"), "Warp");
                 c.addKnob(key("osc", s, "phase"), "Phase");
                 c.addKnob(key("osc", s, "random"), "Random");
-                c.addChoice(key("osc", s, "warp"), "Warp mode");
+                c.addChoice(key("osc", s, advanced ? "wt_warp1" : "warp"), "Warp mode");
                 c.button("Import audio / SFZ", [this, s] { chooseSample(s); });
                 float destination = read(p, key("route", s, "dest")),
                       balance = read(p, key("route", s, "balance"));
@@ -1368,6 +1380,25 @@ class Editor : public AudioProcessorEditor, public DragAndDropContainer, private
             std::min(1.f, float(viewport.getHeight()) / float(std::max(1, content.getHeight())));
         content.setTransform(AffineTransform::scale(fit));
         viewport.setScrollBarsShown(false, false);
+        updateOverlayVisibility();
+    }
+    void updateOverlayVisibility(){
+        const bool overlay=advancedEditor && advancedEditor->isVisible();
+        viewport.setVisible(!overlay);
+        for(auto &b:envDock)b->setVisible(!overlay && page==0);
+        for(auto &b:lfoDock)b->setVisible(!overlay && page==0);
+        for(auto &b:filterTabs)b.setVisible(!overlay && page==0);
+        for(Component *c:std::initializer_list<Component*>{&keyboard,&pitchWheel,&modWheel,&pitchCaption,&modCaption,&modulationPicker,&modulationDrag})c->setVisible(!overlay && !AURORA_FX);
+        if(overlay)advancedEditor->toFront(false);
+    }
+    bool overlayForTest(const File &folder){
+        showPage(0);advanced.onClick();
+        bool okay=advancedEditor && advancedEditor->isVisible() && !viewport.isVisible() && !keyboard.isVisible() && !filterTabs[0].isVisible();
+        auto screenshot=folder.getChildFile("interface-all-parameters.png");screenshot.deleteFile();
+        if(auto stream=screenshot.createOutputStream()){PNGImageFormat png;okay &= png.writeImageToStream(createComponentSnapshot(getLocalBounds()),*stream);}else okay=false;
+        showPage(4);okay &= !advancedEditor->isVisible() && viewport.isVisible();
+        showPage(0);advanced.onClick();advanced.onClick();
+        return okay && viewport.isVisible() && (AURORA_FX || keyboard.isVisible());
     }
     void resized() override {
         constexpr int w=aurora_ui::reference::width, logicalHeight=aurora_ui::reference::height;

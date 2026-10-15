@@ -36,5 +36,5 @@ foreach ($name in $names) {
         throw "Falha de integridade: $name. O backup, quando existente, está em $backup."
     }
 }
-"Aurora 0.2.2 e Aurora FX instalados em $target. Backup anterior: $backup" | Set-Content -LiteralPath (Join-Path $source 'installation-result.txt')
+"Aurora 0.2.3 e Aurora FX instalados em $target. Backup anterior: $backup" | Set-Content -LiteralPath (Join-Path $source 'installation-result.txt')
 Write-Host 'No FL Studio: Manage plugins > Verify plugins > Rescan previously verified plugins > Find installed plugins.'

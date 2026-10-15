@@ -2,11 +2,21 @@
 
 Sintetizador e processador de efeitos VST3 de código aberto para Windows x64.
 
-[Baixar Aurora 0.2.2](https://github.com/GGSantoDa019/Aurora/releases/tag/v0.2.2) · [Reportar problema](https://github.com/GGSantoDa019/Aurora/issues) · [Licença GPLv3](LICENSE.txt)
+[Baixar Aurora 0.2.3](https://github.com/GGSantoDa019/Aurora/releases/tag/v0.2.3) · [Reportar problema](https://github.com/GGSantoDa019/Aurora/issues) · [Licença GPLv3](LICENSE.txt)
 
 ![Interface do Aurora](interface.png)
 
-## Novidades da versão 0.2.2
+## Otimizações da versão 0.2.3
+
+All parameters sem sobreposição de wavetables ou teclado duplicado; gráficos com composição comum e atualização por mudança. Processamento mais eficiente durante automação, caches de parâmetros e configuração, compartilhamento de samples/coeficientes de IR e preparação de assets fora da região crítica de áudio. Consulte [medições e limites](docs/OPTIMIZATION_023.md).
+
+## Integração de wavetable e presets
+
+Níveis periódicos compactos preparados fora do áudio, unison de até 16 subvozes, dois slots de warp suportados e fontes de modulação independentes do volume audível. O importador distingue unidades, defaults e IDs locais, aceita três codificações de payload e preserva metadados e campos desconhecidos ao salvar em `.aurora`.
+
+A importação continua parcial: curvas de warp indisponíveis, ciclos de modulação e diferenças nos motores e efeitos são indicados no relatório. Consulte [detalhes e limites](docs/WAVETABLE_PRESET_023.md).
+
+## Novidades da versão 0.2.3
 
 - Interface com três osciladores, painéis Sub/Noise, filtros por abas e editores de envelope/LFO. Redimensionamento proporcional e tamanho inicial próximo de 960 pixels.
 - Leitor wavetable de 16 pontos e 512 fases, com transição de 64 avaliações entre níveis e estado independente por subvoz de unison.
@@ -16,11 +26,11 @@ Sintetizador e processador de efeitos VST3 de código aberto para Windows x64.
 - Estado estruturado com metadados JSON e payload CBOR/Zstandard, migração de versões e assets incorporados.
 - 626 presets procedurais de fábrica, expressão por voz e melhorias de MPE.
 
-A versão passou por **78 verificações automatizadas**, incluindo render dos VST3, estado, importação de assets, interface e regressão numérica. Os testes não substituem a validação em todas as DAWs. MPE completo, alguns motores e algoritmos continuam em desenvolvimento.
+A versão passou por **90 verificações automatizadas**, incluindo render dos VST3, estado, importação de assets, interface e regressão numérica. Os testes não substituem a validação em todas as DAWs. MPE completo, alguns motores e algoritmos continuam em desenvolvimento.
 
 ## Downloads e instalação
 
-Baixe `Aurora-0.2.2-Windows-x64.zip` na [release](https://github.com/GGSantoDa019/Aurora/releases/tag/v0.2.2) e extraia o arquivo inteiro.
+Baixe `Aurora-0.2.3-Windows-x64.zip` na [release](https://github.com/GGSantoDa019/Aurora/releases/tag/v0.2.3) e extraia o arquivo inteiro.
 
 1. Feche a DAW e os aplicativos que estiverem usando o plugin.
 2. Execute `Instalar-Aurora.ps1` em um PowerShell como administrador. O script preserva uma cópia da instalação anterior.

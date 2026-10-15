@@ -1,6 +1,7 @@
 #pragma once
 #include "CoreInfrastructure.h"
 #include <complex>
+#include <memory>
 #include "BodeCoefficients.h"
 namespace aurora {
 struct Ring8192 {
@@ -55,7 +56,10 @@ struct PartitionedFIR {
     juce::dsp::FFT fft{8};
     std::array<float,B> head{},history{},input{},tail{},overlap{};
     std::array<std::complex<float>,N> time{},spectrum{},sum{},inverse{};
-    std::vector<std::array<std::complex<float>,N>> kernels, spectra;
+    using KernelBank=std::vector<std::array<std::complex<float>,N>>;
+    std::shared_ptr<const KernelBank> kernels=std::make_shared<KernelBank>();
+    KernelBank spectra;
+    int headLength=1;
     int position=0,headCursor=0,blockCursor=0;
     PartitionedFIR(){head[0]=1;}
     void configure(const std::vector<float>&ir){
@@ -63,25 +67,32 @@ struct PartitionedFIR {
         position=headCursor=blockCursor=0;
         for(size_t i=0;i<std::min(ir.size(),size_t(B));++i)head[i]=ir[i];
         int partitions=int((ir.size()>B?ir.size()-B:0)+B-1)/B;
-        kernels.resize(size_t(partitions));spectra.resize(size_t(partitions));
+        auto prepared=std::make_shared<KernelBank>(size_t(partitions));spectra.resize(size_t(partitions));
+        headLength=int(std::min(ir.size(),size_t(B)));
         for(auto &s:spectra)s.fill({});
         for(int p=0;p<partitions;++p){
             time.fill({}); // Every IR partition is padded B -> 2B.
             for(int j=0;j<B;++j){size_t k=size_t(B+p*B+j);if(k<ir.size())time[size_t(j)]=ir[k];}
-            fft.perform(time.data(),kernels[size_t(p)].data(),false);
+            fft.perform(time.data(),(*prepared)[size_t(p)].data(),false);
         }
+        kernels=std::move(prepared);
+    }
+    void shareKernel(const PartitionedFIR &source){
+        head=source.head;headLength=source.headLength;kernels=source.kernels;
+        history.fill(0);input.fill(0);tail.fill(0);overlap.fill(0);position=headCursor=blockCursor=0;
+        spectra.resize(kernels->size());for(auto &s:spectra)s.fill({});
     }
     float tick(float x){
         history[size_t(headCursor)]=x;float y=0;
-        for(int j=0;j<B;++j)y+=head[size_t(j)]*history[size_t((headCursor-j+B)%B)];
+        for(int j=0;j<headLength;++j)y+=head[size_t(j)]*history[size_t((headCursor-j+B)%B)];
         headCursor=(headCursor+1)%B;y+=tail[size_t(position)];input[size_t(position)]=x;
         if(++position==B){
             position=0;
-            if(!kernels.empty()){
+            if(!kernels->empty()){
                 time.fill({});for(int j=0;j<B;++j)time[size_t(j)]=input[size_t(j)];
                 fft.perform(time.data(),spectra[size_t(blockCursor)].data(),false);sum.fill({});
-                int count=int(kernels.size());
-                for(int p=0;p<count;++p)complexMac4(sum.data(),spectra[size_t((blockCursor-p+count)%count)].data(),kernels[size_t(p)].data(),productGain,N);
+                int count=int(kernels->size());
+                for(int p=0;p<count;++p)complexMac4(sum.data(),spectra[size_t((blockCursor-p+count)%count)].data(),(*kernels)[size_t(p)].data(),productGain,N);
                 fft.perform(sum.data(),inverse.data(),true);
                 for(int j=0;j<B;++j){tail[size_t(j)]=inverse[size_t(j)].real()*N+overlap[size_t(j)];overlap[size_t(j)]=inverse[size_t(j+B)].real()*N;}
                 blockCursor=(blockCursor+1)%count;
@@ -102,6 +113,7 @@ struct StereoFIR {
             channels[size_t(c)].configure(data);
         }
     }
+    void shareIR(const StereoFIR &source){sampleRate=source.sampleRate;for(int c=0;c<2;++c)channels[size_t(c)].shareKernel(source.channels[size_t(c)]);}
     void process(float*l,float*r,int n){for(int i=0;i<n;++i){l[i]=channels[0].tick(l[i]);r[i]=channels[1].tick(r[i]);}}
 };
 }

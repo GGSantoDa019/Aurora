@@ -3,6 +3,7 @@
 #include "Cbor.h"
 #include <limits>
 #include <map>
+#include "WavetableAlgorithms.h"
 
 namespace aurora {
 // Independent reader of the documented XferJson carrier and RFC 8949 CBOR.
@@ -28,6 +29,7 @@ struct SerumImportReport {
 
 struct SerumDocument {
     juce::var metadata, payload;
+    int encoding=2;
 };
 inline bool decodeSerum(const void *data, size_t size, SerumDocument &doc,
                         SerumImportReport &report) {
@@ -54,23 +56,35 @@ inline bool decodeSerum(const void *data, size_t size, SerumDocument &doc,
         return false;
     }
     int plain = input.readInt(), kind = input.readInt();
-    if (plain <= 0 || size_t(plain) > limit || kind != 2) {
+    if (plain <= 0 || size_t(plain) > limit || kind < 0 || kind > 2) {
         report.error =
-            "Unsupported encoding or decoded length (requires Zstandard/CBOR encoding 2).";
+            "Unsupported encoding or decoded length.";
         return false;
     }
     juce::MemoryBlock packed;
     input.readIntoMemoryBlock(packed, size_t(input.getNumBytesRemaining()));
     juce::MemoryBlock decoded{size_t(plain)};
-    auto frame = ZSTD_findFrameCompressedSize(packed.getData(), packed.getSize());
-    auto count =
-        ZSTD_decompress(decoded.getData(), decoded.getSize(), packed.getData(), packed.getSize());
-    if (ZSTD_isError(frame) || frame != packed.getSize() || ZSTD_isError(count) ||
-        count != decoded.getSize()) {
-        report.error = "Invalid or truncated Zstandard payload.";
-        return false;
+    bool ok=false;
+    if(kind==2){
+        auto frame=ZSTD_findFrameCompressedSize(packed.getData(),packed.getSize());
+        auto count=ZSTD_decompress(decoded.getData(),decoded.getSize(),packed.getData(),packed.getSize());
+        if(ZSTD_isError(frame)||frame!=packed.getSize()||ZSTD_isError(count)||count!=decoded.getSize()){
+            report.error="Invalid or truncated Zstandard payload.";return false;}
+        ok=SerumCbor(decoded).read(doc.payload);
+    }else{
+        const auto *wire=static_cast<const uint8_t*>(packed.getData());size_t n=packed.getSize();
+        if(n<6 || (wire[0]&15)!=8 || ((unsigned(wire[0])*256+wire[1])%31)!=0 || (wire[1]&32)){
+            report.error="Invalid zlib header.";return false;}
+        juce::MemoryInputStream compressed(packed,false);juce::GZIPDecompressorInputStream stream(compressed);
+        int count=stream.read(decoded.getData(),plain);uint8_t extra=0;
+        uint32_t a=1,b=0;for(size_t i=0;i<decoded.getSize();++i){a=(a+static_cast<const uint8_t*>(decoded.getData())[i])%65521;b=(b+a)%65521;}
+        uint32_t checksum=(uint32_t(wire[n-4])<<24)|(uint32_t(wire[n-3])<<16)|(uint32_t(wire[n-2])<<8)|wire[n-1];
+        if(count!=plain || stream.read(&extra,1)!=0 || checksum!=((b<<16)|a)){
+            report.error="Invalid, oversized or truncated zlib payload.";return false;}
+        if(kind==0)ok=juce::JSON::parse(juce::String::fromUTF8(static_cast<const char*>(decoded.getData()),plain),doc.payload).wasOk();
+        else ok=SerumCbor(decoded).read(doc.payload);
     }
-    bool ok = SerumCbor(decoded).read(doc.payload);
+    doc.encoding=kind;
     if (!ok || !doc.payload.isObject() || !doc.payload.hasProperty("Oscillator0")) {
         report.error = "Unsupported or malformed Serum preset schema.";
         return false;
@@ -82,7 +96,7 @@ inline bool decodeSerum(const void *data, size_t size, SerumDocument &doc,
     return true;
 }
 
-inline juce::var serumParams(const juce::var &node) { return node.getProperty("plainParams", {}); }
+inline juce::var serumParams(const juce::var &node) { auto p=node.getProperty("plainParams", {});return p.isObject()?p:juce::var{}; }
 inline double serumNumber(const juce::var &object, const char *key, double fallback) {
     auto v = object.getProperty(key, {});
     if (!(v.isDouble() || v.isInt() || v.isInt64() || v.isBool()))
@@ -96,6 +110,11 @@ struct SerumPlan {
     std::array<int, 3> engines{};
     void set(const juce::String &id, double value) { values[id] = float(value); }
 };
+inline int serumWarp(const juce::var &value){
+    if(value.isInt() || value.isInt64() || value.isDouble())return juce::jlimit(0,69,int(value));
+    auto name=value.toString();if(name=="kOff" || name=="Off" || name.isEmpty())return 0;
+    for(int i=0;i<70;++i)if(name==wavetableWarpEnums[i] || name==wavetableWarpNames[i])return i;return -1;
+}
 inline SerumPlan mapSerum(const SerumDocument &doc, SerumImportReport &report) {
     using namespace juce;
     SerumPlan plan;
@@ -133,18 +152,35 @@ inline SerumPlan mapSerum(const SerumDocument &doc, SerumImportReport &report) {
         if (std::abs(tune) > 24)
             report.note("Oscillator tuning clamped to Aurora's +/-24 semitone range.");
         plan.set(id("osc", i, "tune"), tune);
-        plan.set(id("osc", i, "pan"), number(params, "kParamPan", 0) / 100);
+        plan.set(id("osc", i, "pan"),number(params,"kParamPan",.5)*2-1);
         plan.set(id("osc", i, "unison"), number(params, "kParamUnison", 1));
         plan.set(id("osc", i, "detune"), number(params, "kParamDetune", .1) * 100);
-        plan.set(id("osc", i, "phase"), number(specific, "kParamInitialPhase", 0) / 360);
-        plan.set(id("osc", i, "random"), number(specific, "kParamRandPhase", 0) / 100);
+        plan.set(id("osc", i, "phase"), number(specific, "kParamInitialPhase", 180) / 360);
+        plan.set(id("osc", i, "random"), number(specific,"kParamRandomPhase",number(specific,"kParamRandPhase",100))/100);
         plan.set(id("osc", i, "position"), number(specific, "kParamTablePos", 0) / 256);
         plan.set(id("osc", i, "loop"), number(specific, "kParamOneShot", 0) < .5 ? 1 : 0);
-        String warp = specific.getProperty("kParamWarpMenu", "Off").toString();
-        if (warp != "Off" && warp != "kOff" && enabled)
-            report.note("Wavetable warp/FM modes are not translated; original tables are used "
-                        "without Serum warp.");
-        plan.set(id("osc", i, "warp"), 0);
+        plan.set(id("osc",i,"wt_compat"),mode==0?1:0);
+        plan.set(id("osc",i,"wt_enabled"),enabled?1:0);
+        plan.set(id("osc",i,"wt_unison"),number(params,"kParamUnison",1));
+        plan.set(id("osc",i,"wt_detune"),number(params,"kParamDetune",.5));
+        plan.set(id("osc",i,"wt_blend"),number(params,"kParamDetuneWid",.75));
+        plan.set(id("osc",i,"wt_width"),number(params,"kParamUnisonStereo",1));
+        plan.set(id("osc",i,"wt_shape"),number(params,"kParamDetuneMode",0));
+        plan.set(id("osc",i,"wt_stack"),number(params,"kParamUnisonStack",0));
+        plan.set(id("osc",i,"wt_range"),number(params,"kParamUnisonRange",12));
+        plan.set(id("osc",i,"wt_rotate"),4*number(params,"kParamUnisonRotate",.5)-2);
+        plan.set(id("osc",i,"wt_variation"),2*number(specific,"kParamUnisonWTPos",.5)-1);
+        plan.set(id("osc",i,"wt_xfade"),number(specific,"kParamXfadeMode",0));
+        plan.set(id("osc",i,"wt_memory"),number(specific,"kParamPhaseMemory",0));
+        plan.set(id("osc",i,"wt_legato"),number(specific,"kParamPhaseLegato",1));
+        plan.set(id("osc",i,"wt_wrap"),number(specific,"kParamWrapPhase",1));
+        for(int slot=0;slot<2;++slot){int warp=serumWarp(specific.getProperty(slot==0?"kParamWarpMenu":"kParamWarpMenu2","kNoWarp"));
+            if(warp<0 || !supportedWavetableWarp(warp)){
+                if(enabled && warp!=0)report.note("A warp mode requires an unavailable curve, filter or shaper; its data is preserved, but this slot is bypassed.");warp=0;}
+            plan.set(id("osc",i,slot==0?"wt_warp1":"wt_warp2"),warp);
+            plan.set(id("osc",i,slot==0?"wt_amount1":"wt_amount2"),number(specific,slot==0?"kParamWarp":"kParamWarp2",0));
+        }
+        plan.set(id("osc",i,"warp"),0);
     }
     for (int i = 3; i < 5; ++i) {
         auto params = serumParams(root.getProperty(Identifier("Oscillator" + String(i)), {}));
@@ -234,6 +270,8 @@ inline SerumPlan mapSerum(const SerumDocument &doc, SerumImportReport &report) {
                              : destinationName.containsIgnoreCase("Main")   ? .25
                              : i < 5                                        ? 0
                                                                             : .25;
+        auto destinationValue=route.getProperty("kParamRoutingDest",{});
+        if(destinationValue.isInt() || destinationValue.isInt64() || destinationValue.isDouble())destination=.25*juce::jlimit(0,3,int(destinationValue));
         if (destination == 0 && i < 5 && !filter0 && !filter1)
             destination = .25;
         plan.set(id("route", i, "dest"), destination);
@@ -260,6 +298,13 @@ inline SerumPlan mapSerum(const SerumDocument &doc, SerumImportReport &report) {
         String type = route["destModuleTypeString"].toString(),
                name = route["destModuleParamName"].toString();
         int index = int(route["destModuleID"]), target = 0;
+        int local=int(route.getProperty("destModuleParamID",-1));String expected;
+        if(type=="Oscillator")expected=local==1?"kParamVolume":local==2?"kParamPan":local==4?"kParamPitch":"";
+        if(type=="WTOsc" && local==6)expected="kParamTablePos";
+        if(type=="VoiceFilter" && local==3)expected="kParamFreq";
+        if(name.isEmpty())name=expected;
+        else if(expected.isNotEmpty() && expected!=name){report.note("A local modulation parameter ID/name conflict was preserved and skipped; version-specific migration is required.");continue;}
+
         if (index >= 0 && index < 3 && type == "Oscillator")
             target = name == "kParamVolume"  ? 1 + index
                      : name == "kParamPan"   ? 8
@@ -316,8 +361,19 @@ inline SerumPlan mapSerum(const SerumDocument &doc, SerumImportReport &report) {
                 "Effect parameters and algorithms are approximations; rack topology may differ.");
         }
     }
+    std::array<int,3> visiting{};
+    auto visit=[&](auto &&self,int oscillator)->bool{if(visiting[size_t(oscillator)]==1)return false;if(visiting[size_t(oscillator)]==2)return true;visiting[size_t(oscillator)]=1;
+        if(plan.values[id("osc",oscillator,"wt_enabled")]<.5f || plan.engines[size_t(oscillator)]!=0){visiting[size_t(oscillator)]=2;return true;}
+        for(int slot=0;slot<2;++slot){int mode=int(plan.values[id("osc",oscillator,slot==0?"wt_warp1":"wt_warp2")]);
+            if(mode>=33 && mode!=57){int source=mode>=58?(mode-58)%6:(mode-33)%6;
+                if(source<2){int other=oscillator==0?source+1:oscillator==1?(source==0?0:2):source;if(!self(self,other))return false;}}}
+        visiting[size_t(oscillator)]=2;return true;};
+    bool acyclic=true;for(int oscillator=0;oscillator<3;++oscillator)acyclic &= visit(visit,oscillator);
+    if(!acyclic){report.error="Cyclic external oscillator modulation is not supported safely by this renderer.";return plan;}
+    for(auto key:{"noteOnExpressionCompat","loopEndCompat","roundingModeCompat","portaAlwaysTuningCompat","noteOffHandlingCompat","envLegatoInvertedCompat"})
+        if(root.hasProperty(key))report.note("Version-specific compatibility flags were preserved; behavior outside implemented mappings may differ.");
     report.parameters = int(plan.values.size());
-    report.note("Approximation: unsupported warp/FM, envelope curvature, LFO retrigger modes, "
+    report.note("Approximation: unavailable warp variants, envelope curvature, LFO retrigger modes, "
                 "arp/clip patterns and advanced engine settings are not reproduced.");
     return plan;
 }

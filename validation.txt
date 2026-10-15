@@ -16,6 +16,15 @@ PASS Recovered Bode coefficients match all 37 IEEE-754 words / quadrature phase 
 PASS Runtime host catalog: 2623 distinct IDs, 2080 MIDI, 420 numeric overlaps; static domain separate
 PASS AuroraState JSON+CBOR+Zstd / metadata+unknown fields / lossless document roundtrip / migration / future-version rejection
 PASS Static catalog: 2637 distinct canonical IDs; 35 confirmed RoutingSlot descriptors; unknown descriptors explicit
+PASS Compact periodic wavetable builder: 48 captured levels / exact level zero / circular guards / error <= 1e-6
+PASS IEEE level boundaries and deferred new level requests preserve the active 64-evaluation transition
+PASS Unison pan: 6800 float outputs match the captured native helper bit-for-bit
+PASS Seeded MT19937-64: 10000 reference outputs agree with the native-validated sequence
+PASS Phase initialization / explicit / stored reuse: 768 captured double outputs match bit-for-bit
+PASS Two external warp slots: captured FM / exponential / PD / AM / RM coefficients match bit-for-bit
+PASS Discrete frame changes crossfade while morph mode interpolates adjacent frames
+PASS Wavetable cached voice path: 16 subvoices, finite audio and enabled silent oscillator modulation
+PASS Batched sample-accurate filter/master ramps preserve audible routing, delay tails and independent shared-IR histories
 PASS Processor sample-offset automation / block invariance / native note-ID expression / MPE / per-voice LFO independence
 PASS nonlinear polynomial
 PASS delay impulse / wrap indexing
@@ -56,7 +65,10 @@ PASS UI pages / resize / modulation drop / FX reorder / MIDI learn / undo-redo
 PASS Mono/legato fallback / portamento / unison / Bezier envelope stability
 PASS OSC filter routing / envelope cutoff and LFO level affect rendered audio
 PASS Live DSP filter animation / ENV and LFO / source buttons / reverse serial / cycle guard / state
-PASS OpenGL shader compilation on native context
+PASS Wavetable renderer uses composited components without native OpenGL overlays
+PASS Preset carriers JSON/zlib, CBOR/zlib and CBOR/Zstandard decode and reject corruption
+PASS Preset per-parameter units: pan, degrees, random percent, warp amount and 16-way unison
+PASS Preset default marker uses declared defaults rather than zero
 PASS Serum XferJson/Zstd/CBOR maps oscillator, envelope, LFO polarity and modulation
 PASS Serum truncated payload, oversized metadata and unsupported encoding rejected
 PASS Serum CBOR truncation and nesting limits

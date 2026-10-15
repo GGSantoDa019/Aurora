@@ -1,0 +1,50 @@
+{
+  "sampleRate": 48000,
+  "blockSize": 512,
+  "framesPerScenario": 16384,
+  "notes": 4,
+  "unison": 4,
+  "timingUnit": "milliseconds",
+  "scope": "isolated processor, UI closed; single before/after run; DAW-wide CPU and RAM are not measured",
+  "cases": {
+    "idle": {
+      "before": {
+        "milliseconds": 72.46560001000762,
+        "maxBlockMs": 15.24740000069141
+      },
+      "after": {
+        "milliseconds": 1.601400014013052,
+        "maxBlockMs": 0.3407000005245209
+      },
+      "reductionPercent": 97.79012384663635,
+      "identicalFloat32": true,
+      "sha256": "fa43239bcee7b97ca62f007cc68487560a39e19f74f3dde7486db3f98df8e471"
+    },
+    "steady": {
+      "before": {
+        "milliseconds": 1635.508199997246,
+        "maxBlockMs": 79.30450000241399
+      },
+      "after": {
+        "milliseconds": 17.30249999463558,
+        "maxBlockMs": 1.029899999499321
+      },
+      "reductionPercent": 98.9420719508062,
+      "identicalFloat32": true,
+      "sha256": "2c5d77c1993bba7a5019c77aaf08f2c72204ec7d840cf9a2595a68730e9d06ab"
+    },
+    "automation": {
+      "before": {
+        "milliseconds": 19720.71950000152,
+        "maxBlockMs": 3275.689999997616
+      },
+      "after": {
+        "milliseconds": 18.12580000609159,
+        "maxBlockMs": 0.9591000005602837
+      },
+      "reductionPercent": 99.90808753196814,
+      "identicalFloat32": true,
+      "sha256": "2c5d77c1993bba7a5019c77aaf08f2c72204ec7d840cf9a2595a68730e9d06ab"
+    }
+  }
+}

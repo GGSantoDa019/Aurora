@@ -1,4 +1,4 @@
-# Aurora 0.2.2 — sprint de infraestrutura (15/10/2026)
+# Aurora 0.2.3 — sprint de infraestrutura (15/10/2026)
 
 O anexo original era uma investigação estática parcial; a atualização de 15/10 acrescenta consultas de interfaces públicas e renders offline em processo próprio. A investigação continua parcial, não uma especificação integral nem o código-fonte original. “Concluído” abaixo se refere ao contrato implementado e testado no Aurora; não significa equivalência sonora/binária com o plugin investigado. A sprint de infraestrutura não alterou o layout; a revisão posterior 0.2.2 adiciona a tela principal descrita em [UI_REFERENCE.md](docs/UI_REFERENCE.md), por solicitação explícita do usuário.
 
@@ -37,3 +37,16 @@ A enumeração do original não substitui os parâmetros do Aurora por IDs estra
 ## Avanço wavetable após 0.2.2
 
 Integrados o interpolador recuperado 16 taps/512 fases e a transição de 64 avaliações, com estado por subvoz. O fixture confronta 1.092 valores capturados no alvo histórico. Construção/seleção de níveis, warps e equivalência integral continuam pendentes. Veja [WAVETABLE_ADVANCE.md](docs/WAVETABLE_ADVANCE.md).
+
+## Revisão 0.2.3 — desempenho e interface
+
+Tratados os gargalos de configuração/limpeza por amostra, caches por voz, consultas de parâmetros, geração visual ociosa, cópia de samples no estado e preparação/duplicação de coeficientes de IR. All parameters usa composição comum e exclusividade de visibilidade. Os gráficos não criam mais contextos OpenGL. [Medições e limites](docs/OPTIMIZATION_023.md). A validação em FL Studio continua dependente de confirmação no host real.
+
+Validação 0.2.3: 79 verificações aprovadas. Os três renders de comparação de desempenho coincidiram byte a byte. O teste adicional confronta automação de filtro/ressonância/volume com o caminho conservador, usando filtros audíveis e cauda de delay.
+
+
+## Integração 0.2.3
+
+Implementados e testados: níveis compactos periódicos (12 níveis/4.287 floats por frame), interpolação com guardas, transições sem reinício durante fade, morph/discreto, pan/detune/random/fase, até 16 subvozes, dois slots de warp confirmados e dependências acíclicas entre osciladores. Preservados os IDs e ranges anteriores, com novos parâmetros anexados ao catálogo.
+
+Importador: JSON/zlib, CBOR/zlib e CBOR/Zstandard; conversões por parâmetro; defaults declarados; nomes/IDs locais sem correspondências inventadas; fonte/metadados desconhecidos preservados no estado nativo. A compatibilidade sonora integral permanece pendente. Quantize sem constantes confirmadas, curvas remap ausentes, shapers/filtros externos, diferenças em efeitos/envelopes e agendamento global do PRNG não são declarados equivalentes. Casos sem implementação são reportados ou rejeitados. Ver docs/WAVETABLE_PRESET_023.md. Validação final: 90 PASS, zero FAIL.

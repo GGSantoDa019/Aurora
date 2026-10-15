@@ -1,12 +1,15 @@
 #include "Dsp.h"
 #include "CoreInfrastructure.h"
 #include "ImportedWavetable.h"
+#include "WavetableAlgorithms.h"
 #include "LegacyParamOrder.h"
 #include "ModCurve.h"
 #include "Preset.h"
 #include "SerumImport.h"
 #include <memory>
 #include <regex>
+#include <unordered_map>
+#include <string_view>
 using namespace juce;
 using namespace aurora;
 #ifndef AURORA_FX
@@ -18,7 +21,7 @@ static const String &key(const char *prefix, int i, const char *suffix) {
                                 "route", "mod", "step", "fx"};
         const char *suffixes[9][32]{
             {"mode", "level", "tune", "position", "pan", "grain", "loop", "unison", "detune",
-             "warp", "warp_amount", "phase", "random"},
+             "warp", "warp_amount", "phase", "random", "wt_compat", "wt_enabled", "wt_warp1", "wt_amount1", "wt_warp2", "wt_amount2", "wt_blend", "wt_width", "wt_detune", "wt_shape", "wt_stack", "wt_range", "wt_rotate", "wt_xfade", "wt_memory", "wt_legato", "wt_wrap", "wt_variation", "wt_unison"},
             {"a",  "d",  "s",  "r",  "mode", "count", "tension", "duration", "loop",
              "x0", "x1", "x2", "x3", "x4",   "x5",    "x6",      "x7",       "y0",
              "y1", "y2", "y3", "y4", "y5",   "y6",    "y7"},
@@ -45,17 +48,24 @@ static const String &key(const char *prefix, int i, const char *suffix) {
         }
     };
     static const Keys cache;
-    for (int family = 0; family < 9; ++family)
-        if (std::strcmp(prefix, cache.prefixes[family]) == 0 && i >= 0 && i < cache.counts[family])
-            for (int s = 0; s < 32 && cache.suffixes[family][s]; ++s)
-                if (std::strcmp(suffix, cache.suffixes[family][s]) == 0)
-                    return cache.ids[size_t(family)][size_t(i)][size_t(s)];
+    struct Lookup {
+        std::unordered_map<std::string_view,int> family;
+        std::array<std::unordered_map<std::string_view,int>,9> suffix;
+        Lookup(const Keys &keys){for(int f=0;f<9;++f){family.emplace(keys.prefixes[f],f);
+            for(int k=0;k<32 && keys.suffixes[f][k];++k)suffix[size_t(f)].emplace(keys.suffixes[f][k],k);}}
+    };
+    static const Lookup lookup(cache);
+    auto family=lookup.family.find(prefix);
+    if(family!=lookup.family.end() && i>=0 && i<cache.counts[family->second]){
+        auto field=lookup.suffix[size_t(family->second)].find(suffix);
+        if(field!=lookup.suffix[size_t(family->second)].end())return cache.ids[size_t(family->second)][size_t(i)][size_t(field->second)];
+    }
     static const String empty;
     return empty;
 }
 class Aurora;
 struct Zone {
-    AudioBuffer<float> data;
+    std::shared_ptr<AudioBuffer<float>> data=std::make_shared<AudioBuffer<float>>();
     double sampleRate = 48000;
     int root = 60, low = 0, high = 127;
 };
@@ -75,10 +85,37 @@ class Voice : public SynthesiserVoice {
     void channelPressureChanged(int v) override { pressure = v / 127.f; }
     void renderNextBlock(AudioBuffer<float> &, int, int) override;
     Aurora &owner;
+    struct OscConfig {
+        int mode;
+        float pos, level, pan, grain;
+        double tune;
+        bool loop;
+        int unison = 1, warp = 0;
+        float detune = 0, warpAmount = .5f;
+        std::array<double,16> detuneFactor{};
+        bool compat=false,enabled=true,morph=false;
+        int warpModes[2]{0,0};float warpTargets[2]{0,0};
+        float blend=.75f,width=1,variation=0;
+        std::array<float,32> panGains{};
+        float normalization=1;
+    };
+    std::array<OscConfig,3> config;
+    struct LfoConfig {double rate=1,divisor=1,phase=0,delay=0;float rise=0;int shape=0;bool sync=false;};
+    std::array<LfoConfig,10> lfoConfig;
+    unsigned configRevision=~0u;
+    float noiseLevel=0,subLevel=0;
+
     std::array<ADSR, 4> envs;
     std::array<double, 3> phase{}, position{};
-    std::array<std::array<double, 8>, 3> unisonPhase{};
-    std::array<std::array<WavetableReadState,8>,3> wavetableState{};
+    std::array<std::array<double, 16>, 3> unisonPhase{};
+    std::array<std::array<WavetableReadState,16>,3> wavetableState{};
+    std::array<std::array<float,16>,3> rawTap{};
+    std::array<std::array<double,16>,3> randomDetune{};
+    std::array<std::array<float,2>,3> warpSmooth{};
+    std::array<std::array<int,2>,3> previousWarp{{{-1,-1},{-1,-1},{-1,-1}}};
+    std::array<bool,3> phaseSeen{};
+    std::array<int,3> renderOrder{0,1,2};
+    std::array<bool,3> sourceRequired{};
     std::array<double, 4> envelopeTime{};
     bool keepEnvelope = false;
     float glideNote = 60;
@@ -211,12 +248,18 @@ class Aurora : public AudioProcessor, public SampleAccurateParameterSink, public
     PerformanceSynth synth;
     std::array<DisplayQueue, 3> displayFrames;
     int displayClock = 0;
+    std::atomic<int> displaySubscribers{0};
+    std::array<float,3> lastDisplayPosition{-1,-1,-1};
+    std::array<int,3> lastDisplayMode{-1,-1,-1};
+    unsigned assetRevision=0,lastDisplayAsset=~0u,lastDisplayEpoch=~0u;
+    std::atomic<unsigned> displayEpoch{0};
     std::array<CurveShape, 4> envCurves;
     std::array<CurveShape, 10> lfoCurves;
     std::array<double, 10> lfoTime{};
     double currentTempo=120;
     float previousNote = 60;
     Wavetables tables;
+    PhaseRandom phaseRandom;
     std::array<std::shared_ptr<ImportedWavetable>, 3> importedTables;
     std::atomic<bool> importedLfoUnipolar{false};
     std::atomic<bool> importedSendOnlyRouting{false};
@@ -281,6 +324,10 @@ class Aurora : public AudioProcessor, public SampleAccurateParameterSink, public
         return false;
     }
     std::vector<bool> smoothParameters;
+    std::vector<unsigned> parameterGroups;
+    std::unordered_map<std::string_view,int> parameterLookup;
+    unsigned voiceRevision=0;
+
     std::map<String, int> indices;
     struct RouteConfig {
         float balance = 0, bus1 = 0, bus2 = 0;
@@ -292,9 +339,15 @@ class Aurora : public AudioProcessor, public SampleAccurateParameterSink, public
         int source = 0, target = 0;
         float depth = 0, curve = 1;
     };
-    std::array<ModConfig, 64> mods;
+    std::array<ModConfig, 64> mods,activeMods;
+    int activeModCount=0;
+    std::array<bool,10> activeLfo{};
+    std::array<bool,4> activeEnvelope{true,false,false,false};
     std::array<float, 8> macros{};
-    AudioBuffer<float> cutoffMod;
+    AudioBuffer<float> cutoffMod,postRampBuffer;
+    std::array<int,5> postRampIndices{};
+    bool batchedPostRamp=false;
+    bool forceSingleSampleForTest=false;
     double rate = 48000;
     int maxBlock = 512;
     float gainSmooth = .6f;
@@ -342,6 +395,15 @@ class Aurora : public AudioProcessor, public SampleAccurateParameterSink, public
             }
             parameterCatalog.push_back(descriptor);
         }
+        for(const auto &entry:indices){auto &id=entry.first;parameterLookup.emplace(std::string_view(id.toRawUTF8(),size_t(id.getNumBytesAsUTF8())),entry.second);}
+        for(auto *parameter:getParameters()){
+            auto id=dynamic_cast<RangedAudioParameter*>(parameter)->paramID;
+            unsigned group=id.startsWith("route")?1:id.startsWith("mod")?2:id.startsWith("macro")?4:id.startsWith("env")?8:id.startsWith("lfo")?16:0;
+            if(id.startsWith("osc") || id.startsWith("env") || id.startsWith("lfo") || id=="noise" || id=="sub")group|=32;
+            if(id=="master" || (id.startsWith("filter") && (id.endsWith("_cutoff") || id.endsWith("_res"))))group|=64;
+            parameterGroups.push_back(group);
+        }
+        postRampIndices={indices["master"],indices["filter0_cutoff"],indices["filter0_res"],indices["filter1_cutoff"],indices["filter1_res"]};
         capture(true);
         for (auto &s : spectrum) {
             s.fill(0);
@@ -495,6 +557,28 @@ class Aurora : public AudioProcessor, public SampleAccurateParameterSink, public
               60 + ((i % 4) * 2));
             boolean(key("step", i, "on"), "Step enabled", i % 2 == 0);
         }
+        for(int i=0;i<3;++i){String n="Osc "+String(i+1)+" WT ";
+            boolean(key("osc",i,"wt_compat"),n+"advanced engine",false);
+            boolean(key("osc",i,"wt_enabled"),n+"enabled",true);
+            StringArray names;for(auto label:wavetableWarpNames)names.add(label);
+            choice(key("osc",i,"wt_warp1"),n+"warp 1",names);
+            f(key("osc",i,"wt_amount1"),n+"warp 1 amount",0,1,0);
+            choice(key("osc",i,"wt_warp2"),n+"warp 2",names);
+            f(key("osc",i,"wt_amount2"),n+"warp 2 amount",0,1,0);
+            f(key("osc",i,"wt_blend"),n+"blend",0,1,.75f);
+            f(key("osc",i,"wt_width"),n+"stereo width",0,1,1);
+            f(key("osc",i,"wt_detune"),n+"detune",0,1,.5f);
+            choice(key("osc",i,"wt_shape"),n+"detune distribution",{"Linear","Tangent","Quadratic","Sine","Random"});
+            f(key("osc",i,"wt_stack"),n+"stack",0,8,0);
+            f(key("osc",i,"wt_range"),n+"detune range",0,48,12);
+            f(key("osc",i,"wt_rotate"),n+"distribution shift",-2,2,0);
+            boolean(key("osc",i,"wt_xfade"),n+"morph frames",false);
+            boolean(key("osc",i,"wt_memory"),n+"phase memory",false);
+            boolean(key("osc",i,"wt_legato"),n+"legato phase",true);
+            boolean(key("osc",i,"wt_wrap"),n+"wrap initial phase",true);
+            f(key("osc",i,"wt_variation"),n+"frame variation",-1,1,0);
+            f(key("osc",i,"wt_unison"),n+"subvoices",1,16,1);
+        }
         return p;
     }
     void capture(bool instant = false, int block = 0) {
@@ -503,25 +587,34 @@ class Aurora : public AudioProcessor, public SampleAccurateParameterSink, public
             float value=raw[i]->load();
             if (instant) { snapshot[i]=value; parameterRamps[i].reset(value); }
         }
+        ++voiceRevision;
         refreshConfiguration();
     }
-    void refreshConfiguration() {
+    void refreshConfiguration(unsigned mask=31) {
+        if(mask&1)
         for (int j = 0; j < 7; ++j)
             routes[size_t(j)] = {(val(key("route", j, "balance")) + 100) / 200,
                                  val(key("route", j, "bus1")) * .01f,
                                  val(key("route", j, "bus2")) * .01f,
                                  juce::jlimit(0,3,int(val(key("route",j,"dest")))),
                                  val(key("route", j, "env")) >= .5f};
+        if(mask&2){
         for (int j = 0; j < 64; ++j)
             mods[size_t(j)] = {int(val(key("mod", j, "source"))), int(val(key("mod", j, "target"))),
                                val(key("mod", j, "depth")), val(key("mod", j, "curve"))};
-        for (int j = 0; j < 8; ++j)
+        activeModCount=0;activeLfo.fill(false);activeEnvelope={true,false,false,false};
+        for(const auto &m:mods)if(m.source && m.target && m.depth!=0){activeMods[size_t(activeModCount++)]=m;
+            if(m.source>=8 && m.source<18)activeLfo[size_t(m.source-8)]=true;
+            if(m.source>=4 && m.source<8)activeEnvelope[size_t(m.source-4)]=true;
+        }
+        }
+        if(mask&4)for (int j = 0; j < 8; ++j)
             macros[size_t(j)] = val(key("macro", j, "value"));
         static const char *xs[]{"x0", "x1", "x2", "x3", "x4", "x5", "x6", "x7"};
         static const char *ys[]{"y0", "y1", "y2", "y3", "y4", "y5", "y6", "y7"};
         static const char *ps[]{"point0", "point1", "point2", "point3",
                                 "point4", "point5", "point6", "point7"};
-        for (int j = 0; j < 4; ++j) {
+        if(mask&8)for (int j = 0; j < 4; ++j) {
             auto &curve = envCurves[size_t(j)];
             curve.count = juce::jlimit(2, 8, int(val(key("env", j, "count"))));
             curve.tension = val(key("env", j, "tension"));
@@ -530,7 +623,7 @@ class Aurora : public AudioProcessor, public SampleAccurateParameterSink, public
                 curve.y[size_t(i)] = val(key("env", j, ys[i]));
             }
         }
-        for (int j = 0; j < 10; ++j) {
+        if(mask&16)for (int j = 0; j < 10; ++j) {
             auto &curve = lfoCurves[size_t(j)];
             curve.count = juce::jlimit(2, 8, int(val(key("lfo", j, "count"))));
             curve.tension = val(key("lfo", j, "tension"));
@@ -557,8 +650,11 @@ class Aurora : public AudioProcessor, public SampleAccurateParameterSink, public
         return note;
     }
     float val(const String &id) const {
-        auto it = indices.find(id);
-        return it == indices.end() ? 0 : snapshot[size_t(it->second)];
+        auto it=parameterLookup.find(std::string_view(id.toRawUTF8(),size_t(id.getNumBytesAsUTF8())));
+        return it==parameterLookup.end()?0:snapshot[size_t(it->second)];
+    }
+    float val(const char *id) const {
+        auto it=parameterLookup.find(id);return it==parameterLookup.end()?0:snapshot[size_t(it->second)];
     }
     void prepareToPlay(double sr, int block) override {
         rate = sr;
@@ -577,6 +673,7 @@ class Aurora : public AudioProcessor, public SampleAccurateParameterSink, public
         send2.setSize(2, maxBlock);
         direct.setSize(2, maxBlock);
         cutoffMod.setSize(4, maxBlock);
+        postRampBuffer.setSize(5,maxBlock);
         for (auto &r : fx)
             for (auto &e : r)
                 e.prepare(sr, maxBlock);
@@ -735,12 +832,16 @@ class Aurora : public AudioProcessor, public SampleAccurateParameterSink, public
                 parameterRamps[i].set(point.plain, smoothParameters[i] ? std::max(1,int(rate*.01)) : 0);
                 raw[i]->store(point.plain);
             }
-            bool ramping=false;
+            bool ramping=false,postOnly=true;unsigned changed=0;
             for (size_t i=0; i<snapshot.size(); ++i) {
                 ramping |= parameterRamps[i].remaining > 0;
-                snapshot[i]=parameterRamps[i].next();
+                if(parameterRamps[i].remaining>0 && !(parameterGroups[i]&64))postOnly=false;
+                float value=parameterRamps[i].next();
+                if(value!=snapshot[i])changed |= parameterGroups[i];
+                snapshot[i]=value;
             }
-            refreshConfiguration();
+            if(changed&32)++voiceRevision;
+            if(changed&31)refreshConfiguration(changed);
             bool useMpe=val("mpe_enabled")>=.5f;
             if(useMpe!=synth.mpeActive){synth.mpeActive=useMpe;if(useMpe)synth.mpe.setLowerZone(15);else synth.mpe.clearAllZones();}
             synth.mode=int(val("voice_mode"));
@@ -748,13 +849,18 @@ class Aurora : public AudioProcessor, public SampleAccurateParameterSink, public
             if(limit<synth.limit)for(int i=limit;i<synth.limit;++i)synth.getVoice(i)->stopNote(0,false);
             synth.limit=limit;
             while(noteEvent<nativeCount && nativeEvents[size_t(noteEvent)].offset<=offset)dispatchNative(nativeEvents[size_t(noteEvent++)]);
-            int length = ramping ? 1 : std::min(maxBlock,total-offset);
+            batchedPostRamp=ramping && postOnly && val("portamento")==0 && !forceSingleSampleForTest;
+            int length = ramping && !batchedPostRamp ? 1 : std::min(maxBlock,total-offset);
             if(noteEvent<nativeCount)length=std::min(length,std::max(1,nativeEvents[size_t(noteEvent)].offset-offset));
             if (event < automation.count) length=std::min(length,std::max(1,automation.points[size_t(event)].sampleOffset-offset));
-            refreshConfiguration();
+            if(batchedPostRamp)for(int row=0;row<5;++row){auto index=size_t(postRampIndices[size_t(row)]);
+                postRampBuffer.setSample(row,0,snapshot[index]);
+                for(int i=1;i<length;++i)postRampBuffer.setSample(row,i,parameterRamps[index].next());}
             automationMidi.clear(); automationMidi.addEvents(nativeMidi,offset,length,-offset);
             AudioBuffer<float> view(output.getArrayOfWritePointers(),output.getNumChannels(),offset,length);
             processAudioChunk(view,automationMidi);
+            if(batchedPostRamp)for(int row=0;row<5;++row)snapshot[size_t(postRampIndices[size_t(row)])]=postRampBuffer.getSample(row,length-1);
+            batchedPostRamp=false;
             offset += length;
         }
         if (event < automation.count) automation.rejected.fetch_add(unsigned(automation.count-event));
@@ -810,11 +916,11 @@ class Aurora : public AudioProcessor, public SampleAccurateParameterSink, public
         for (int start = 0; start < total; start += maxBlock) {
             int n = std::min(maxBlock, total - start);
             for (auto &b : buses)
-                b.clear();
-            send1.clear();
-            send2.clear();
-            direct.clear();
-            cutoffMod.clear();
+                b.clear(0,n);
+            send1.clear(0,n);
+            send2.clear(0,n);
+            direct.clear(0,n);
+            cutoffMod.clear(0,n);
             if (AURORA_FX) {
                 for (int i = 0; i < n; ++i)
                     route(0, output.getSample(0, start + i), output.getSample(1, start + i), 1, i);
@@ -837,20 +943,22 @@ class Aurora : public AudioProcessor, public SampleAccurateParameterSink, public
                 for (int i = 0; i < n; ++i) {
                     float lr[2];
                     float count = std::max(1.f, cutoffMod.getSample(2, i));
+                    float sampleBase=batchedPostRamp?postRampBuffer.getSample(1+f*2,i):base;
+                    float sampleRes=batchedPostRamp?postRampBuffer.getSample(2+f*2,i):res;
                     float cutoff =
-                        base * std::pow(2.f, juce::jlimit(-8.f, 8.f,
+                        sampleBase * std::pow(2.f, juce::jlimit(-8.f, 8.f,
                                                           cutoffMod.getSample(f, i) / count * 8));
                     observedCutoff = juce::jlimit(10.f, float(rate * .45), cutoff);
                     for (int c = 0; c < 2; ++c)
                         lr[c] = filters[size_t(f)][size_t(c)].tick(
-                            buses[size_t(f + 2)].getSample(c, i), cutoff, res, rate, type);
+                            buses[size_t(f + 2)].getSample(c, i), cutoff, sampleRes, rate, type);
                     int dest = routes[size_t(f + 5)].dest;
                     float envelope=AURORA_FX?1.f:cutoffMod.getSample(3,i)/count;
                     if(dest!=3 || importedSendOnlyRouting.load())route(f+5,lr[0],lr[1],envelope,i,!cycle);
                 }
                 auto &display = filterDisplay[size_t(f)];
                 display.cutoff.store(observedCutoff, std::memory_order_relaxed);
-                display.resonance.store(res, std::memory_order_relaxed);
+                display.resonance.store(batchedPostRamp?postRampBuffer.getSample(2+f*2,n-1):res, std::memory_order_relaxed);
                 display.type.store(type, std::memory_order_relaxed);
                 display.sampleRate.store(float(rate), std::memory_order_relaxed);
                 display.frame.fetch_add(1, std::memory_order_release);
@@ -870,7 +978,7 @@ class Aurora : public AudioProcessor, public SampleAccurateParameterSink, public
             }
             float gain = val("master");
             for (int i = 0; i < n; ++i) {
-                gainSmooth = gain;
+                gainSmooth = batchedPostRamp?postRampBuffer.getSample(0,i):gain;
                 for (int c = 0; c < 2; ++c) {
                     float x = (buses[0].getSample(c, i) + direct.getSample(c, i)) * gainSmooth;
                     output.setSample(c, start + i, AURORA_FX ? x : std::tanh(x));
@@ -885,18 +993,21 @@ class Aurora : public AudioProcessor, public SampleAccurateParameterSink, public
             }
             telemetry.peak.store(peak);
             displayClock += n;
-            if (displayClock >= rate / 60) {
-                displayClock -= int(rate / 60);
+            if (displayClock >= rate / 30) {
+                displayClock %= std::max(1,int(rate/30));
+                if(displaySubscribers.load(std::memory_order_relaxed)>0){
                 for (int slot = 0; slot < 3; ++slot) {
                     DisplayFrame frame;
                     frame.mode = int(val(key("osc", slot, "mode")));
                     frame.position = val(key("osc", slot, "position"));
+                    if(frame.position==lastDisplayPosition[size_t(slot)] && frame.mode==lastDisplayMode[size_t(slot)] && lastDisplayAsset==assetRevision && lastDisplayEpoch==displayEpoch.load())continue;
+                    lastDisplayPosition[size_t(slot)]=frame.position;lastDisplayMode[size_t(slot)]=frame.mode;
                     for (int i = 0; i < 256; ++i) {
                         if (frame.mode == 0 || samples[size_t(slot)].empty())
                             frame.samples[size_t(i)] =
                                 displayWave(slot, i / 256., frame.position, 220, rate);
                         else {
-                            const auto &source = samples[size_t(slot)][0].data;
+                            const auto &source = *samples[size_t(slot)][0].data;
                             int at = juce::jlimit(0, source.getNumSamples() - 1,
                                                   int((frame.position * .8 + i / 256.f * .2) *
                                                       (source.getNumSamples() - 1)));
@@ -905,6 +1016,8 @@ class Aurora : public AudioProcessor, public SampleAccurateParameterSink, public
                     }
                     displayFrames[size_t(slot)].push(frame);
                 }
+                lastDisplayAsset=assetRevision;lastDisplayEpoch=displayEpoch.load();
+                }
             }
         }
         midi.clear();
@@ -912,51 +1025,57 @@ class Aurora : public AudioProcessor, public SampleAccurateParameterSink, public
     // Asset import is serialized with the audio callback; editing is an offline operation.
     bool loadSample(int slot, const File &file, int root = 60, int low = 0, int high = 127,
                     bool append = false) {
+        double targetRate;{const ScopedLock lock(getCallbackLock());targetRate=rate;}
         std::unique_ptr<AudioFormatReader> reader(formats.createReaderFor(file));
-        if (!reader || reader->lengthInSamples <= 0 || reader->lengthInSamples > rate * 120)
+        if (!reader || reader->lengthInSamples <= 0 || reader->lengthInSamples > targetRate * 120)
             return false;
         Zone z;
         z.root = root;
         z.low = low;
         z.high = high;
-        z.data.setSize(1, int(reader->lengthInSamples));
-        reader->read(&z.data, 0, z.data.getNumSamples(), 0, true, false);
-        if (std::abs(reader->sampleRate - rate) > 1) {
-            int len = int(z.data.getNumSamples() * rate / reader->sampleRate);
+        (*z.data).setSize(1, int(reader->lengthInSamples));
+        reader->read(&(*z.data), 0, (*z.data).getNumSamples(), 0, true, false);
+        if (std::abs(reader->sampleRate - targetRate) > 1) {
+            int len = int((*z.data).getNumSamples() * targetRate / reader->sampleRate);
             AudioBuffer<float> res(1, len);
             for (int i = 0; i < len; ++i) {
-                double at = i * reader->sampleRate / rate;
-                int a = juce::jlimit(0, z.data.getNumSamples() - 1, int(at)),
-                    b = std::min(a + 1, z.data.getNumSamples() - 1);
+                double at = i * reader->sampleRate / targetRate;
+                int a = juce::jlimit(0, (*z.data).getNumSamples() - 1, int(at)),
+                    b = std::min(a + 1, (*z.data).getNumSamples() - 1);
                 float f = float(at - std::floor(at));
-                res.setSample(0, i, z.data.getSample(0, a) * (1 - f) + z.data.getSample(0, b) * f);
+                res.setSample(0, i, (*z.data).getSample(0, a) * (1 - f) + (*z.data).getSample(0, b) * f);
             }
-            z.data = std::move(res);
+            (*z.data) = std::move(res);
         }
-        z.sampleRate = rate;
-        const ScopedLock lock(getCallbackLock());
-        synth.allNotesOff(0, false);
-        if (!append)
-            samples[size_t(slot)].clear();
-        samples[size_t(slot)].push_back(std::move(z));
+        z.sampleRate = targetRate;
         // Analyze one 2048-sample frame into 64 harmonic amplitudes for additive resynthesis.
         std::array<float, 4096> fftdata{};
-        auto &data = samples[size_t(slot)].back().data;
+        auto &data = (*z.data);
         for (int i = 0; i < std::min(2048, data.getNumSamples()); ++i)
             fftdata[size_t(i)] = data.getSample(0, i) * (.5f - .5f * std::cos(2 * pi * i / 2048));
         dsp::FFT fft(11);
         fft.performFrequencyOnlyForwardTransform(fftdata.data());
+        std::array<float,64> analyzedSpectrum{};
         float sum = 0;
         float fundamental = float(MidiMessage::getMidiNoteInHertz(root));
         for (int h = 0; h < 64; ++h) {
-            int bin = juce::jlimit(1, 1023, int(fundamental * (h + 1) * 2048 / rate));
+            int bin = juce::jlimit(1, 1023, int(fundamental * (h + 1) * 2048 / targetRate));
             float a = fftdata[size_t(bin)];
-            spectrum[size_t(slot)][size_t(h)] = a;
+            analyzedSpectrum[size_t(h)] = a;
             sum += a;
         }
         if (sum > 0)
-            for (auto &a : spectrum[size_t(slot)])
+            for (auto &a : analyzedSpectrum)
                 a /= sum;
+        std::vector<Zone> retired;
+        const ScopedLock lock(getCallbackLock());
+        if(rate!=targetRate)return false;
+        synth.allNotesOff(0, false);
+        if (!append)
+            samples[size_t(slot)].swap(retired);
+        samples[size_t(slot)].push_back(std::move(z));
+        ++assetRevision;
+        spectrum[size_t(slot)]=analyzedSpectrum;
         state.state.setProperty("sample" + String(slot), file.getFullPathName(), nullptr);
         return true;
     }
@@ -1024,39 +1143,28 @@ class Aurora : public AudioProcessor, public SampleAccurateParameterSink, public
         flush();
         return loaded > 0;
     }
-    bool applyIR(int rack) {
-        auto &bytes = irData[size_t(rack)];
-        AudioBuffer<float> buffer;
-        double irRate = rate;
-        if (bytes.getSize()) {
-            std::unique_ptr<AudioFormatReader> reader(formats.createReaderFor(
-                std::make_unique<MemoryInputStream>(bytes.getData(), bytes.getSize(), false)));
-            if (!reader || reader->lengthInSamples <= 0 ||
-                reader->lengthInSamples > reader->sampleRate * 10)
-                return false;
-            irRate = reader->sampleRate;
-            buffer.setSize(2, int(reader->lengthInSamples));
-            reader->read(&buffer, 0, buffer.getNumSamples(), 0, true, true);
-        } else {
-            buffer.setSize(2, 1);
-            buffer.setSample(0, 0, 1);
-            buffer.setSample(1, 0, 1);
-        }
-        for (auto &effect : fx[size_t(rack)]) {
-            AudioBuffer<float> copy;
-            copy.makeCopyOf(buffer);
-            effect.conv.load(copy,irRate);
-        }
+    using PreparedRack=std::array<std::unique_ptr<StereoFIR>,4>;
+    bool prepareIR(const MemoryBlock &bytes,double sampleRate,PreparedRack &ready){
+        AudioBuffer<float> buffer;double irRate=sampleRate;
+        if(bytes.getSize()){
+            AudioFormatManager localFormats;localFormats.registerBasicFormats();
+            auto reader=std::unique_ptr<AudioFormatReader>(localFormats.createReaderFor(std::make_unique<MemoryInputStream>(bytes.getData(),bytes.getSize(),false)));
+            if(!reader || reader->lengthInSamples<=0 || reader->lengthInSamples>reader->sampleRate*10)return false;
+            irRate=reader->sampleRate;buffer.setSize(2,int(reader->lengthInSamples));reader->read(&buffer,0,buffer.getNumSamples(),0,true,true);
+        }else{buffer.setSize(2,1);buffer.setSample(0,0,1);buffer.setSample(1,0,1);}
+        ready[0]=std::make_unique<StereoFIR>();ready[0]->prepare(sampleRate);ready[0]->load(buffer,irRate);
+        for(int i=1;i<4;++i){ready[size_t(i)]=std::make_unique<StereoFIR>();ready[size_t(i)]->shareIR(*ready[0]);}
         return true;
     }
-    bool loadIR(int rack, const File &file) {
-        MemoryBlock bytes;
-        if (!file.loadFileAsData(bytes) || bytes.getSize() > 32 * 1024 * 1024)
-            return false;
-        const ScopedLock lock(getCallbackLock());
-        irData[size_t(rack)] = std::move(bytes);
-        auto &ir = irData[size_t(rack)];
-        return applyIR(rack);
+    void installIR(int rack,PreparedRack &ready){for(int i=0;i<4;++i)std::swap(fx[size_t(rack)][size_t(i)].conv,*ready[size_t(i)]);}
+    bool applyIR(int rack){PreparedRack ready;if(!prepareIR(irData[size_t(rack)],rate,ready))return false;installIR(rack,ready);return true;}
+    bool loadIR(int rack,const File &file){
+        MemoryBlock bytes;if(!file.loadFileAsData(bytes)||bytes.getSize()>32*1024*1024)return false;
+        double sampleRate;{const ScopedLock lock(getCallbackLock());sampleRate=rate;}
+        PreparedRack ready;if(!prepareIR(bytes,sampleRate,ready))return false;
+        {const ScopedLock lock(getCallbackLock());if(rate!=sampleRate)return false;
+            irData[size_t(rack)]=std::move(bytes);installIR(rack,ready);}
+        return true;
     }
     File resolveSerumAsset(String path, const String &category, const File &presetFile,
                            const File &library) {
@@ -1140,6 +1248,7 @@ class Aurora : public AudioProcessor, public SampleAccurateParameterSink, public
         if (!decodeSerum(bytes.getData(), bytes.getSize(), document, report))
             return false;
         auto plan = mapSerum(document, report);
+        if(report.error.isNotEmpty())return false;
         ValueTree tree("AuroraState");
         tree.setProperty("routingPlainVersion",2,nullptr);
         tree.setProperty("serumLfoUnipolar", true, nullptr);
@@ -1354,12 +1463,25 @@ class Aurora : public AudioProcessor, public SampleAccurateParameterSink, public
         }
         MemoryBlock binary;
         copyXmlToBinary(*xml, binary);
-        setStateInformation(binary.getData(), int(binary.getSize()));
+        var metadata(new DynamicObject),extensions(new DynamicObject);
+        metadata.getDynamicObject()->setProperty("product","Aurora");metadata.getDynamicObject()->setProperty("presetName",report.name);
+        metadata.getDynamicObject()->setProperty("sourceMetadata",document.metadata);
+        extensions.getDynamicObject()->setProperty("sourceState",document.payload);
+        extensions.getDynamicObject()->setProperty("sourceEncoding",document.encoding);
+        MemoryBlock native;if(!encodePreset(binary,native,metadata,extensions)){report.error="Could not preserve imported state.";return false;}
+        setStateInformation(native.getData(),int(native.getSize()));
         return true;
     }
     void getStateInformation(MemoryBlock &out) override {
+        ValueTree tree;std::array<std::vector<Zone>,3> savedSamples;
+        std::array<std::shared_ptr<ImportedWavetable>,3> savedTables;
+        std::array<MemoryBlock,3> savedIR;std::array<std::array<float,64>,3> savedSpectrum;
+        var metadata,extensions;
+        {
         const ScopedLock lock(getCallbackLock());
-        auto tree = state.copyState();
+        tree=state.copyState();savedSamples=samples;savedIR=irData;savedSpectrum=spectrum;
+        for(int s=0;s<3;++s)savedTables[size_t(s)]=importedTable(s);
+        metadata=presetMetadata;extensions=presetExtensions;
         tree.setProperty("routingPlainVersion",2,nullptr);
         tree.setProperty("serumLfoUnipolar", importedLfoUnipolar.load(), nullptr);
         tree.setProperty("serumSendOnlyRouting", importedSendOnlyRouting.load(), nullptr);
@@ -1369,11 +1491,12 @@ class Aurora : public AudioProcessor, public SampleAccurateParameterSink, public
                 index >= 0 ? dynamic_cast<RangedAudioParameter *>(getParameters()[index]) : nullptr;
             tree.setProperty("cc" + String(cc), parameter ? parameter->paramID : String{}, nullptr);
         }
+        }
         for (int j = tree.getNumChildren() - 1; j >= 0; --j)
             if (tree.getChild(j).hasType("Bank") || tree.getChild(j).hasType("ImportedTable"))
                 tree.removeChild(j, nullptr);
         for (int s = 0; s < 3; ++s) {
-            if (auto table = importedTable(s)) {
+            if (auto table = savedTables[size_t(s)]) {
                 ValueTree wave("ImportedTable");
                 wave.setProperty("slot", s, nullptr);
                 wave.setProperty("data",
@@ -1384,30 +1507,30 @@ class Aurora : public AudioProcessor, public SampleAccurateParameterSink, public
             }
             tree.setProperty(
                 "irData" + String(s),
-                Base64::toBase64(irData[size_t(s)].getData(), irData[size_t(s)].getSize()),
+                Base64::toBase64(savedIR[size_t(s)].getData(), savedIR[size_t(s)].getSize()),
                 nullptr);
             ValueTree bank("Bank");
             bank.setProperty("slot", s, nullptr);
-            for (const auto &z : samples[size_t(s)]) {
+            for (const auto &z : savedSamples[size_t(s)]) {
                 ValueTree item("Zone");
                 item.setProperty("rate", z.sampleRate, nullptr);
                 item.setProperty("root", z.root, nullptr);
                 item.setProperty("low", z.low, nullptr);
                 item.setProperty("high", z.high, nullptr);
                 item.setProperty("data",
-                                 Base64::toBase64(z.data.getReadPointer(0),
-                                                  size_t(z.data.getNumSamples()) * sizeof(float)),
+                                 Base64::toBase64((*z.data).getReadPointer(0),
+                                                  size_t((*z.data).getNumSamples()) * sizeof(float)),
                                  nullptr);
                 bank.addChild(item, -1, nullptr);
             }
             for (int h = 0; h < 64; ++h)
-                bank.setProperty("h" + String(h), spectrum[size_t(s)][size_t(h)], nullptr);
+                bank.setProperty("h" + String(h), savedSpectrum[size_t(s)][size_t(h)], nullptr);
             tree.addChild(bank, -1, nullptr);
         }
         if (auto xml = tree.createXml()) {
             MemoryBlock binary;
             copyXmlToBinary(*xml, binary);
-            if (!encodePreset(binary, out, presetMetadata, presetExtensions))
+            if (!encodePreset(binary, out, metadata, extensions))
                 out = std::move(binary);
         }
     }
@@ -1445,6 +1568,8 @@ class Aurora : public AudioProcessor, public SampleAccurateParameterSink, public
                     return;
                 decodedTables[size_t(slot)] = std::move(table);
             }
+        std::array<int,128> decodedMappings{};
+        double preparedRate;{const ScopedLock lock(getCallbackLock());preparedRate=rate;}
         for (int cc = 0; cc < 128; ++cc) {
             var value = tree.getProperty("cc" + String(cc), -1);
             String id;
@@ -1456,7 +1581,7 @@ class Aurora : public AudioProcessor, public SampleAccurateParameterSink, public
                     id = legacyParamIds[old];
             }
             auto found = indices.find(id);
-            midiMappings[size_t(cc)].store(found == indices.end() ? -1 : found->second);
+            decodedMappings[size_t(cc)]=found == indices.end() ? -1 : found->second;
         }
         for (auto *base : getParameters())
             if (auto *parameter = dynamic_cast<RangedAudioParameter *>(base))
@@ -1467,14 +1592,10 @@ class Aurora : public AudioProcessor, public SampleAccurateParameterSink, public
                         "value", parameter->convertFrom0to1(parameter->getDefaultValue()), nullptr);
                     tree.addChild(child, -1, nullptr);
                 }
-        const ScopedLock lock(getCallbackLock());
-        synth.allNotesOff(0, false);
-        for (int s = 0; s < 3; ++s)
-            std::atomic_store(&importedTables[size_t(s)], std::move(decodedTables[size_t(s)]));
-        importedLfoUnipolar.store(bool(tree.getProperty("serumLfoUnipolar", false)));
-        importedSendOnlyRouting.store(bool(tree.getProperty("serumSendOnlyRouting", false)));
-        for (auto &b : samples)
-            b.clear();
+        std::array<std::vector<Zone>,3> decodedSamples;
+        std::array<std::array<float,64>,3> decodedSpectrum{};
+        std::array<MemoryBlock,3> decodedIR;
+        std::array<PreparedRack,3> readyIR;
         for (auto bank : tree)
             if (bank.hasType("Bank")) {
                 int slot = int(bank["slot"]);
@@ -1485,27 +1606,39 @@ class Aurora : public AudioProcessor, public SampleAccurateParameterSink, public
                     if (!Base64::convertFromBase64(bytes, item["data"].toString()))
                         continue;
                     size_t count = bytes.getDataSize() / sizeof(float);
-                    if (count == 0 || count > size_t(rate * 120))
+                    if (count == 0 || count > size_t(preparedRate * 120))
                         continue;
                     Zone z;
                     z.sampleRate = double(item.getProperty("rate", 48000));
                     z.root = int(item["root"]);
                     z.low = int(item["low"]);
                     z.high = int(item["high"]);
-                    z.data.setSize(1, int(count));
-                    std::memcpy(z.data.getWritePointer(0), bytes.getData(), count * sizeof(float));
-                    samples[size_t(slot)].push_back(std::move(z));
+                    (*z.data).setSize(1, int(count));
+                    std::memcpy((*z.data).getWritePointer(0), bytes.getData(), count * sizeof(float));
+                    decodedSamples[size_t(slot)].push_back(std::move(z));
                 }
                 for (int h = 0; h < 64; ++h)
-                    spectrum[size_t(slot)][size_t(h)] = float(bank["h" + String(h)]);
+                    decodedSpectrum[size_t(slot)][size_t(h)] = float(bank["h" + String(h)]);
             }
         for (int s = 0; s < 3; ++s) {
             MemoryOutputStream bytes;
             Base64::convertFromBase64(bytes, tree["irData" + String(s)].toString());
-            irData[size_t(s)].replaceAll(bytes.getData(), bytes.getDataSize());
-            auto &ir = irData[size_t(s)];
-            applyIR(s);
+            decodedIR[size_t(s)].replaceAll(bytes.getData(), bytes.getDataSize());
+            auto &ir = decodedIR[size_t(s)];
+            if(!prepareIR(decodedIR[size_t(s)],preparedRate,readyIR[size_t(s)]))return;
         }
+
+        const ScopedLock lock(getCallbackLock());
+        if(rate!=preparedRate)return;
+        for(int cc=0;cc<128;++cc)midiMappings[size_t(cc)].store(decodedMappings[size_t(cc)]);
+        synth.allNotesOff(0, false);
+        ++assetRevision;
+        for (int s = 0; s < 3; ++s)
+            std::atomic_store(&importedTables[size_t(s)], std::move(decodedTables[size_t(s)]));
+        importedLfoUnipolar.store(bool(tree.getProperty("serumLfoUnipolar", false)));
+        importedSendOnlyRouting.store(bool(tree.getProperty("serumSendOnlyRouting", false)));
+        samples.swap(decodedSamples);spectrum=decodedSpectrum;irData.swap(decodedIR);
+        for(int s=0;s<3;++s)installIR(s,readyIR[size_t(s)]);
         state.replaceState(tree);
         presetMetadata=document.metadata; presetExtensions=document.state;
         capture(true);
@@ -1537,6 +1670,7 @@ void Voice::startNote(int n, float vel, SynthesiserSound *, int wheel) {
     pressure = 0; timbre=.5f;expressionGain=1;expressionPan=expressionTune=0;nativeNoteId=-1;
     released = false;
     if (!legato) {
+        configRevision=~0u;
         wavetableState = {};
         phase = {};
         position = {};
@@ -1544,11 +1678,21 @@ void Voice::startNote(int n, float vel, SynthesiserSound *, int wheel) {
         envelopeTime = {};
         voiceLfoPhase={};voiceLfoTime={};voiceLfoValue={};
         for (int s = 0; s < 3; ++s)
-            for (int u = 0; u < 8; ++u)
+            for (int u = 0; u < 8 && owner.val(key("osc",s,"wt_compat"))<.5f; ++u)
                 unisonPhase[size_t(s)][size_t(u)] =
                     std::fmod(owner.val(key("osc", s, "phase")) +
                                   owner.val(key("osc", s, "random")) * rng.nextFloat(),
                               1.);
+    }
+    for(int s=0;s<3;++s)if(owner.val(key("osc",s,"wt_compat"))>=.5f && (!legato || owner.val(key("osc",s,"wt_legato"))<.5f)){
+        bool memory=owner.val(key("osc",s,"wt_memory"))>=.5f && phaseSeen[size_t(s)];
+        double base=owner.val(key("osc",s,"phase")),amount=owner.val(key("osc",s,"random"));
+        if(owner.val(key("osc",s,"wt_wrap"))<.5f)base=juce::jlimit(0.,1.,base);else base-=std::floor(base);
+        for(int u=0;u<16;++u){float random=owner.phaseRandom.nextUniform();
+            randomDetune[size_t(s)][size_t(u)]=random;
+            if(!memory)unisonPhase[size_t(s)][size_t(u)]=PhaseRandom::phase(base,amount,random);
+        }
+        phaseSeen[size_t(s)]=true;rawTap[size_t(s)]={};previousWarp[size_t(s)]={-1,-1};
     }
     pitchWheelMoved(wheel);
     for (int j = 0; j < 4; ++j) {
@@ -1586,18 +1730,9 @@ void Voice::stopNote(float, bool tail) {
     }
 }
 void Voice::renderNextBlock(AudioBuffer<float> &, int start, int n) {
-    struct OscConfig {
-        int mode;
-        float pos, level, pan, grain;
-        double tune;
-        bool loop;
-        int unison = 1, warp = 0;
-        float detune = 0, warpAmount = .5f;
-    };
-    std::array<OscConfig, 3> config;
-    std::array<std::shared_ptr<ImportedWavetable>, 3> customTables;
-    for (int s = 0; s < 3; ++s)
-        customTables[size_t(s)] = owner.importedTable(s);
+    std::array<std::shared_ptr<ImportedWavetable>,3> customTables;
+    for(int s=0;s<3;++s)customTables[size_t(s)]=owner.importedTable(s);
+    if(configRevision!=owner.voiceRevision){
     for (int s = 0; s < 3; ++s)
         config[size_t(s)] = {int(owner.val(key("osc", s, "mode"))),
                              owner.val(key("osc", s, "position")),
@@ -1607,12 +1742,46 @@ void Voice::renderNextBlock(AudioBuffer<float> &, int start, int n) {
                              std::pow(2., owner.val(key("osc", s, "tune")) / 12.),
                              owner.val(key("osc", s, "loop")) > .5f};
     for(int j=0;j<4;++j)envs[size_t(j)].setParameters({owner.val(key("env",j,"a")),owner.val(key("env",j,"d")),owner.val(key("env",j,"s")),owner.val(key("env",j,"r"))});
-    const float noiseLevel = owner.val("noise"), subLevel = owner.val("sub");
+    noiseLevel=owner.val("noise");subLevel=owner.val("sub");
     for (int s = 0; s < 3; ++s) {
         config[size_t(s)].unison = juce::jlimit(1, 8, int(owner.val(key("osc", s, "unison"))));
         config[size_t(s)].detune = owner.val(key("osc", s, "detune"));
         config[size_t(s)].warp = int(owner.val(key("osc", s, "warp")));
         config[size_t(s)].warpAmount = owner.val(key("osc", s, "warp_amount"));
+    }
+
+        for(int s=0;s<3;++s)for(int u=0;u<config[size_t(s)].unison;++u){auto &cfg=config[size_t(s)];
+            double detune=cfg.unison==1?0:(2.*u/(cfg.unison-1)-1)*cfg.detune;
+            cfg.detuneFactor[size_t(u)]=std::pow(2.,detune/1200.);}
+        for(int j=0;j<10;++j){auto &cfg=lfoConfig[size_t(j)];
+            cfg.rate=owner.val(key("lfo",j,"rate"));cfg.sync=owner.val(key("lfo",j,"sync"))>.5f;
+            cfg.divisor=std::pow(2.,4-int(owner.val(key("lfo",j,"division"))));
+            cfg.phase=owner.val(key("lfo",j,"phase"));cfg.shape=int(owner.val(key("lfo",j,"shape")));
+            cfg.delay=owner.val(key("lfo",j,"delay"));cfg.rise=owner.val(key("lfo",j,"rise"));
+        }
+        for(int s=0;s<3;++s){auto &cfg=config[size_t(s)];cfg.compat=owner.val(key("osc",s,"wt_compat"))>=.5f;
+            if(!cfg.compat)continue;
+            cfg.enabled=owner.val(key("osc",s,"wt_enabled"))>=.5f;
+            cfg.unison=juce::jlimit(1,16,int(owner.val(key("osc",s,"wt_unison"))));
+            cfg.morph=owner.val(key("osc",s,"wt_xfade"))>=.5f;
+            cfg.blend=owner.val(key("osc",s,"wt_blend"));cfg.width=owner.val(key("osc",s,"wt_width"));
+            cfg.variation=owner.val(key("osc",s,"wt_variation"));
+            cfg.panGains=wavetablePan(cfg.unison,cfg.blend,cfg.width);
+            cfg.normalization=cfg.unison==1?1.f:float(.5*wavetableExp(wtRound(float(cfg.unison)*-.0287823136895895f)));
+            cfg.detuneFactor=wavetableDetune(cfg.unison,owner.val(key("osc",s,"wt_detune")),owner.val(key("osc",s,"wt_range")),
+                int(owner.val(key("osc",s,"wt_stack"))),int(owner.val(key("osc",s,"wt_shape"))),owner.val(key("osc",s,"wt_rotate")),randomDetune[size_t(s)]);
+            for(int slot=0;slot<2;++slot){cfg.warpModes[slot]=int(owner.val(key("osc",s,slot==0?"wt_warp1":"wt_warp2")));
+                cfg.warpTargets[slot]=wavetableAmount(owner.val(key("osc",s,slot==0?"wt_amount1":"wt_amount2")),cfg.warpModes[slot]);
+                if(previousWarp[size_t(s)][size_t(slot)]!=cfg.warpModes[slot]){warpSmooth[size_t(s)][size_t(slot)]=cfg.warpTargets[slot];previousWarp[size_t(s)][size_t(slot)]=cfg.warpModes[slot];}}
+        }
+        sourceRequired={false,false,false};
+        std::array<int,3> visited{};int ordered=0;
+        auto visit=[&](auto &&self,int s)->void{if(visited[size_t(s)])return;visited[size_t(s)]=1;
+            auto &cfg=config[size_t(s)];if(cfg.compat && cfg.enabled)for(int mode:cfg.warpModes)if(mode>=33 && mode!=57){int source=(mode>=58?(mode-58)%6:(mode-33)%6);
+                if(source<2){int other=s==0?source+1:s==1?(source==0?0:2):source;sourceRequired[size_t(other)]=true;self(self,other);}}
+            renderOrder[size_t(ordered++)]=s;visited[size_t(s)]=2;};
+        for(int s=0;s<3;++s)visit(visit,s);
+        configRevision=owner.voiceRevision;
     }
     float glideMs = owner.val("portamento");
     if (owner.val("porta_always") < .5f)
@@ -1621,21 +1790,21 @@ void Voice::renderNextBlock(AudioBuffer<float> &, int start, int n) {
         glideMs > 0 ? float(1 - std::exp(-1 / (getSampleRate() * glideMs * .0002))) : 1;
     for (int i = start; i < start + n; ++i) {
         for(int j=0;j<10;++j){
-            auto k=size_t(j);double frequency=owner.val(key("lfo",j,"rate"));
-            if(owner.val(key("lfo",j,"sync"))>.5f)frequency=owner.currentTempo/60/std::pow(2.,4-int(owner.val(key("lfo",j,"division"))));
+            auto k=size_t(j);const auto &cfg=lfoConfig[k];double frequency=cfg.sync?owner.currentTempo/60/cfg.divisor:cfg.rate;
             voiceLfoTime[k]+=1/getSampleRate();voiceLfoPhase[k]+=frequency/getSampleRate();voiceLfoPhase[k]-=std::floor(voiceLfoPhase[k]);
-            double phase=voiceLfoPhase[k]+owner.val(key("lfo",j,"phase"));phase-=std::floor(phase);
-            int shape=int(owner.val(key("lfo",j,"shape")));
+            if(!owner.activeLfo[k] && !owner.forceSingleSampleForTest)continue;
+            double phase=voiceLfoPhase[k]+cfg.phase;phase-=std::floor(phase);
+            int shape=cfg.shape;
             float value=shape==0?std::sin(2*pi*float(phase)):shape==1?1-4*std::abs(float(phase)-.5f):shape==2?2*float(phase)-1:shape==4?2*owner.lfoCurves[k].at(float(phase))-1:phase<.5?1:-1;
             if(owner.importedLfoUnipolar.load())value=(value+1)*.5f;
-            double elapsed=voiceLfoTime[k]-owner.val(key("lfo",j,"delay"));float rise=owner.val(key("lfo",j,"rise"));
+            double elapsed=voiceLfoTime[k]-cfg.delay;float rise=cfg.rise;
             voiceLfoValue[k]=value*(elapsed<0?0:rise>0?juce::jlimit(0.f,1.f,float(elapsed)/rise):1);
         }
         std::array<float, 4> en{};
         for (int j = 0; j < 4; ++j) {
             en[size_t(j)] = envs[size_t(j)].getNextSample();
             envelopeTime[size_t(j)] += 1 / getSampleRate();
-            if (owner.val(key("env", j, "mode")) > .5f) {
+            if (owner.activeEnvelope[size_t(j)] && owner.val(key("env", j, "mode")) > .5f) {
                 float position =
                     float(envelopeTime[size_t(j)]) / owner.val(key("env", j, "duration"));
                 if (owner.val(key("env", j, "loop")) > .5f)
@@ -1648,7 +1817,8 @@ void Voice::renderNextBlock(AudioBuffer<float> &, int start, int n) {
             break;
         }
         std::array<float, 11> mod{};
-        for (const auto &m : owner.mods) {
+        for(int modulation=0;modulation<owner.activeModCount;++modulation){
+            const auto &m=owner.activeMods[size_t(modulation)];
             int src = m.source, dest = m.target;
             if (!src || !dest || m.depth == 0)
                 continue;
@@ -1670,21 +1840,45 @@ void Voice::renderNextBlock(AudioBuffer<float> &, int start, int n) {
         owner.cutoffMod.addSample(3, i, en[0]);
         glideNote += (note - glideNote) * glideRate;
         double hz = 440 * std::pow(2., (glideNote - 69 + expressionTune) / 12. + mod[7] * 2.) * bend;
-        for (int s = 0; s < 3; ++s) {
-            const auto &cfg = config[size_t(s)];
-            if (cfg.level == 0 && mod[size_t(s + 1)] <= 0)
+        for(int oscillator=0;oscillator<3;++oscillator){int s=renderOrder[size_t(oscillator)];
+            const auto &cfg=config[size_t(s)];
+            if(!cfg.enabled){rawTap[size_t(s)]={};continue;}
+            if (cfg.level == 0 && mod[size_t(s + 1)] <= 0 && !sourceRequired[size_t(s)])
                 continue;
             int mode = cfg.mode;
             double frequency = hz * cfg.tune;
             double &p = phase[size_t(s)];
             float pos = juce::jlimit(0.f, 1.f, cfg.pos + mod[size_t(s + 4)]);
-            float x = 0;
-            if (mode == 0) {
+            float x=0,stereoLeft=0,stereoRight=0;
+            if(cfg.compat)for(int slot=0;slot<2;++slot){auto &amount=warpSmooth[size_t(s)][size_t(slot)];amount=wtRound(amount+wtRound((cfg.warpTargets[slot]-amount)*.001f));}
+            if(mode==0 && cfg.compat){
+                for(int u=0;u<cfg.unison;++u){double &up=unisonPhase[size_t(s)][size_t(u)];
+                    double uf=frequency*cfg.detuneFactor[size_t(u)],readPhase=up,increment=uf/getSampleRate(),sync=1;
+                    ExternalWarp external;
+                    for(int slot=0;slot<2;++slot){int selector=cfg.warpModes[slot];float amount=warpSmooth[size_t(s)][size_t(slot)];
+                        if(selector==1){double control=amount;sync*=1+15*control*control*control;}
+                        else if(selector>=33 && selector!=57){int source=selector>=58?(selector-58)%6:(selector-33)%6;
+                            int kind=selector>=64?6:selector>=58?5:1+(selector-33)/6;float sample=0;
+                            if(source<2){int other=s==0?source+1:s==1?(source==0?0:2):source;int count=config[size_t(other)].unison;
+                                if(config[size_t(other)].enabled)sample=rawTap[size_t(other)][size_t(u%count)];}
+                            else if(source==2)sample=noiseLevel>0?(rng.nextFloat()*2-1):0;
+                            else if(source==3)sample=std::sin(2*pi*float(subphase));
+                            external.apply(slot,kind,amount,sample,source==2);
+                        }else readPhase=wavetablePhase(readPhase,amount,selector);
+                    }
+                    double fm=std::max(-increment,double(external.value[0])+external.value[1]);
+                    readPhase=readPhase*sync+external.value[2];readPhase-=std::floor(readPhase);
+                    float varied=pos;if(u>0 && cfg.variation!=0){float offset=float(65536>>((u+2)>>1))/65536.f;varied=juce::jlimit(0.f,1.f,pos+((u&1)?1:-1)*offset*cfg.variation);}
+                    auto &table=customTables[size_t(s)]?*customTables[size_t(s)]:owner.tables.compatible;
+                    float value=table.read(readPhase,varied,uf*sync,getSampleRate(),&wavetableState[size_t(s)][size_t(u)],cfg.morph,true)*external.value[3];
+                    rawTap[size_t(s)][size_t(u)]=value;
+                    stereoLeft+=value*cfg.panGains[size_t(u*2)];stereoRight+=value*cfg.panGains[size_t(u*2+1)];
+                    up+=increment+fm*double(float(1.f/float(getSampleRate())))*88200.;up-=std::floor(up);
+                }
+            } else if (mode == 0) {
                 for (int u = 0; u < cfg.unison; ++u) {
                     double &up = unisonPhase[size_t(s)][size_t(u)];
-                    double detune =
-                        cfg.unison == 1 ? 0 : (2. * u / (cfg.unison - 1) - 1) * cfg.detune;
-                    double uf = frequency * std::pow(2., detune / 1200.), phase = up;
+                    double uf=frequency*cfg.detuneFactor[size_t(u)],phase=up;
                     if (cfg.warp == 1)
                         phase = std::pow(phase, .25 * std::pow(16., cfg.warpAmount));
                     if (cfg.warp == 2) {
@@ -1699,17 +1893,19 @@ void Voice::renderNextBlock(AudioBuffer<float> &, int start, int n) {
                             : owner.tables.read(phase, pos, effectiveFrequency, getSampleRate(), &wavetableState[size_t(s)][size_t(u)]);
                     if (cfg.warp == 3)
                         value = std::sin(value * (1 + cfg.warpAmount * 5));
+                    rawTap[size_t(s)][size_t(u)]=value;
                     x += value / cfg.unison;
                     up += uf / getSampleRate();
                     up -= std::floor(up);
                 }
             } else if (mode == 4) {
-                for (int h = 1; h <= 64 && frequency * h < getSampleRate() * .45; ++h)
-                    x += owner.spectrum[size_t(s)][size_t(h - 1)] *
-                         std::sin(2 * pi * float(p) * h + pos * pi * h);
+                for (int h = 1; h <= 64 && frequency * h < getSampleRate() * .45; ++h){
+                    float amplitude=owner.spectrum[size_t(s)][size_t(h-1)];
+                    if(amplitude!=0)x+=amplitude*std::sin(2*pi*float(p)*h+pos*pi*h);
+                }
             } else if (zone[size_t(s)] >= 0) {
                 const auto &z = owner.samples[size_t(s)][size_t(zone[size_t(s)])];
-                int len = z.data.getNumSamples();
+                int len = (*z.data).getNumSamples();
                 double &cursor = position[size_t(s)];
                 double ratio = frequency / MidiMessage::getMidiNoteInHertz(z.root) * z.sampleRate /
                                getSampleRate();
@@ -1718,7 +1914,7 @@ void Voice::renderNextBlock(AudioBuffer<float> &, int start, int n) {
                         return 0.f;
                     int k = int(at);
                     float f = float(at - k);
-                    return z.data.getSample(0, k) * (1 - f) + z.data.getSample(0, k + 1) * f;
+                    return (*z.data).getSample(0, k) * (1 - f) + (*z.data).getSample(0, k + 1) * f;
                 };
                 if (mode == 3) {
                     double grain = cfg.grain * getSampleRate() * .001;
@@ -1739,15 +1935,18 @@ void Voice::renderNextBlock(AudioBuffer<float> &, int start, int n) {
             p -= std::floor(p);
             float level = juce::jlimit(0.f, 1.f, cfg.level + mod[size_t(s + 1)]) * velocity * expressionGain * .25f;
             float pan = juce::jlimit(-1.f, 1.f, cfg.pan + mod[8] + expressionPan);
+            if(mode!=0)rawTap[size_t(s)].fill(x);
+            if(mode==0 && cfg.compat){auto gains=wavetableGlobalPan((pan+1)*.5f,cfg.normalization);
+                owner.route(s,stereoLeft*level*gains[0],stereoRight*level*gains[1],en[0],i);continue;}
             owner.route(s, x * level * std::sqrt((1 - pan) * .5f),
                         x * level * std::sqrt((1 + pan) * .5f), en[0], i);
         }
         float noise = (rng.nextFloat() * 2 - 1) * noiseLevel * velocity * expressionGain * .12f;
-        owner.route(3,noise*std::sqrt(1-expressionPan),noise*std::sqrt(1+expressionPan),en[0],i);
-        float sub = std::sin(2 * pi * float(subphase)) * subLevel * velocity * expressionGain * .25f;
+        if(noiseLevel!=0)owner.route(3,noise*std::sqrt(1-expressionPan),noise*std::sqrt(1+expressionPan),en[0],i);
+        float sub = subLevel==0?0:std::sin(2 * pi * float(subphase)) * subLevel * velocity * expressionGain * .25f;
         subphase += hz * .5 / getSampleRate();
         subphase -= std::floor(subphase);
-        owner.route(4,sub*std::sqrt(1-expressionPan),sub*std::sqrt(1+expressionPan),en[0],i);
+        if(subLevel!=0)owner.route(4,sub*std::sqrt(1-expressionPan),sub*std::sqrt(1+expressionPan),en[0],i);
     }
 }
 #include "Editor.h"
@@ -1762,7 +1961,7 @@ bool auroraImportSFZForTest(AudioProcessor &p, int slot, const File &f) {
 bool auroraUIForTest(AudioProcessor &processor, const File &folder) {
     auto &p = dynamic_cast<Aurora &>(processor);
     Editor editor(p);
-    bool okay = editor.referenceLayoutForTest();
+    bool okay = editor.referenceLayoutForTest() && editor.overlayForTest(folder);
     for (int page = 0; page < 6; ++page) {
         editor.showPage(page);
         okay &= editor.pageFitsForTest();
@@ -2111,6 +2310,8 @@ bool auroraSerumForTest(const File &file, String &details, bool fixture) {
     }
     MemoryBlock state;
     p.getStateInformation(state);
+    {aurora::PresetDocument saved;MemoryBlock xml;
+     valid &= aurora::decodePreset(state.getData(),int(state.getSize()),xml,&saved) && saved.state.hasProperty("sourceState") && saved.metadata.hasProperty("sourceMetadata");}
     if (fixture) {
         auto broken = file.getSiblingFile("Broken.SerumPreset");
         broken.replaceWithData(state.getData(), std::min(size_t(20), state.getSize()));
@@ -2151,4 +2352,74 @@ bool auroraSerumForTest(const File &file, String &details, bool fixture) {
               String(report.assets) + " assets, " + String(report.modulations) +
               " routes, energy " + String(energy, 6) + ", notes " + String(report.notes.size());
     return valid;
+}
+
+int auroraOptimizationBenchmark(const juce::File &folder) {
+    folder.createDirectory();
+    juce::var report(new juce::DynamicObject());
+    for(auto name:{"idle","steady","automation"}) {
+        auto owner=std::make_unique<Aurora>();auto &p=*owner;
+        aurora_ui::write(p,"sub",0);aurora_ui::write(p,"noise",0);
+        for(int s=0;s<3;++s){aurora_ui::write(p,key("osc",s,"random"),0);aurora_ui::write(p,key("osc",s,"unison"),4);}
+        p.prepareToPlay(48000,512);juce::AudioBuffer<float> audio(2,512);juce::MidiBuffer midi;
+        juce::MemoryOutputStream samples;double milliseconds=0,maximum=0;
+        for(int block=0;block<32;++block){
+            midi.clear();if(block==0 && juce::String(name)!="idle")for(int note:{48,55,60,64})midi.addEvent(juce::MidiMessage::noteOn(1,note,.8f),0);
+            if(juce::String(name)=="automation")p.enqueueParameterPoint(p.indices["filter0_cutoff"],37,block%2?.2f:.8f);
+            auto start=juce::Time::getMillisecondCounterHiRes();p.processBlock(audio,midi);
+            double duration=juce::Time::getMillisecondCounterHiRes()-start;milliseconds+=duration;maximum=std::max(maximum,duration);
+            for(int c=0;c<2;++c)samples.write(audio.getReadPointer(c),512*sizeof(float));
+        }
+        folder.getChildFile(juce::String(name)+".f32le").replaceWithData(samples.getData(),samples.getDataSize());
+        auto entry=new juce::DynamicObject();entry->setProperty("milliseconds",milliseconds);entry->setProperty("maxBlockMs",maximum);
+        report.getDynamicObject()->setProperty(name,juce::var(entry));
+    }
+    folder.getChildFile("timing.json").replaceWithText(juce::JSON::toString(report,true));return 0;
+}
+
+bool auroraOptimizationRegressionForTest(){
+    auto render=[](bool reference){
+        auto owner=std::make_unique<Aurora>();auto &p=*owner;
+        p.forceSingleSampleForTest=reference;
+        for(auto id:{"sub","noise","osc0_random"})aurora_ui::write(p,id,0);
+        aurora_ui::write(p,"route0_dest",0);aurora_ui::write(p,"route0_balance",-100);
+        aurora_ui::write(p,"filter0_res",.4f);aurora_ui::write(p,"fx2s0_type",5);
+        aurora_ui::write(p,"fx2s0_time",.01f);aurora_ui::write(p,"fx2s0_mix",.3f);
+        p.prepareToPlay(48000,512);AudioBuffer<float> result(2,4096),block(2,512);MidiBuffer midi;
+        for(int part=0;part<8;++part){midi.clear();
+            if(part==0)midi.addEvent(MidiMessage::noteOn(1,60,.8f),17);
+            if(part==2)midi.addEvent(MidiMessage::noteOff(1,60),133);
+            if(part<4){p.enqueueParameterPoint(p.indices["filter0_cutoff"],73,part%2?.3f:.6f);
+                p.enqueueParameterPoint(p.indices["filter0_res"],101,.2f+.1f*part);
+                p.enqueueParameterPoint(p.indices["master"],211,part%2?.4f:.7f);}
+            p.processBlock(block,midi);for(int c=0;c<2;++c)result.copyFrom(c,part*512,block,c,0,512);
+        }
+        return result;
+    };
+    auto a=render(false),b=render(true);
+    for(int c=0;c<2;++c)for(int i=0;i<a.getNumSamples();++i)
+        if(!std::isfinite(a.getSample(c,i)) || std::abs(a.getSample(c,i)-b.getSample(c,i))>1.e-7f)return false;
+    PartitionedFIR first,second;std::vector<float> ir(513);ir[0]=1;ir[180]=.3f;ir[512]=-.1f;
+    first.configure(ir);second.shareKernel(first);if(first.kernels!=second.kernels)return false;
+    for(int i=0;i<1024;++i){float x=i==0?1.f:0.f;if(first.tick(x)!=second.tick(x))return false;}
+    if(second.tick(1.f)==first.tick(0.f))return false; // Histories remain independent.
+    return true;
+}
+
+// Regression for the complete cached wavetable voice path, including silent modulation sources.
+bool auroraWavetableVoiceForTest(){
+    auto render=[](bool enabled,int warp,int unison){
+        auto p=std::make_unique<Aurora>();
+        auto set=[&](const String&id,float value){aurora_ui::write(*p,id,value);};
+        set("sub",0);set("noise",0);set("env0_a",.001f);
+        for(int s=0;s<3;++s){set(key("osc",s,"wt_compat"),1);set(key("osc",s,"wt_enabled"),s==0 || (s==1 && enabled));set(key("osc",s,"level"),s==0?.6f:0);set(key("osc",s,"random"),0);}
+        set("osc0_wt_unison",float(unison));set("osc0_wt_warp1",float(warp));set("osc0_wt_amount1",.4f);set("osc1_tune",7);
+        p->prepareToPlay(48000,256);std::vector<float> result;AudioBuffer<float> audio(2,256);MidiBuffer midi;
+        for(int b=0;b<16;++b){midi.clear();if(!b)midi.addEvent(MidiMessage::noteOn(1,60,.8f),0);p->processBlock(audio,midi);for(int c=0;c<2;++c)for(int i=0;i<256;++i)result.push_back(audio.getSample(c,i));}
+        return result;
+    };
+    auto normal=render(true,0,1),fm=render(true,33,1),off=render(false,33,1),wide=render(true,33,16);
+    double difference=0,energy=0;bool finite=true;
+    for(size_t i=0;i<normal.size();++i){difference+=std::abs(normal[i]-fm[i]);energy+=wide[i]*wide[i];finite &= std::isfinite(fm[i])&&std::isfinite(wide[i]);}
+    return finite && difference>.01 && energy>1e-6 && normal==off;
 }

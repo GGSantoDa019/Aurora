@@ -59,6 +59,7 @@ struct WavetableReader {
         const int index=int(z),q=index>>9;
         // Original sample pointer has a seven-float pre-roll. Aurora's
         // equal-length bands use wrapped local taps instead of padded assets.
+        if(q>=7 && q+8<period)return contiguous(samples+q-7,(z-index+(index&511))/512.0,1);
         float taps[16];for(int k=0;k<16;++k)taps[k]=samples[(q+k-7)&(period-1)];
         return contiguous(taps,(z-index+(index&511))/512.0,1);
     }
@@ -73,9 +74,10 @@ struct WavetableReader {
 struct WavetableReadState {
     const void *resource=nullptr;
     int band=-1,previous=-1,remaining=0;
+    int frame=-1,oldFrame=-1,frameRemaining=0;
     void select(const void *identity,int next) {
-        if(resource!=identity || band<0){resource=identity;band=previous=next;remaining=0;}
-        else if(band!=next){previous=band;band=next;remaining=64;}
+        if(resource!=identity || band<0){resource=identity;band=previous=next;remaining=0;frame=-1;frameRemaining=0;}
+        else if(!remaining && band!=next){previous=band;band=next;remaining=64;}
     }
     template<class Read> float tick(const void *identity,int next,Read read) {
         select(identity,next);float value=read(band);

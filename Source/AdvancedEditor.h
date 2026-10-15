@@ -41,7 +41,7 @@ class PianoRoll : public Component {
         repaint();
     }
 };
-class AdvancedEditor : public AudioProcessorEditor {
+class AdvancedEditor : public Component {
     Aurora &p;
     ComboBox section, instance;
     Label heading, status;
@@ -58,7 +58,7 @@ class AdvancedEditor : public AudioProcessorEditor {
 
   public:
     AdvancedEditor(Aurora &a)
-        : AudioProcessorEditor(a), p(a),
+        : p(a),
           keyboard(a.keyboard, MidiKeyboardComponent::horizontalKeyboard), roll(a) {
         setSize(840, 740);
         for (Component *c :
@@ -67,8 +67,7 @@ class AdvancedEditor : public AudioProcessorEditor {
             addAndMakeVisible(c);
         heading.setText("AURORA  /  Modular Synth", dontSendNotification);
         heading.setFont(Font(24.f));
-        status.setText("Three engines • 16 voices • MIDI input • stereo VST3",
-                       dontSendNotification);
+        status.setText("Three engines | 16 voices | MIDI input | stereo VST3",dontSendNotification);
         section.addItemList({"Global", "Oscillator", "Envelope", "LFO", "Macro", "Filter",
                              "Routing", "FX rack", "Modulation", "Sequencer"},
                             1);
@@ -167,6 +166,7 @@ class AdvancedEditor : public AudioProcessorEditor {
             if (auto *cp = dynamic_cast<AudioParameterChoice *>(rp)) {
                 auto c = std::make_unique<ComboBox>();
                 c->addItemList(cp->choices, 1);
+                if(id.endsWith("wt_warp1") || id.endsWith("wt_warp2"))for(int mode=0;mode<70;++mode)c->setItemEnabled(mode+1,aurora::supportedWavetableWarp(mode));
                 c->setBounds(375, y, 390, 30);
                 form.addAndMakeVisible(*c);
                 combos.push_back(std::make_unique<AudioProcessorValueTreeState::ComboBoxAttachment>(

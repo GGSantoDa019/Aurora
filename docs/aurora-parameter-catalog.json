@@ -6369,5 +6369,461 @@
     "maximum": 1.0,
     "default": 0.0,
     "unit": "bool"
+  },
+  {
+    "auroraId": "osc0_wt_compat",
+    "name": "Osc 1 WT advanced engine",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "osc0_wt_enabled",
+    "name": "Osc 1 WT enabled",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 1.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "osc0_wt_warp1",
+    "name": "Osc 1 WT warp 1",
+    "minimum": 0.0,
+    "maximum": 69.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "osc0_wt_amount1",
+    "name": "Osc 1 WT warp 1 amount",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc0_wt_warp2",
+    "name": "Osc 1 WT warp 2",
+    "minimum": 0.0,
+    "maximum": 69.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "osc0_wt_amount2",
+    "name": "Osc 1 WT warp 2 amount",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc0_wt_blend",
+    "name": "Osc 1 WT blend",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.75,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc0_wt_width",
+    "name": "Osc 1 WT stereo width",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc0_wt_detune",
+    "name": "Osc 1 WT detune",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.5,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc0_wt_shape",
+    "name": "Osc 1 WT detune distribution",
+    "minimum": 0.0,
+    "maximum": 4.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "osc0_wt_stack",
+    "name": "Osc 1 WT stack",
+    "minimum": 0.0,
+    "maximum": 8.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc0_wt_range",
+    "name": "Osc 1 WT detune range",
+    "minimum": 0.0,
+    "maximum": 48.0,
+    "default": 12.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc0_wt_rotate",
+    "name": "Osc 1 WT distribution shift",
+    "minimum": -2.0,
+    "maximum": 2.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc0_wt_xfade",
+    "name": "Osc 1 WT morph frames",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "osc0_wt_memory",
+    "name": "Osc 1 WT phase memory",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "osc0_wt_legato",
+    "name": "Osc 1 WT legato phase",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 1.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "osc0_wt_wrap",
+    "name": "Osc 1 WT wrap initial phase",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 1.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "osc0_wt_variation",
+    "name": "Osc 1 WT frame variation",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc0_wt_unison",
+    "name": "Osc 1 WT subvoices",
+    "minimum": 1.0,
+    "maximum": 16.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc1_wt_compat",
+    "name": "Osc 2 WT advanced engine",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "osc1_wt_enabled",
+    "name": "Osc 2 WT enabled",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 1.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "osc1_wt_warp1",
+    "name": "Osc 2 WT warp 1",
+    "minimum": 0.0,
+    "maximum": 69.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "osc1_wt_amount1",
+    "name": "Osc 2 WT warp 1 amount",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc1_wt_warp2",
+    "name": "Osc 2 WT warp 2",
+    "minimum": 0.0,
+    "maximum": 69.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "osc1_wt_amount2",
+    "name": "Osc 2 WT warp 2 amount",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc1_wt_blend",
+    "name": "Osc 2 WT blend",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.75,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc1_wt_width",
+    "name": "Osc 2 WT stereo width",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc1_wt_detune",
+    "name": "Osc 2 WT detune",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.5,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc1_wt_shape",
+    "name": "Osc 2 WT detune distribution",
+    "minimum": 0.0,
+    "maximum": 4.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "osc1_wt_stack",
+    "name": "Osc 2 WT stack",
+    "minimum": 0.0,
+    "maximum": 8.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc1_wt_range",
+    "name": "Osc 2 WT detune range",
+    "minimum": 0.0,
+    "maximum": 48.0,
+    "default": 12.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc1_wt_rotate",
+    "name": "Osc 2 WT distribution shift",
+    "minimum": -2.0,
+    "maximum": 2.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc1_wt_xfade",
+    "name": "Osc 2 WT morph frames",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "osc1_wt_memory",
+    "name": "Osc 2 WT phase memory",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "osc1_wt_legato",
+    "name": "Osc 2 WT legato phase",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 1.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "osc1_wt_wrap",
+    "name": "Osc 2 WT wrap initial phase",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 1.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "osc1_wt_variation",
+    "name": "Osc 2 WT frame variation",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc1_wt_unison",
+    "name": "Osc 2 WT subvoices",
+    "minimum": 1.0,
+    "maximum": 16.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc2_wt_compat",
+    "name": "Osc 3 WT advanced engine",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "osc2_wt_enabled",
+    "name": "Osc 3 WT enabled",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 1.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "osc2_wt_warp1",
+    "name": "Osc 3 WT warp 1",
+    "minimum": 0.0,
+    "maximum": 69.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "osc2_wt_amount1",
+    "name": "Osc 3 WT warp 1 amount",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc2_wt_warp2",
+    "name": "Osc 3 WT warp 2",
+    "minimum": 0.0,
+    "maximum": 69.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "osc2_wt_amount2",
+    "name": "Osc 3 WT warp 2 amount",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc2_wt_blend",
+    "name": "Osc 3 WT blend",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.75,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc2_wt_width",
+    "name": "Osc 3 WT stereo width",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 1.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc2_wt_detune",
+    "name": "Osc 3 WT detune",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.5,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc2_wt_shape",
+    "name": "Osc 3 WT detune distribution",
+    "minimum": 0.0,
+    "maximum": 4.0,
+    "default": 0.0,
+    "unit": "enum"
+  },
+  {
+    "auroraId": "osc2_wt_stack",
+    "name": "Osc 3 WT stack",
+    "minimum": 0.0,
+    "maximum": 8.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc2_wt_range",
+    "name": "Osc 3 WT detune range",
+    "minimum": 0.0,
+    "maximum": 48.0,
+    "default": 12.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc2_wt_rotate",
+    "name": "Osc 3 WT distribution shift",
+    "minimum": -2.0,
+    "maximum": 2.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc2_wt_xfade",
+    "name": "Osc 3 WT morph frames",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "osc2_wt_memory",
+    "name": "Osc 3 WT phase memory",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "osc2_wt_legato",
+    "name": "Osc 3 WT legato phase",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 1.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "osc2_wt_wrap",
+    "name": "Osc 3 WT wrap initial phase",
+    "minimum": 0.0,
+    "maximum": 1.0,
+    "default": 1.0,
+    "unit": "bool"
+  },
+  {
+    "auroraId": "osc2_wt_variation",
+    "name": "Osc 3 WT frame variation",
+    "minimum": -1.0,
+    "maximum": 1.0,
+    "default": 0.0,
+    "unit": "plain"
+  },
+  {
+    "auroraId": "osc2_wt_unison",
+    "name": "Osc 3 WT subvoices",
+    "minimum": 1.0,
+    "maximum": 16.0,
+    "default": 1.0,
+    "unit": "plain"
   }
 ]

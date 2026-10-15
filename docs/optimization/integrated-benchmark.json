@@ -1,0 +1,14 @@
+{
+  "idle": {
+    "milliseconds": 1.554299999028444,
+    "maxBlockMs": 0.3380999974906445
+  },
+  "steady": {
+    "milliseconds": 17.82980000972748,
+    "maxBlockMs": 0.9153999984264374
+  },
+  "automation": {
+    "milliseconds": 19.16499999538064,
+    "maxBlockMs": 0.9884000010788441
+  }
+}
